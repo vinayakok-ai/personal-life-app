@@ -16,11 +16,11 @@ const body = Hanken_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Personal Life App",
+  title: "VinyOS",
   description:
-    "A private companion for finances, food, journaling, workouts and time.",
+    "VinyOS — a private companion for finances, food, journaling, workouts and time.",
   manifest: "/manifest.webmanifest",
-  appleWebApp: { capable: true, statusBarStyle: "default", title: "Life" },
+  appleWebApp: { capable: true, statusBarStyle: "default", title: "VinyOS" },
   icons: {
     icon: "/icons/icon-192.png",
     apple: "/icons/apple-touch-icon.png",

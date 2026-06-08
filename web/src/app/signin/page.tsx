@@ -28,7 +28,7 @@ export default function SignInPage() {
   return (
     <main className={styles.wrap}>
       <div className={styles.card}>
-        <p className={styles.eyebrow}>Personal Life App</p>
+        <p className={styles.eyebrow}>VinyOS</p>
         <h1 className={styles.title}>A private space, just for you.</h1>
         <p className={styles.sub}>
           Finances, food, journaling, workouts and time — in one place only you

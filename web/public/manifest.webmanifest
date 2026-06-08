@@ -1,6 +1,6 @@
 {
-  "name": "Personal Life App",
-  "short_name": "Life",
+  "name": "VinyOS",
+  "short_name": "VinyOS",
   "description": "A private companion for finances, food, journaling, workouts and time.",
   "start_url": "/",
   "scope": "/",
