@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Timeline · Sage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+ --frame:#bcc4b4;
+ --sky:linear-gradient(180deg,#F1F3E4 0%,#DCE6C9 24%,#B6CBA8 46%,#5f7e6e 70%,#142219 100%);
+ --line:linear-gradient(180deg,#cdb96a,#a8b56a 42%,#5f7e6e 70%,#27352b);
+ --accent:#B98E36; --accent-ring:rgba(185,142,54,.26);
+ --dawn-text:#20271a; --dawn-muted:#6c7a5a; --time:#74815f; --dot-border:#b3bd86;
+ --night-text:#eef0df; --night-muted:#b9c6b0; --night-dot:#8fa088;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Hanken Grotesk',sans-serif;display:flex;justify-content:center;padding:32px 16px;min-height:100vh;background:var(--frame);-webkit-font-smoothing:antialiased}
+.screen{width:390px;min-height:860px;padding:34px 26px 40px;border-radius:30px;overflow:hidden;background:var(--sky);box-shadow:0 26px 56px -26px rgba(30,40,25,.5)}
+.date{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--dawn-muted);font-weight:600}
+h1{font-family:'Fraunces',serif;font-weight:600;font-size:29px;margin:8px 0 26px;letter-spacing:-.015em;color:var(--dawn-text)}
+.timeline{position:relative;padding-left:66px}
+.timeline::before{content:"";position:absolute;left:48px;top:8px;bottom:8px;width:3px;background:var(--line)}
+.stop{position:relative;margin-bottom:24px}
+.time{position:absolute;left:-66px;top:-2px;width:42px;text-align:right;font-size:12px;color:var(--time);font-variant-numeric:tabular-nums;font-weight:500}
+.dot{position:absolute;left:-24px;top:1px;width:14px;height:14px;border-radius:50%;background:#fff;border:3px solid var(--dot-border)}
+.stop.done .dot{background:var(--accent);border-color:var(--accent)}
+.stop.now .dot{background:#fff;border-color:var(--accent);box-shadow:0 0 0 5px var(--accent-ring)}
+.stop h3{font-size:16px;font-weight:600;color:var(--dawn-text)}
+.stop.done h3{color:var(--dawn-muted);font-weight:400}
+.stop p{font-size:12.5px;color:var(--dawn-muted);margin-top:2px}
+.stop.now h3 b{color:var(--accent);font-weight:600}
+.stop.eve h3,.stop.night h3{color:var(--night-text)}
+.stop.eve .time,.stop.night .time,.stop.eve p,.stop.night p{color:var(--night-muted)}
+.stop.eve .dot,.stop.night .dot{border-color:var(--night-dot);background:#e7ecdf}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+.chips span{font-size:12.5px;padding:5px 11px;border-radius:999px;border:1px solid rgba(255,255,255,.45);color:#eef0df}
+.cap{margin-top:4px;display:inline-flex;gap:8px;align-items:center;font-size:13px;color:#283019;background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.65);padding:7px 13px;border-radius:999px}
+.cap b{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#7a6320}
+</style>
+</head>
+<body>
+<div class="screen">
+  <p class="date">Sunday · 7 June</p>
+  <h1>Good morning, Vinayak</h1>
+  <div class="timeline">
+    <div class="stop done"><span class="time">7:00</span><span class="dot"></span><h3>Out of bed</h3></div>
+    <div class="stop done"><span class="time">7:05</span><span class="dot"></span><h3>Bathroom</h3></div>
+    <div class="stop now"><span class="time">7:10</span><span class="dot"></span><h3><b>Workout</b> — 5 min</h3><p>after the bathroom · do it before you sit down</p></div>
+    <div class="stop"><span class="time">7:25</span><span class="dot"></span><h3>Brush &amp; shower</h3></div>
+    <div class="stop"><span class="time">7:40</span><span class="dot"></span><h3>Smoothie</h3><p>spinach + cucumber</p></div>
+    <div class="stop"><span class="time">8:00</span><span class="dot"></span><h3>Start work</h3></div>
+    <div class="stop"><span class="time">—</span><span class="dot"></span><h3>How are you feeling?</h3><span class="cap"><b>hold to talk</b> anytime</span></div>
+    <div class="stop"><span class="time">13:00</span><span class="dot"></span><h3>Break → make lunch</h3></div>
+    <div class="stop eve"><span class="time">18:30</span><span class="dot"></span><h3>Free this evening?</h3><div class="chips"><span>Movie trailer</span><span>Call family</span><span>This app</span></div></div>
+    <div class="stop night"><span class="time">23:00</span><span class="dot"></span><h3>Read, then sleep</h3><p>aiming earlier than last night</p></div>
+  </div>
+</div>
+</body>
+</html>

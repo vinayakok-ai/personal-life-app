@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>6 · Precise minimal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+ --bg:#EEF0F3; --screen:#FFFFFF; --surface:#F7F8FA; --ink:#171A20; --muted:#6A7180;
+ --line:#E7EAEF; --accent:#4B59D6;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);font-family:'Schibsted Grotesk',sans-serif;color:var(--ink);display:flex;justify-content:center;padding:34px 16px;min-height:100vh;-webkit-font-smoothing:antialiased}
+.screen{width:390px;background:var(--screen);border-radius:28px;padding:30px 24px 34px;box-shadow:0 20px 48px -26px rgba(30,40,70,.3);border:1px solid var(--line)}
+.eyebrow{font-size:11px;letter-spacing:.12em;color:var(--muted);font-weight:600;text-transform:uppercase}
+.top h1{font-weight:700;font-size:27px;line-height:1.1;margin:9px 0 5px;letter-spacing:-.02em}
+.lede{color:var(--muted);font-size:14.5px}
+.block{margin-top:26px}
+.block-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.block-head h2{font-weight:600;font-size:15px}
+.progress{font-size:12px;color:var(--accent);font-weight:600}
+.chain{list-style:none;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.chain li{position:relative;padding:12px 14px 12px 38px;font-size:15px;border-bottom:1px solid var(--line)}
+.chain li:last-child{border-bottom:0}
+.chain li::before{content:"";position:absolute;left:14px;top:14px;width:13px;height:13px;border-radius:50%;border:1.5px solid #cdd3dc}
+.chain li.is-done{color:var(--muted)}
+.chain li.is-done::before{background:var(--accent);border-color:var(--accent)}
+.chain li.is-done::after{content:"";position:absolute;left:18px;top:17px;width:3.5px;height:6.5px;border:solid #fff;border-width:0 1.6px 1.6px 0;transform:rotate(45deg)}
+.chain li.is-now{font-weight:600;background:var(--surface)}
+.chain li.is-now::before{border-color:var(--accent);box-shadow:0 0 0 3px rgba(75,89,214,.14)}
+.chain li em{display:block;font-style:normal;font-size:12px;color:var(--muted);font-weight:400;margin-top:2px}
+.capture{margin-top:24px;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:15px 16px;font-family:'Schibsted Grotesk',sans-serif;font-weight:500;font-size:15px;color:var(--ink);cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.capture span{font-size:10.5px;color:var(--accent);letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+.today{margin-top:18px;display:flex;gap:8px}
+.today>div{flex:1;display:flex;flex-direction:column;gap:2px;padding:13px 12px;background:var(--surface);border-radius:12px;border:1px solid var(--line)}
+.today .k{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.today .v{font-size:19px;font-weight:700;letter-spacing:-.01em}
+.evening{margin-top:26px}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px}
+.chips span{font-size:13px;padding:7px 12px;border-radius:9px;background:var(--surface);border:1px solid var(--line);color:var(--ink);font-weight:500}
+</style>
+</head>
+<body>
+<div class="screen">
+  <header class="top">
+    <p class="eyebrow">Sun · 7 June</p>
+    <h1>Good morning, Vinayak</h1>
+    <p class="lede">Let's win the morning.</p>
+  </header>
+  <section class="block">
+    <div class="block-head"><h2>This morning</h2><span class="progress">2 / 6</span></div>
+    <ol class="chain">
+      <li class="is-done">Out of bed</li>
+      <li class="is-done">Bathroom</li>
+      <li class="is-now">Workout — 5 min<em>after the bathroom</em></li>
+      <li>Brush &amp; shower</li>
+      <li>Smoothie</li>
+      <li>Start work</li>
+    </ol>
+  </section>
+  <button class="capture">How are you feeling?<span>hold to talk</span></button>
+  <section class="today">
+    <div><span class="k">Spent</span><span class="v">₹240</span></div>
+    <div><span class="k">Steps</span><span class="v">1,240</span></div>
+    <div><span class="k">Meals</span><span class="v">0 / 2</span></div>
+  </section>
+  <section class="evening">
+    <div class="block-head"><h2>Free tonight?</h2></div>
+    <div class="chips"><span>Movie trailer</span><span>Improve this app</span><span>Call family</span><span>New project</span></div>
+  </section>
+</div>
+</body>
+</html>

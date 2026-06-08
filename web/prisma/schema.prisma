@@ -1,0 +1,41 @@
+// Personal Life App — Prisma schema
+// Grown slice-by-slice. See DATA_MODEL.md for the full intended model.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// Single-user preferences (theme toggle, etc.).
+model UserSettings {
+  id                    String   @id @default(cuid())
+  theme                 String   @default("dawn") // dawn | sage
+  eveningWorkoutEnabled Boolean  @default(false)
+  updatedAt             DateTime @updatedAt
+}
+
+/// Lightweight event log powering the daily Claude review + "is it working?" signal.
+model UsageEvent {
+  id         String   @id @default(cuid())
+  eventType  String
+  metadata   Json?
+  occurredAt DateTime @default(now())
+
+  @@index([occurredAt])
+}
+
+/// Free-form, voice-first journaling — the spine of reflection.
+model JournalEntry {
+  id        String   @id @default(cuid())
+  body      String
+  mood      String? // optional, emergent — no fixed scale
+  tags      String[] // emergent, no fixed taxonomy
+  source    String   @default("text") // text | voice
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}

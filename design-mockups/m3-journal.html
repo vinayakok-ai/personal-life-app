@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>C · Analog journal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#F9F3E3;--ink:#3c3526;--muted:#8a7f63;--accent:#C2603A;--tape:rgba(122,168,148,.5)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#EBE2CB;background-image:radial-gradient(#d8cba9 1.1px,transparent 1.1px);background-size:22px 22px;font-family:'Newsreader',serif;color:var(--ink);display:flex;justify-content:center;padding:42px 16px;min-height:100vh;-webkit-font-smoothing:antialiased}
+.screen{width:390px;background:var(--paper);padding:34px 26px 36px;box-shadow:0 18px 42px -20px rgba(80,60,30,.4);position:relative;border-radius:3px}
+.tape{position:absolute;top:-13px;left:50%;transform:translateX(-50%) rotate(-3deg);width:150px;height:26px;background:var(--tape)}
+.date{font-family:'Caveat',cursive;font-size:21px;color:var(--muted);transform:rotate(-1.5deg)}
+h1{font-family:'Caveat',cursive;font-weight:700;font-size:44px;line-height:.95;margin:2px 0 0;transform:rotate(-1deg)}
+.squig{display:block;width:180px;height:10px;margin:2px 0 0 2px}
+.lede{font-size:15px;margin-top:12px;color:#4a4334;line-height:1.45}
+.head{font-family:'Caveat',cursive;font-weight:600;font-size:26px;margin:20px 0 4px;color:var(--accent)}
+.list{list-style:none}
+.list li{display:flex;gap:13px;align-items:flex-start;padding:8px 0;font-size:17px}
+.cb{width:21px;height:21px;border:2px solid var(--ink);border-radius:5px 8px 6px 9px;flex:none;margin-top:2px;transform:rotate(-2deg);display:grid;place-items:center}
+.list li.done{color:var(--muted)}
+.list li.done .ck{font-family:'Caveat',cursive;font-weight:700;font-size:23px;color:var(--accent);transform:rotate(-9deg)}
+.list li.now{font-weight:500}
+.list li.now .label{position:relative;display:inline-block;padding:1px 4px}
+.list li.now .label::after{content:"";position:absolute;left:-7px;right:-7px;top:-5px;bottom:-5px;border:2px solid var(--accent);border-radius:62% 38% 58% 42%/50% 56% 44% 50%;transform:rotate(-1.4deg)}
+.list em{display:block;font-family:'Caveat',cursive;font-size:17px;color:var(--muted);font-style:normal;font-weight:600}
+.note{margin-top:22px;font-family:'Caveat',cursive;font-size:24px;color:var(--ink);border:2px dashed var(--muted);border-radius:12px;padding:13px 16px;transform:rotate(-.5deg)}
+.note small{display:block;font-family:'Newsreader',serif;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-top:4px}
+.stats{display:flex;gap:16px;margin-top:24px}
+.stats div:nth-child(2){transform:rotate(-1deg)}
+.stats div:nth-child(3){transform:rotate(.6deg)}
+.stats .k{font-family:'Caveat',cursive;font-size:18px;color:var(--muted)}
+.stats .v{font-size:23px;font-weight:500;display:block;margin-top:-2px}
+.tonight{margin-top:22px}
+.tags{display:flex;flex-wrap:wrap;gap:9px;margin-top:2px}
+.tags span{font-family:'Caveat',cursive;font-weight:600;font-size:18px;border:1.5px solid var(--accent);color:var(--accent);border-radius:16px 9px 17px 8px;padding:2px 13px}
+.tags span:nth-child(odd){transform:rotate(-1.5deg)}
+.tags span:nth-child(even){transform:rotate(1deg)}
+</style>
+</head>
+<body>
+<div class="screen">
+  <div class="tape"></div>
+  <p class="date">Sunday, 7 June</p>
+  <h1>Good morning, Vinayak</h1>
+  <svg class="squig" viewBox="0 0 180 10"><path d="M2 6 Q 22 1 42 6 T 82 6 T 122 6 T 178 5" fill="none" stroke="#C2603A" stroke-width="2.5" stroke-linecap="round"/></svg>
+  <p class="lede">Two done already. Just a little movement next — then the rest follows.</p>
+  <p class="head">this morning</p>
+  <ul class="list">
+    <li class="done"><span class="cb"><span class="ck">✓</span></span>Out of bed</li>
+    <li class="done"><span class="cb"><span class="ck">✓</span></span>Bathroom</li>
+    <li class="now"><span class="cb"></span><span><span class="label">Workout — 5 min</span><em>after the bathroom</em></span></li>
+    <li><span class="cb"></span>Brush &amp; shower</li>
+    <li><span class="cb"></span>Smoothie</li>
+    <li><span class="cb"></span>Start work</li>
+  </ul>
+  <div class="note">How are you feeling?<small>hold to talk →</small></div>
+  <div class="stats">
+    <div><span class="k">spent</span><span class="v">₹240</span></div>
+    <div><span class="k">steps</span><span class="v">1,240</span></div>
+    <div><span class="k">meals</span><span class="v">0 / 2</span></div>
+  </div>
+  <div class="tonight">
+    <p class="head">free tonight?</p>
+    <div class="tags"><span>Movie trailer</span><span>This app</span><span>Call family</span><span>New project</span></div>
+  </div>
+</div>
+</body>
+</html>

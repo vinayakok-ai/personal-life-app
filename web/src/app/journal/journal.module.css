@@ -1,0 +1,139 @@
+.composer,
+.list {
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  background: var(--surface);
+  padding: 26px 22px 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+.list {
+  padding-bottom: calc(92px + env(safe-area-inset-bottom));
+}
+
+.back {
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: 600;
+}
+.back:hover {
+  color: var(--text);
+}
+
+/* ---- composer ---- */
+.cHeader {
+  margin-bottom: 14px;
+}
+.form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.textarea {
+  flex: 1;
+  width: 100%;
+  min-height: 50dvh;
+  resize: none;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-body), sans-serif;
+  font-size: 18px;
+  line-height: 1.65;
+  outline: none;
+  padding: 8px 0;
+}
+.textarea::placeholder {
+  color: var(--muted);
+  opacity: 0.85;
+}
+.save {
+  align-self: flex-end;
+  margin-top: 16px;
+  appearance: none;
+  border: none;
+  cursor: pointer;
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--font-body), sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  padding: 12px 22px;
+  border-radius: 999px;
+}
+.save:hover {
+  filter: brightness(0.96);
+}
+
+/* ---- list ---- */
+.header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+.title {
+  margin: 6px 0 0;
+  font-family: var(--font-display), serif;
+  font-weight: 600;
+  font-size: 28px;
+  letter-spacing: -0.015em;
+  color: var(--text);
+}
+.newBtn {
+  flex: none;
+  text-decoration: none;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 9px 16px;
+  border-radius: 999px;
+}
+.empty {
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.6;
+  margin-top: 8px;
+}
+.inlineLink {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+.entries {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.entry {
+  border-bottom: 1px solid var(--surface-line);
+  padding-bottom: 18px;
+}
+.entry:last-child {
+  border-bottom: none;
+}
+.entryTime {
+  display: block;
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.entryBody {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text);
+  white-space: pre-wrap;
+}

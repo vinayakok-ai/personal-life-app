@@ -1,0 +1,18 @@
+# Root ignores (the Next.js app also has its own web/.gitignore)
+
+# dependencies / build output (matches at any depth, incl. web/)
+node_modules/
+.next/
+out/
+build/
+
+# secrets — never commit any env file
+.env
+.env.*
+**/.env
+**/.env.*
+
+# OS / editor / logs
+.DS_Store
+Thumbs.db
+*.log

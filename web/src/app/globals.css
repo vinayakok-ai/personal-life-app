@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+:root {
+  --radius: 30px;
+}
+
+/* ---- Theme palettes (DESIGN.md) ---- */
+html[data-theme="dawn"] {
+  --frame: #cdbfa9;
+  --sky: linear-gradient(180deg, #fbf1dc 0%, #f5e4c6 24%, #e8cca4 46%, #9ba2bc 70%, #2c3858 100%);
+  --line: linear-gradient(180deg, #e7a15a, #caa06a 42%, #6f789a 70%, #3b4d7a);
+  --accent: #e0852f;
+  --accent-ring: rgba(224, 133, 47, 0.28);
+  --text: #2a2114;
+  --muted: #86714f;
+  --night-text: #f1ecdd;
+  --night-muted: #c3c9dc;
+  --dot-border: #caa06a;
+  --night-dot: #9aa0bc;
+  --night-dot-fill: #e9ebf3;
+  --surface: #f4ecdc;
+  --surface-line: #e3d6bd;
+}
+
+html[data-theme="sage"] {
+  --frame: #bcc4b4;
+  --sky: linear-gradient(180deg, #f1f3e4 0%, #dce6c9 24%, #b6cba8 46%, #5f7e6e 70%, #142219 100%);
+  --line: linear-gradient(180deg, #cdb96a, #a8b56a 42%, #5f7e6e 70%, #27352b);
+  --accent: #b98e36;
+  --accent-ring: rgba(185, 142, 54, 0.26);
+  --text: #20271a;
+  --muted: #6c7a5a;
+  --night-text: #eef0df;
+  --night-muted: #b9c6b0;
+  --dot-border: #b3bd86;
+  --night-dot: #8fa088;
+  --night-dot-fill: #e7ecdf;
+  --surface: #eef1e3;
+  --surface-line: #dde2cd;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--frame);
+  color: var(--text);
+  font-family: var(--font-body), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}

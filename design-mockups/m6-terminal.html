@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>F · Terminal / command deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#070A08;--fg:#9FE7B4;--dim:#52806010;--dimtxt:#5d8c6c;--accent:#FFC857;--line:#1a271d}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#04060527;background:#06090720;background-color:#060807;font-family:'JetBrains Mono',monospace;color:var(--fg);display:flex;justify-content:center;padding:34px 16px;min-height:100vh;-webkit-font-smoothing:antialiased}
+.screen{width:390px;background:#0A0F0B;border:1px solid var(--line);border-radius:9px;overflow:hidden;box-shadow:0 0 70px -14px rgba(90,210,130,.22);position:relative}
+.screen::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0,transparent 2px,rgba(0,0,0,.17) 3px)}
+.bar{display:flex;align-items:center;gap:7px;padding:11px 14px;border-bottom:1px solid var(--line);font-size:11px;color:var(--dimtxt)}
+.bar i{width:10px;height:10px;border-radius:50%;background:#26362b;display:inline-block}
+.bar i.r{background:#b5563f}.bar i.y{background:#caa23c}.bar i.g{background:#3f8a55}
+.bar span{margin-left:auto;letter-spacing:.04em}
+.body{padding:18px 16px 26px;font-size:13.5px;line-height:1.75;text-shadow:0 0 7px rgba(120,230,150,.22)}
+.cmd{color:var(--dimtxt)}
+.cmd b{color:var(--accent);font-weight:400}
+.h1{color:#dffbe6;font-size:16px;margin:8px 0 16px;font-weight:500}
+.sec{color:var(--dimtxt);letter-spacing:.04em;margin:18px 0 7px;font-size:12px}
+.row{white-space:pre-wrap}
+.done{color:var(--dimtxt)}
+.now{color:var(--accent)}
+.comment{color:#4f6e58}
+.stat{color:#bfe9cd}
+.prompt{margin-top:8px;color:#bfe9cd}
+.cursor{display:inline-block;width:8px;height:16px;background:var(--fg);vertical-align:-3px;margin-left:2px;animation:blink 1.1s steps(1,end) infinite}
+@keyframes blink{50%{opacity:0}}
+.tags{color:#bfe9cd;margin-top:2px}
+.tags b{color:var(--accent);font-weight:400}
+</style>
+</head>
+<body>
+<div class="screen">
+  <div class="bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>vinayak@life — today</span></div>
+  <div class="body">
+    <div class="cmd">vinayak@life ~ % <b>today</b></div>
+    <div class="h1">good morning, vinayak —</div>
+
+    <div class="sec">MORNING STACK ───────────────</div>
+    <div class="row done">[x] out of bed</div>
+    <div class="row done">[x] bathroom</div>
+    <div class="row now">[&gt;] workout · 5 min   <span class="comment"># after the bathroom</span></div>
+    <div class="row">[ ] brush &amp; shower</div>
+    <div class="row">[ ] smoothie</div>
+    <div class="row">[ ] start work</div>
+
+    <div class="sec">TODAY ────────────────────────</div>
+    <div class="row stat">spent ₹240   steps 1,240   meals 0/2</div>
+
+    <div class="prompt">journal&gt; how are you feeling?<span class="cursor"></span></div>
+
+    <div class="sec">TONIGHT ──────────────────────</div>
+    <div class="tags">· movie trailer   · improve this app<br>· call family     · new project</div>
+  </div>
+</div>
+</body>
+</html>

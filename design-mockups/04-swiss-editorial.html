@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>4 · Swiss editorial / mono</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+ --paper:#F1ECE1; --ink:#16130D; --muted:#6f685b; --line:#16130D; --accent:#E0402A;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#DBD3C2;font-family:'Archivo',sans-serif;color:var(--ink);display:flex;justify-content:center;padding:34px 16px;min-height:100vh;-webkit-font-smoothing:antialiased}
+.screen{width:390px;background:var(--paper);border-radius:6px;padding:28px 24px 34px;border:1.5px solid var(--ink);box-shadow:10px 10px 0 rgba(22,19,13,.12)}
+.eyebrow{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.1em;color:var(--ink);font-weight:700;display:flex;justify-content:space-between;border-bottom:1.5px solid var(--ink);padding-bottom:8px}
+.eyebrow .a{color:var(--accent)}
+.top h1{font-family:'Archivo',sans-serif;font-weight:800;font-size:34px;line-height:.98;margin:16px 0 6px;letter-spacing:-.03em;text-transform:uppercase}
+.lede{font-family:'Space Mono',monospace;color:var(--muted);font-size:13px}
+.block{margin-top:26px}
+.block-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;border-top:1.5px solid var(--ink);padding-top:10px}
+.block-head h2{font-family:'Space Mono',monospace;font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+.progress{font-family:'Space Mono',monospace;font-size:13px;color:var(--accent);font-weight:700}
+.chain{list-style:none}
+.chain li{position:relative;padding:12px 0 12px 34px;font-size:16px;font-weight:500;border-bottom:1px solid rgba(22,19,13,.18)}
+.chain li:last-child{border-bottom:0}
+.chain li::before{content:"";position:absolute;left:2px;top:14px;width:14px;height:14px;border:1.5px solid var(--ink)}
+.chain li.is-done{color:var(--muted)}
+.chain li.is-done::before{background:var(--ink)}
+.chain li.is-done::after{content:"";position:absolute;left:6px;top:16px;width:4px;height:8px;border:solid var(--paper);border-width:0 1.6px 1.6px 0;transform:rotate(45deg)}
+.chain li.is-now::before{background:var(--accent);border-color:var(--accent)}
+.chain li.is-now{font-weight:700}
+.chain li em{display:block;font-style:normal;font-family:'Space Mono',monospace;font-size:11.5px;color:var(--muted);font-weight:400;margin-top:3px}
+.capture{margin-top:26px;width:100%;text-align:left;background:var(--ink);border:0;border-radius:4px;padding:17px 18px;font-family:'Archivo',sans-serif;font-weight:600;font-size:16px;color:var(--paper);cursor:pointer;display:flex;justify-content:space-between;align-items:center;text-transform:uppercase;letter-spacing:.01em}
+.capture span{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--accent);letter-spacing:.06em;text-transform:uppercase}
+.today{margin-top:20px;display:flex;border:1.5px solid var(--ink)}
+.today>div{flex:1;display:flex;flex-direction:column;gap:4px;padding:14px 12px;border-right:1.5px solid var(--ink)}
+.today>div:last-child{border-right:0}
+.today .k{font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.today .v{font-family:'Archivo',sans-serif;font-size:22px;font-weight:800}
+.evening{margin-top:26px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chips span{font-family:'Space Mono',monospace;font-size:12px;padding:7px 12px;border:1.5px solid var(--ink);color:var(--ink);text-transform:uppercase;letter-spacing:.02em}
+</style>
+</head>
+<body>
+<div class="screen">
+  <header class="top">
+    <p class="eyebrow"><span class="a">SUN 07 JUN</span><span>07:12</span></p>
+    <h1>Good<br>morning,<br>Vinayak</h1>
+    <p class="lede">// let's win the morning</p>
+  </header>
+  <section class="block">
+    <div class="block-head"><h2>This morning</h2><span class="progress">02/06</span></div>
+    <ol class="chain">
+      <li class="is-done">Out of bed</li>
+      <li class="is-done">Bathroom</li>
+      <li class="is-now">Workout — 5 min<em>after the bathroom</em></li>
+      <li>Brush &amp; shower</li>
+      <li>Smoothie</li>
+      <li>Start work</li>
+    </ol>
+  </section>
+  <button class="capture">How are you feeling?<span>hold · talk</span></button>
+  <section class="today">
+    <div><span class="k">Spent</span><span class="v">₹240</span></div>
+    <div><span class="k">Steps</span><span class="v">1,240</span></div>
+    <div><span class="k">Meals</span><span class="v">0/2</span></div>
+  </section>
+  <section class="evening">
+    <div class="block-head"><h2>Free tonight?</h2></div>
+    <div class="chips"><span>Movie trailer</span><span>This app</span><span>Call family</span><span>New project</span></div>
+  </section>
+</div>
+</body>
+</html>
