@@ -84,3 +84,30 @@ model StepsLog {
   steps     Int      @default(0)
   createdAt DateTime @default(now())
 }
+
+// ---- Time / Schedule: the habit-stacked day (anchor chain, no clock times) ----
+
+model Habit {
+  id        String     @id @default(cuid())
+  label     String
+  cue       String // the anchor, e.g. "after the bathroom"
+  note      String? // optional detail (room to grow into tasks later)
+  kind      String     @default("plain") // plain | workout | steps | journal | evening
+  link      String? // optional deep-link route (e.g. /workout)
+  period    String     @default("morning") // morning | midday | evening | night (gradient bucket)
+  position  Int        @default(0)
+  active    Boolean    @default(true)
+  createdAt DateTime   @default(now())
+  logs      HabitLog[]
+}
+
+model HabitLog {
+  id      String   @id @default(cuid())
+  habit   Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  habitId String
+  date    DateTime @db.Date
+  done    Boolean  @default(true)
+  doneAt  DateTime @default(now())
+
+  @@unique([habitId, date])
+}
