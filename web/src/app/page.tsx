@@ -2,6 +2,7 @@ import Link from "next/link";
 import styles from "./home.module.css";
 import ThemeToggle from "@/components/ThemeToggle";
 import StepsNode from "./StepsNode";
+import HabitCheck from "./HabitCheck";
 import { getTodayDay } from "@/lib/time";
 import { getTodaySteps } from "@/lib/workout";
 
@@ -11,12 +12,6 @@ function periodClass(period: string) {
   if (period === "evening") return styles.eve;
   if (period === "night") return styles.night;
   return "";
-}
-
-function hrefFor(kind: string, id: string) {
-  if (kind === "workout") return "/workout";
-  if (kind === "journal") return "/journal/new";
-  return `/day/${id}`;
 }
 
 export default async function Home() {
@@ -59,29 +54,53 @@ export default async function Home() {
 
       <div className={styles.timeline}>
         {habits.map((h) => {
-          const base = `${styles.stop} ${h.done ? styles.done : ""} ${periodClass(h.period)}`;
+          const pc = periodClass(h.period);
+          const base = `${styles.stop} ${h.done ? styles.done : ""} ${pc}`;
+          const inner = (
+            <>
+              <span className={styles.dot} />
+              <h3 className={styles.title}>{h.label}</h3>
+              <p className={styles.cue}>{h.cue}</p>
+            </>
+          );
 
           if (h.kind === "steps") {
             return (
               <div key={h.id} className={base}>
-                <span className={styles.dot} />
-                <h3 className={styles.title}>{h.label}</h3>
-                <p className={styles.cue}>{h.cue}</p>
+                {inner}
                 <StepsNode initialSteps={todaySteps} />
               </div>
             );
           }
 
+          if (h.kind === "workout" || h.kind === "journal" || h.detail) {
+            const href =
+              h.kind === "workout"
+                ? "/workout"
+                : h.kind === "journal"
+                  ? "/journal/new"
+                  : `/day/${h.id}`;
+            return (
+              <Link
+                key={h.id}
+                href={href}
+                className={`${base} ${styles.stopLink}`}
+              >
+                {inner}
+              </Link>
+            );
+          }
+
+          // simple habit → one-tap inline check
           return (
-            <Link
+            <HabitCheck
               key={h.id}
-              href={hrefFor(h.kind, h.id)}
-              className={`${base} ${styles.stopLink}`}
-            >
-              <span className={styles.dot} />
-              <h3 className={styles.title}>{h.label}</h3>
-              <p className={styles.cue}>{h.cue}</p>
-            </Link>
+              id={h.id}
+              label={h.label}
+              cue={h.cue}
+              periodCls={pc}
+              initialDone={h.done}
+            />
           );
         })}
       </div>

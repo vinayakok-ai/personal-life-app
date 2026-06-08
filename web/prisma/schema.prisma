@@ -94,6 +94,7 @@ model Habit {
   note      String? // optional detail (room to grow into tasks later)
   kind      String     @default("plain") // plain | workout | steps | journal | evening
   link      String? // optional deep-link route (e.g. /workout)
+  detail    Boolean    @default(false) // tap opens a detail screen (important items only); else inline check
   period    String     @default("morning") // morning | midday | evening | night (gradient bucket)
   position  Int        @default(0)
   active    Boolean    @default(true)

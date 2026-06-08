@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getHabit, isHabitDoneToday } from "@/lib/time";
-import { toggleHabit } from "./actions";
+import { toggleHabit } from "@/app/habit-actions";
 import styles from "./day.module.css";
 
 export const dynamic = "force-dynamic";

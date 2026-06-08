@@ -88,6 +88,19 @@
 .stopLink:active {
   opacity: 0.85;
 }
+.checkBtn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
+}
+.checkBtn:active {
+  opacity: 0.85;
+}
 
 .dot {
   position: absolute;
