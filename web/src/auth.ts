@@ -5,6 +5,10 @@ import Google from "next-auth/providers/google";
 const ALLOWED_EMAIL = "vinayakok@gmail.com";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  // Behind Railway's proxy, trust the forwarded host so OAuth redirects use the
+  // public domain — not the internal localhost:PORT (which caused a redirect to
+  // localhost:8080 after sign-in).
+  trustHost: true,
   providers: [Google],
   pages: { signIn: "/signin" },
   callbacks: {
