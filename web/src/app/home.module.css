@@ -216,3 +216,25 @@
   font-size: 13px;
   color: var(--night-muted);
 }
+.stepsValue {
+  color: var(--night-text);
+  font-family: var(--font-body), sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.stepsBtn {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--night-muted);
+  cursor: pointer;
+  padding: 4px;
+  margin-left: 2px;
+  display: inline-flex;
+  align-items: center;
+  line-height: 0;
+}
+.stepsBtn:hover {
+  color: var(--night-text);
+}
