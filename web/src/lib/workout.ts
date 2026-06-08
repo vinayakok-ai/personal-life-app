@@ -61,3 +61,9 @@ export async function getTodayWorkout() {
   const steps = await prisma.stepsLog.findUnique({ where: { date } });
   return { day, steps: steps?.steps ?? 0 };
 }
+
+export async function getTodaySteps() {
+  const date = todayIST();
+  const s = await prisma.stepsLog.findUnique({ where: { date } });
+  return s?.steps ?? 0;
+}

@@ -188,3 +188,31 @@
   color: var(--accent);
   font-weight: 700;
 }
+
+/* steps logger (evening node, sits on the darker part of the timeline) */
+.stepsNode {
+  margin-top: 8px;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.stepsField {
+  width: 70px;
+  background: transparent;
+  border: none;
+  border-bottom: 1.5px solid var(--night-muted);
+  color: var(--night-text);
+  font-family: var(--font-body), sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  padding: 2px 0;
+  outline: none;
+  font-variant-numeric: tabular-nums;
+}
+.stepsField::placeholder {
+  color: var(--night-muted);
+}
+.stepsUnit {
+  font-size: 13px;
+  color: var(--night-muted);
+}

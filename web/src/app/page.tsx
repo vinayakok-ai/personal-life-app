@@ -1,6 +1,10 @@
 import Link from "next/link";
 import styles from "./home.module.css";
 import ThemeToggle from "@/components/ThemeToggle";
+import StepsNode from "./StepsNode";
+import { getTodaySteps } from "@/lib/workout";
+
+export const dynamic = "force-dynamic";
 
 type Step = {
   time: string;
@@ -11,6 +15,7 @@ type Step = {
   chips?: string[];
   cap?: boolean;
   href?: string;
+  stepsNode?: boolean;
 };
 
 // Placeholder data — wired to the DB module by module.
@@ -37,6 +42,14 @@ const steps: Step[] = [
     state: "eve",
   },
   {
+    time: "21:00",
+    lead: "Steps",
+    title: "",
+    note: "after dinner",
+    state: "eve",
+    stepsNode: true,
+  },
+  {
     time: "23:00",
     title: "Read, then sleep",
     note: "aiming earlier than last night",
@@ -51,7 +64,9 @@ const stateClass: Record<NonNullable<Step["state"]>, string> = {
   night: styles.night,
 };
 
-export default function Home() {
+export default async function Home() {
+  const todaySteps = await getTodaySteps();
+
   return (
     <main className={styles.app}>
       <header className={styles.header}>
@@ -85,6 +100,7 @@ export default function Home() {
                 titleEl
               )}
               {s.note ? <p className={styles.note}>{s.note}</p> : null}
+              {s.stepsNode ? <StepsNode initialSteps={todaySteps} /> : null}
               {s.cap ? (
                 <Link href="/journal/new" className={styles.cap}>
                   <b>hold to talk</b> anytime

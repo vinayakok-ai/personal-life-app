@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import styles from "./workout.module.css";
-import { setSetsDone, saveSteps } from "./actions";
+import { setSetsDone } from "./actions";
 
 type Item = {
   id: string;
@@ -16,10 +16,8 @@ type Item = {
 
 export default function WorkoutToday({
   items: initialItems,
-  steps: initialSteps,
 }: {
   items: Item[];
-  steps: number;
 }) {
   const [items, setItems] = useState(initialItems);
   const [, startTransition] = useTransition();
@@ -36,11 +34,6 @@ export default function WorkoutToday({
       ),
     );
     startTransition(() => setSetsDone(item.id, next));
-  }
-
-  function commitSteps(value: string) {
-    const n = Math.max(0, parseInt(value.replace(/\D/g, ""), 10) || 0);
-    startTransition(() => saveSteps(n));
   }
 
   return (
@@ -89,20 +82,6 @@ export default function WorkoutToday({
           </li>
         ))}
       </ul>
-
-      <div className={styles.steps}>
-        <label className={styles.stepsLabel} htmlFor="steps">
-          Steps today
-        </label>
-        <input
-          id="steps"
-          className={styles.stepsInput}
-          inputMode="numeric"
-          defaultValue={initialSteps || ""}
-          placeholder="0"
-          onBlur={(e) => commitSteps(e.target.value)}
-        />
-      </div>
 
       {allDone ? (
         <p className={styles.doneNote}>
