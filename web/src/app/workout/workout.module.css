@@ -1,0 +1,155 @@
+.screen {
+  width: 100%;
+  max-width: 460px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  background: var(--surface);
+  padding: 30px 24px calc(96px + env(safe-area-inset-bottom));
+}
+
+.header {
+  margin-bottom: 22px;
+}
+.eyebrow {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+}
+.title {
+  margin: 8px 0 16px;
+  font-family: var(--font-display), serif;
+  font-weight: 600;
+  font-size: 28px;
+  letter-spacing: -0.015em;
+  color: var(--text);
+}
+.progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.bar {
+  flex: 1;
+  height: 8px;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  overflow: hidden;
+}
+.bar span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  border-radius: 99px;
+  transition: width 0.25s ease;
+}
+.progressLabel {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.exercise {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--surface-line);
+}
+.exercise:last-child {
+  border-bottom: none;
+}
+.exHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.exName {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text);
+}
+.exDone .exName {
+  color: var(--muted);
+}
+.exTarget {
+  font-size: 13px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.dots {
+  display: flex;
+  gap: 10px;
+}
+.dot {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--surface-line);
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+.dot:hover {
+  border-color: var(--accent);
+}
+.dotOn {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.dotOn::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: 8px;
+  height: 14px;
+  border: solid #fff;
+  border-width: 0 3px 3px 0;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.steps {
+  margin-top: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px;
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+  border-radius: 16px;
+}
+.stepsLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+.stepsInput {
+  width: 96px;
+  text-align: right;
+  border: none;
+  background: transparent;
+  font-family: var(--font-body), sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+  outline: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.doneNote {
+  margin-top: 22px;
+  text-align: center;
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 15px;
+}

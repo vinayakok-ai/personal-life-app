@@ -39,3 +39,48 @@ model JournalEntry {
 
   @@index([createdAt])
 }
+
+// ---- Workout (habit-stacked morning routine; sets x reps that auto-ramp) ----
+
+model Exercise {
+  id        String        @id @default(cuid())
+  name      String
+  unit      String        @default("reps") // reps | seconds (plank = seconds, self-paced)
+  sets      Int           @default(3)
+  target    Int // current target per set; auto-increments on completed days
+  increment Int           @default(1) // added to target each fully-completed day
+  position  Int           @default(0)
+  active    Boolean       @default(true)
+  createdAt DateTime      @default(now())
+  items     WorkoutItem[]
+}
+
+model WorkoutDay {
+  id        String        @id @default(cuid())
+  date      DateTime      @unique @db.Date
+  status    String        @default("active") // active | done | skipped
+  createdAt DateTime      @default(now())
+  items     WorkoutItem[]
+}
+
+model WorkoutItem {
+  id           String     @id @default(cuid())
+  workoutDay   WorkoutDay @relation(fields: [workoutDayId], references: [id], onDelete: Cascade)
+  workoutDayId String
+  exercise     Exercise   @relation(fields: [exerciseId], references: [id])
+  exerciseId   String
+  unit         String     @default("reps")
+  sets         Int // snapshot of target sets that day
+  target       Int // snapshot of target per set that day
+  setsDone     Int        @default(0)
+  done         Boolean    @default(false)
+
+  @@unique([workoutDayId, exerciseId])
+}
+
+model StepsLog {
+  id        String   @id @default(cuid())
+  date      DateTime @unique @db.Date
+  steps     Int      @default(0)
+  createdAt DateTime @default(now())
+}

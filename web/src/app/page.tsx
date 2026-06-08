@@ -10,18 +10,20 @@ type Step = {
   state?: "done" | "now" | "eve" | "night";
   chips?: string[];
   cap?: boolean;
+  href?: string;
 };
 
-// Placeholder data — wired to the DB in a later slice.
+// Placeholder data — wired to the DB module by module.
 const steps: Step[] = [
   { time: "7:00", title: "Out of bed", state: "done" },
   { time: "7:05", title: "Bathroom", state: "done" },
   {
     time: "7:10",
     lead: "Workout",
-    title: " — 5 min",
-    note: "after the bathroom · do it before you sit down",
+    title: "",
+    note: "after the bathroom · tap to start",
     state: "now",
+    href: "/workout",
   },
   { time: "7:25", title: "Brush & shower" },
   { time: "7:40", title: "Smoothie", note: "spinach + cucumber" },
@@ -61,34 +63,45 @@ export default function Home() {
       </header>
 
       <div className={styles.timeline}>
-        {steps.map((s, i) => (
-          <div
-            key={i}
-            className={`${styles.stop} ${s.state ? stateClass[s.state] : ""}`}
-          >
-            <span className={styles.time}>{s.time}</span>
-            <span className={styles.dot} />
+        {steps.map((s, i) => {
+          const titleEl = (
             <h3 className={styles.title}>
               {s.lead ? <b>{s.lead}</b> : null}
               {s.title}
             </h3>
-            {s.note ? <p className={styles.note}>{s.note}</p> : null}
-            {s.cap ? (
-              <Link href="/journal/new" className={styles.cap}>
-                <b>hold to talk</b> anytime
-              </Link>
-            ) : null}
-            {s.chips ? (
-              <div className={styles.chips}>
-                {s.chips.map((c) => (
-                  <span key={c} className={styles.chip}>
-                    {c}
-                  </span>
-                ))}
-              </div>
-            ) : null}
-          </div>
-        ))}
+          );
+          return (
+            <div
+              key={i}
+              className={`${styles.stop} ${s.state ? stateClass[s.state] : ""}`}
+            >
+              <span className={styles.time}>{s.time}</span>
+              <span className={styles.dot} />
+              {s.href ? (
+                <Link href={s.href} className={styles.titleLink}>
+                  {titleEl}
+                </Link>
+              ) : (
+                titleEl
+              )}
+              {s.note ? <p className={styles.note}>{s.note}</p> : null}
+              {s.cap ? (
+                <Link href="/journal/new" className={styles.cap}>
+                  <b>hold to talk</b> anytime
+                </Link>
+              ) : null}
+              {s.chips ? (
+                <div className={styles.chips}>
+                  {s.chips.map((c) => (
+                    <span key={c} className={styles.chip}>
+                      {c}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+          );
+        })}
       </div>
     </main>
   );

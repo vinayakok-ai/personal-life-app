@@ -22,6 +22,22 @@ function TodayIcon() {
   );
 }
 
+function WorkoutIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M6.5 7v10M17.5 7v10M3.5 9.5v5M20.5 9.5v5M6.5 12h11" />
+    </svg>
+  );
+}
+
 function JournalIcon() {
   return (
     <svg
@@ -41,6 +57,12 @@ function JournalIcon() {
 
 const items = [
   { href: "/", label: "Today", Icon: TodayIcon, isActive: (p: string) => p === "/" },
+  {
+    href: "/workout",
+    label: "Workout",
+    Icon: WorkoutIcon,
+    isActive: (p: string) => p.startsWith("/workout"),
+  },
   {
     href: "/journal",
     label: "Journal",

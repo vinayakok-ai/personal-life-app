@@ -108,6 +108,11 @@
   font-weight: 600;
   color: var(--text);
 }
+.titleLink {
+  text-decoration: none;
+  color: inherit;
+  display: inline-block;
+}
 .note {
   margin: 2px 0 0;
   font-size: 12.5px;
