@@ -112,3 +112,13 @@ model HabitLog {
 
   @@unique([habitId, date])
 }
+
+// ---- Food: pantry stock (add when buying, reduce when cooking) ----
+
+model PantryItem {
+  id        String   @id @default(cuid())
+  name      String
+  quantity  Float    @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
