@@ -1,0 +1,21 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Rider {
+  id          String   @id @default(cuid())
+  name        String
+  phone       String   @unique
+  area        String
+  customArea  String?
+  hasVehicle  Boolean  @default(false)
+  vehicleType String?
+  spareSeats  Int      @default(0)
+  days        String   @default("BOTH")
+  createdAt   DateTime @default(now())
+}
