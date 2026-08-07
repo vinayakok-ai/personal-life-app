@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { AREAS } from "@/lib/areas";
+import { AREAS, CORRIDOR_BY_KEY } from "@/lib/areas";
 import { Confetti, PHONE_KEY, Star, useBoard } from "@/components/shared";
 
 type Vehicle = "CAR" | "BIKE" | null;
@@ -18,7 +18,9 @@ export default function JoinWizard() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [area, setArea] = useState("");
+  const [areaQuery, setAreaQuery] = useState("");
   const [customArea, setCustomArea] = useState("");
+  const areaNextRef = useRef<HTMLDivElement | null>(null);
   const [vehicle, setVehicle] = useState<Vehicle>(null);
   const [seats, setSeats] = useState(2);
   const [sat, setSat] = useState(true);
@@ -180,30 +182,35 @@ export default function JoinWizard() {
         <div>
           {progress}
           <h2 className="serif mb-1 text-[25px] font-bold leading-tight">Where are you starting from?</h2>
-          <p className="mb-5 text-sm text-[var(--soft)]">We group people whose routes to Whitefield overlap.</p>
+          <p className="mb-4 text-sm text-[var(--soft)]">We group people whose routes to Whitefield overlap.</p>
           {err}
-          <div className="grid grid-cols-2 gap-2">
-            {AREAS.map((a) => (
-              <button
-                key={a.key}
-                onClick={() => { setArea(a.key); setError(null); }}
-                className={`rounded-xl border-[1.5px] px-2.5 py-2 text-left text-[13px] font-semibold ${
-                  area === a.key
-                    ? "border-[var(--coral)] bg-[var(--coral-soft)]"
-                    : "border-[var(--line)] bg-[var(--surface)]"
-                }`}
-              >
-                {a.name}
-                <small className="block text-[10.5px] font-normal text-[var(--soft)]">
-                  {a.key === "other" ? "anywhere else" : `~${a.minutes} min away`}
-                </small>
-              </button>
-            ))}
-          </div>
+          <input
+            className={`${input} mb-3`}
+            type="search"
+            placeholder="🔍 Search your area…"
+            value={areaQuery}
+            onChange={(e) => setAreaQuery(e.target.value)}
+          />
+          {area && (
+            <p className="mb-3 rounded-xl bg-[var(--coral-soft)] px-3.5 py-2 text-[13px] font-semibold text-[var(--coral-deep)]">
+              ✓ Selected: {AREAS.find((a) => a.key === area)?.name ?? area} — hit Next below
+            </p>
+          )}
+          <AreaGrid
+            area={area}
+            query={areaQuery}
+            onPick={(key) => {
+              setArea(key);
+              setError(null);
+              requestAnimationFrame(() =>
+                areaNextRef.current?.scrollIntoView({ behavior: "smooth", block: "end" })
+              );
+            }}
+          />
           {area === "other" && (
             <input className={`${input} mt-3`} maxLength={60} placeholder="Type your area, e.g. Kammanahalli" value={customArea} onChange={(e) => setCustomArea(e.target.value)} />
           )}
-          <div className="mt-5 flex gap-2">
+          <div className="mt-5 flex gap-2" ref={areaNextRef}>
             <button className={`${ghost} flex-none basis-24`} onClick={() => setStep(1)}>Back</button>
             <button
               className={btn}
@@ -280,6 +287,57 @@ export default function JoinWizard() {
         </div>
       )}
     </main>
+  );
+}
+
+function AreaGrid({
+  area,
+  query,
+  onPick,
+}: {
+  area: string;
+  query: string;
+  onPick: (key: string) => void;
+}) {
+  const q = query.trim().toLowerCase();
+  const shown = useMemo(() => {
+    if (!q) return AREAS;
+    const hits = AREAS.filter(
+      (a) =>
+        a.key !== "other" &&
+        (a.name.toLowerCase().includes(q) ||
+          CORRIDOR_BY_KEY[a.corridor].name.toLowerCase().includes(q))
+    );
+    // "Other" stays reachable so a failed search still has an exit.
+    return [...hits, AREAS.find((a) => a.key === "other")!];
+  }, [q]);
+
+  return (
+    <div>
+      {q && shown.length === 1 && (
+        <p className="mb-2 text-[12.5px] text-[var(--soft)]">
+          No area matches “{query}” — pick <b>Other</b> and type it in.
+        </p>
+      )}
+      <div className="grid grid-cols-2 gap-2">
+        {shown.map((a) => (
+          <button
+            key={a.key}
+            onClick={() => onPick(a.key)}
+            className={`rounded-xl border-[1.5px] px-2.5 py-2 text-left text-[13px] font-semibold ${
+              area === a.key
+                ? "border-[var(--coral)] bg-[var(--coral-soft)]"
+                : "border-[var(--line)] bg-[var(--surface)]"
+            }`}
+          >
+            {a.name}
+            <small className="block text-[10.5px] font-normal text-[var(--soft)]">
+              {a.key === "other" ? "anywhere else" : `~${a.minutes} min away`}
+            </small>
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }
 
