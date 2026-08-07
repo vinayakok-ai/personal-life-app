@@ -217,6 +217,7 @@ export default function AdminPage() {
             key={m.id}
             m={m}
             selected={sel.has(m.id)}
+            busy={busy}
             onToggle={() =>
               setSel((old) => {
                 const next = new Set(old);
@@ -225,6 +226,10 @@ export default function AdminPage() {
                 return next;
               })
             }
+            onDelete={async () => {
+              if (!window.confirm(`Delete ${m.name} completely (both days)? They'd have to join again.`)) return;
+              if (await call({ action: "deleteRider", riderId: m.id })) setMsg(`Deleted ${m.name} 🗑️`);
+            }}
           />
         ))}
       </div>
@@ -270,13 +275,26 @@ export default function AdminPage() {
                     )}
                     <span className="text-[var(--soft)]"> · {m.areaName}</span>
                   </span>
-                  <button
-                    className="text-[11px] font-bold text-[var(--danger)]"
-                    disabled={busy}
-                    onClick={() => call({ action: "removeMember", day, riderId: m.id })}
-                  >
-                    remove
-                  </button>
+                  <span className="flex shrink-0 items-center gap-2">
+                    <button
+                      className="text-[11px] font-bold text-[var(--danger)]"
+                      disabled={busy}
+                      onClick={() => call({ action: "removeMember", day, riderId: m.id })}
+                    >
+                      remove
+                    </button>
+                    <button
+                      className="text-[13px] opacity-70"
+                      title="Delete this person completely (both days)"
+                      disabled={busy}
+                      onClick={async () => {
+                        if (!window.confirm(`Delete ${m.name} completely (both days)? They'd have to join again.`)) return;
+                        if (await call({ action: "deleteRider", riderId: m.id })) setMsg(`Deleted ${m.name} 🗑️`);
+                      }}
+                    >
+                      🗑️
+                    </button>
+                  </span>
                 </div>
               ))}
               {g.seatsLeft > 0 && (
@@ -293,7 +311,19 @@ export default function AdminPage() {
   );
 }
 
-function WaitRow({ m, selected, onToggle }: { m: MemberView; selected: boolean; onToggle: () => void }) {
+function WaitRow({
+  m,
+  selected,
+  busy,
+  onToggle,
+  onDelete,
+}: {
+  m: MemberView;
+  selected: boolean;
+  busy: boolean;
+  onToggle: () => void;
+  onDelete: () => void;
+}) {
   return (
     <label
       className={`flex cursor-pointer items-center gap-2.5 rounded-xl border-[1.5px] px-3 py-2 ${
@@ -310,6 +340,17 @@ function WaitRow({ m, selected, onToggle }: { m: MemberView; selected: boolean; 
         )}
         <span className="block text-[11.5px] text-[var(--soft)]">{m.areaName}</span>
       </span>
+      <button
+        className="shrink-0 text-[13px] opacity-70"
+        title="Delete this person completely (both days)"
+        disabled={busy}
+        onClick={(e) => {
+          e.preventDefault();
+          onDelete();
+        }}
+      >
+        🗑️
+      </button>
     </label>
   );
 }

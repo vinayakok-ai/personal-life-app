@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { isAdmin } from "@/lib/admin";
 import { autoGroupRest } from "@/lib/autogroup";
-import { anchorCapacity, corridorOf, pruneEmptyGroups } from "@/lib/board";
+import { anchorCapacity, corridorOf, demoteAnchorIfNeeded, pruneEmptyGroups } from "@/lib/board";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +22,19 @@ export async function POST(req: NextRequest) {
   }
   if (!isAdmin(req)) {
     return NextResponse.json({ error: "Not authorized." }, { status: 403 });
+  }
+
+  // Removes the person entirely (both days) — for clearing test entries
+  // or riders who've told the organizer they're out.
+  if (action === "deleteRider") {
+    const riderId = String(body.riderId ?? "");
+    const rider = await prisma.rider.findUnique({ where: { id: riderId } });
+    if (rider) {
+      await demoteAnchorIfNeeded(rider.id);
+      await prisma.rider.delete({ where: { id: rider.id } });
+      await pruneEmptyGroups();
+    }
+    return NextResponse.json({ ok: true });
   }
 
   const day = String(body.day ?? "");
