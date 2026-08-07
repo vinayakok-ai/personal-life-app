@@ -1,9 +1,89 @@
 @import "tailwindcss";
 
+/* Claude Impact Lab theme — warm ivory ground, coral accent, serif display */
 :root {
-  color-scheme: light;
+  --bg: #f0eee6;
+  --surface: #faf9f5;
+  --surface-2: #e8e4d8;
+  --ink: #141413;
+  --soft: #6f6a5d;
+  --line: #dcd6c6;
+  --coral: #d97757;
+  --coral-deep: #b85c3e;
+  --coral-soft: #f4e3da;
+  --on-coral: #ffffff;
+  --eco: #5c7d54;
+  --eco-soft: #e4ead9;
+  --danger: #b3403a;
+  --danger-soft: #f3e0dd;
+  --shadow: 0 1px 2px rgba(20, 20, 19, 0.05), 0 10px 30px rgba(20, 20, 19, 0.08);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1f1e1b;
+    --surface: #292824;
+    --surface-2: #33312b;
+    --ink: #ece9e0;
+    --soft: #a39d8e;
+    --line: #3e3c34;
+    --coral: #e08d6d;
+    --coral-deep: #eda283;
+    --coral-soft: #45322a;
+    --on-coral: #1f1410;
+    --eco: #93ad88;
+    --eco-soft: #2e352a;
+    --danger: #de8b82;
+    --danger-soft: #402a27;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 30px rgba(0, 0, 0, 0.35);
+  }
 }
 
 body {
-  @apply bg-stone-50 text-stone-900 antialiased;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Avenir Next", "Segoe UI", Ubuntu, Cantarell, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.serif {
+  font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+}
+
+/* boarding-pass ticket */
+.ticket-perf {
+  position: relative;
+  border-top: 2px dashed var(--line);
+  margin: 0 10px;
+}
+.ticket-perf::before,
+.ticket-perf::after {
+  content: "";
+  position: absolute;
+  top: -9px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 1px solid var(--line);
+}
+.ticket-perf::before { left: -21px; }
+.ticket-perf::after { right: -21px; }
+.barcode {
+  height: 26px;
+  border-radius: 4px;
+  opacity: 0.75;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--ink) 0 2px, transparent 2px 5px,
+    var(--ink) 5px 6px, transparent 6px 11px
+  );
+}
+
+/* join confetti */
+.confetti { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 90; }
+.confetti span { position: absolute; top: -4vh; font-size: 20px; animation: confetti-fall 1.9s ease-in forwards; }
+@keyframes confetti-fall {
+  to { transform: translateY(108vh) rotate(540deg); opacity: 0.2; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .confetti { display: none; }
 }

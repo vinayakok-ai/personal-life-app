@@ -3,19 +3,24 @@
 Tiny web app for Claude Impact Lab contestants to share rides to Polaris
 School of Technology, Whitefield (Sat & Sun, 9:00 AM sharp).
 
-- **Join in ~30 seconds** — name, mobile number, area, own vehicle?, days.
-  No login: your phone number is your ID (re-enter it to edit or drop out).
-- **Live auto-grouping** — riders are grouped first-come-first-served within
-  their travel corridor (South-East / Central-East / North-East / West /
-  near-venue). People with spare seats become group anchors; everyone else is
-  placed into cab groups of 4.
+- **Join in ~30 seconds** (`/`) — a step-by-step wizard: name & number, tap
+  your area, tap your days & vehicle. No login: your phone number is your ID
+  (re-enter it to edit or drop out).
+- **Organizer console** (`/admin`, passcode via `ADMIN_CODE`) — new joiners
+  land in a waiting pool; an organizer ticks riders and hits **Group
+  selected** (a ticked vehicle owner becomes the crew's driver), then
+  **⚡ Auto-group the rest** places everyone remaining first-come-first-served
+  within their travel corridor (South-East / Central-East / North-East /
+  West / near-venue), topping up open seats first.
 - **Leave-by time per group** — 9:00 AM minus a hardcoded weekend travel
   estimate for the group's farthest area, minus a 25-min buffer.
-- **Ride board** (`/board`) — Sat/Sun tabs, search, collapsible corridors,
-  tap-to-WhatsApp on every member. Auto-refreshes every 30 s.
+- **Ride board** (`/board`) — your own crew shown as a boarding-pass ticket,
+  everyone else in corridor sections; Sat/Sun tabs, search, tap-to-WhatsApp
+  on every member. Auto-refreshes every 30 s.
 
-Stack: Next.js 16 + Prisma + Postgres + Tailwind. Groups are computed on the
-fly from the rider list — no stored group state to go stale.
+Stack: Next.js 16 + Prisma + Postgres + Tailwind, styled after the Claude
+Impact Lab brand (ivory / coral / serif). Groups are stored; labels, seat
+counts and leave-by times are derived on every read.
 
 ## Deploy on Railway (~10 minutes)
 
@@ -26,8 +31,10 @@ fly from the rider list — no stored group state to go stale.
 3. In the project, **+ New → Database → PostgreSQL**.
 4. On the app service, **Variables → New Variable → Add Reference** →
    `DATABASE_URL` from the Postgres service.
-5. Optional: add `EVENT_CODE=<something>` to require a shared code (post it
-   in the WhatsApp group) before anyone can join. Leave unset for open joins.
+5. Set `ADMIN_CODE=<passcode>` for the organizer console at `/admin`
+   (defaults to `polaris` if unset — change it). Optional:
+   `EVENT_CODE=<something>` to require a shared code (post it in the
+   WhatsApp group) before anyone can join. Leave unset for open joins.
 6. **Settings → Networking → Generate Domain** → share that URL in the
    WhatsApp group.
 

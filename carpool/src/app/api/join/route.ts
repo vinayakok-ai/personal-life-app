@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { AREA_BY_KEY } from "@/lib/areas";
+import { demoteAnchorIfNeeded, pruneEmptyGroups } from "@/lib/board";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +16,7 @@ export async function POST(req: NextRequest) {
   }
 
   const name = String(body.name ?? "").trim();
-  const phone = String(body.phone ?? "").replace(/\D/g, "").replace(/^91/, "").trim();
+  const phone = String(body.phone ?? "").replace(/\D/g, "").replace(/^91(?=\d{10}$)/, "");
   const area = String(body.area ?? "");
   const customArea = String(body.customArea ?? "").trim() || null;
   const hasVehicle = Boolean(body.hasVehicle);
@@ -28,7 +29,7 @@ export async function POST(req: NextRequest) {
   }
   if (!PHONE_RE.test(phone)) {
     return NextResponse.json(
-      { error: "Please enter a valid 10-digit Indian mobile number." },
+      { error: "That doesn't look like a 10-digit Indian mobile number." },
       { status: 400 }
     );
   }
@@ -58,11 +59,21 @@ export async function POST(req: NextRequest) {
   }
 
   const data = { name, area, customArea, hasVehicle, vehicleType, spareSeats, days };
-
   const existing = await prisma.rider.findUnique({ where: { phone } });
-  const rider = existing
-    ? await prisma.rider.update({ where: { phone }, data })
-    : await prisma.rider.create({ data: { ...data, phone } });
+
+  let rider;
+  if (existing) {
+    // Dropping a day also drops that day's group; losing the vehicle
+    // demotes any group anchored on this rider to a cab group.
+    const clears: { satGroupId?: null; sunGroupId?: null } = {};
+    if (days === "SUN") clears.satGroupId = null;
+    if (days === "SAT") clears.sunGroupId = null;
+    if (!hasVehicle && existing.hasVehicle) await demoteAnchorIfNeeded(existing.id);
+    rider = await prisma.rider.update({ where: { phone }, data: { ...data, ...clears } });
+    await pruneEmptyGroups();
+  } else {
+    rider = await prisma.rider.create({ data: { ...data, phone } });
+  }
 
   return NextResponse.json({ ok: true, updated: Boolean(existing), rider });
 }

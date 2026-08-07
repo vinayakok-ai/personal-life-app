@@ -2,91 +2,69 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import type { DayBoard, Group, Member } from "@/lib/grouping";
-
-interface BoardData {
-  sat: DayBoard;
-  sun: DayBoard;
-}
+import type { Day, GroupView, MemberView } from "@/lib/board";
+import { GroupCard, MemberRow, PHONE_KEY, Star, Ticket, useBoard } from "@/components/shared";
 
 export default function BoardPage() {
-  const [data, setData] = useState<BoardData | null>(null);
-  const [day, setDay] = useState<"sat" | "sun">("sat");
+  const { board, error } = useBoard();
+  const [day, setDay] = useState<Day>("SAT");
   const [query, setQuery] = useState("");
-  const [error, setError] = useState(false);
+  const [myPhone, setMyPhone] = useState<string | null>(null);
 
   useEffect(() => {
-    let alive = true;
-    async function load() {
-      try {
-        const res = await fetch("/api/board", { cache: "no-store" });
-        if (!res.ok) throw new Error();
-        const json = await res.json();
-        if (alive) {
-          setData(json);
-          setError(false);
-        }
-      } catch {
-        if (alive) setError(true);
-      }
-    }
-    load();
-    const t = setInterval(load, 30000);
-    return () => {
-      alive = false;
-      clearInterval(t);
-    };
+    setMyPhone(localStorage.getItem(PHONE_KEY));
   }, []);
 
-  const board = data?.[day];
+  const view = board?.[day === "SAT" ? "sat" : "sun"];
   const q = query.trim().toLowerCase();
 
-  const corridors = useMemo(() => {
-    if (!board) return [];
-    if (!q) return board.corridors;
-    const matches = (m: Member) =>
-      m.name.toLowerCase().includes(q) || m.areaName.toLowerCase().includes(q);
-    return board.corridors
-      .map((c) => ({
-        ...c,
-        groups: c.groups.filter((g) => g.members.some(matches)),
-        solo: c.solo.filter(matches),
-      }))
-      .filter((c) => c.groups.length > 0 || c.solo.length > 0);
-  }, [board, q]);
+  const myGroup: GroupView | null = useMemo(() => {
+    if (!view || !myPhone) return null;
+    for (const c of view.corridors)
+      for (const g of c.groups)
+        if (g.members.some((m) => m.phone === myPhone)) return g;
+    return null;
+  }, [view, myPhone]);
+  const meWaiting: MemberView | null =
+    (myPhone && view?.waiting.find((m) => m.phone === myPhone)) || null;
+
+  const matches = (m: MemberView) =>
+    !q || m.name.toLowerCase().includes(q) || m.areaName.toLowerCase().includes(q);
 
   return (
-    <main className="mx-auto max-w-2xl px-4 py-6 pb-16">
-      <header className="flex items-center justify-between">
+    <main className="mx-auto max-w-xl px-5 pb-20 pt-6">
+      <header className="flex items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">🚗 Ride board</h1>
-          <p className="text-sm text-stone-600">
+          <h1 className="serif text-[24px] font-bold leading-tight">
+            <Star /> Ride board
+          </h1>
+          <p className="mt-0.5 text-[13px] text-[var(--soft)]">
             Polaris School of Technology, Whitefield · be there by 9:00 AM
           </p>
         </div>
         <Link
           href="/"
-          className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-emerald-700"
+          className="shrink-0 rounded-xl bg-[var(--coral)] px-3.5 py-2 text-[13px] font-bold text-[var(--on-coral)]"
         >
           Join / edit
         </Link>
       </header>
 
-      <div className="mt-4 grid grid-cols-2 gap-2">
-        {(["sat", "sun"] as const).map((d) => (
+      <div className="mt-4 flex gap-2">
+        {(["SAT", "SUN"] as const).map((d) => (
           <button
             key={d}
             onClick={() => setDay(d)}
-            className={`rounded-xl border px-4 py-2.5 font-semibold ${
+            className={`flex-1 rounded-xl border-[1.5px] px-3 py-2.5 text-[13.5px] font-bold ${
               day === d
-                ? "border-emerald-600 bg-emerald-50 text-emerald-800"
-                : "border-stone-300 bg-white text-stone-600"
+                ? "border-[var(--coral)] bg-[var(--coral-soft)] text-[var(--coral-deep)]"
+                : "border-[var(--line)] bg-[var(--surface)] text-[var(--soft)]"
             }`}
           >
-            {d === "sat" ? "Saturday" : "Sunday"}
-            {data && (
-              <span className="ml-1.5 text-xs font-normal">
-                ({data[d].totalRiders})
+            {d === "SAT" ? "Saturday" : "Sunday"}
+            {board && (
+              <span className="ml-1 font-normal">
+                ({board[d === "SAT" ? "sat" : "sun"].totalRiders})
               </span>
             )}
           </button>
@@ -97,119 +75,90 @@ export default function BoardPage() {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search your name or area…"
-        className="mt-3 w-full rounded-xl border border-stone-300 bg-white px-4 py-2.5 outline-none focus:border-emerald-600"
+        className="mt-3 w-full rounded-xl border-[1.5px] border-[var(--line)] bg-[var(--surface)] px-3.5 py-2.5 outline-none focus:border-[var(--coral)]"
       />
 
       {error && (
-        <p className="mt-6 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">
-          Couldn't load the board — check your connection and refresh.
+        <p className="mt-5 rounded-xl bg-[var(--danger-soft)] px-4 py-3 text-sm font-semibold text-[var(--danger)]">
+          Couldn&apos;t load the board — check your connection; it retries automatically.
         </p>
       )}
-      {!data && !error && (
-        <p className="mt-10 text-center text-stone-500">Loading ride groups…</p>
+      {!board && !error && (
+        <p className="mt-12 text-center text-[var(--soft)]">Loading ride crews…</p>
       )}
-      {board && board.totalRiders === 0 && (
-        <div className="mt-10 text-center text-stone-500">
-          <p className="text-4xl">🌱</p>
-          <p className="mt-2">
-            Nobody has joined for this day yet — be the first!
-          </p>
+
+      {meWaiting && (
+        <div className="mt-4 rounded-2xl border-[1.5px] border-dashed border-[var(--line)] bg-[var(--surface)] px-4 py-3 text-[13.5px]">
+          🎫 <b>{meWaiting.name}</b>, your ticket is at the printers — the organizer is forming
+          crews. It&apos;ll appear right here.
         </div>
       )}
-      {board && board.totalRiders > 0 && corridors.length === 0 && q && (
-        <p className="mt-10 text-center text-stone-500">
-          No riders match “{query}”.
-        </p>
+      {myGroup && (
+        <div className="mt-4">
+          <p className="mb-1.5 text-[11.5px] font-bold uppercase tracking-widest text-[var(--soft)]">
+            Your ticket
+          </p>
+          <Ticket
+            group={myGroup}
+            routeHint={view!.corridors.find((c) => c.key === myGroup.corridor)?.routeHint ?? ""}
+          />
+        </div>
       )}
 
-      <div className="mt-5 space-y-4">
-        {corridors.map((c) => (
-          <details key={c.key} open className="group rounded-2xl border border-stone-200 bg-white">
-            <summary className="flex cursor-pointer items-center justify-between px-4 py-3">
-              <div>
-                <span className="font-semibold">{c.name}</span>
-                <span className="ml-2 text-xs text-stone-500">{c.routeHint}</span>
+      {view && view.totalRiders === 0 && (
+        <div className="mt-12 text-center text-[var(--soft)]">
+          <p className="text-4xl">🌱</p>
+          <p className="mt-2">Nobody has joined for this day yet — be the first!</p>
+        </div>
+      )}
+
+      <div className="mt-5 flex flex-col gap-3.5">
+        {view?.corridors.map((c) => {
+          const shown = c.groups.filter((g) => g !== myGroup && g.members.some(matches));
+          if (!shown.length) return null;
+          return (
+            <section key={c.key} className="overflow-hidden rounded-2xl border border-[var(--line)] bg-[var(--surface)]">
+              <div className="flex items-baseline justify-between gap-2 bg-[var(--surface-2)] px-3.5 py-2.5">
+                <span className="text-[13.5px] font-bold">
+                  {c.name}{" "}
+                  <span className="text-[11px] font-normal text-[var(--soft)]">{c.routeHint}</span>
+                </span>
+                <span className="text-[11px] text-[var(--soft)]">{c.riderCount}</span>
               </div>
-              <span className="rounded-full bg-stone-100 px-2.5 py-0.5 text-xs font-medium text-stone-600">
-                {c.riderCount}
-              </span>
-            </summary>
-            <div className="space-y-3 px-4 pb-4">
-              {c.groups.map((g) => (
-                <GroupCard key={g.id} group={g} />
-              ))}
-              {c.solo.length > 0 && (
-                <div className="rounded-xl border border-dashed border-stone-300 p-3">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-stone-500">
-                    Riding solo (own vehicle)
-                  </p>
-                  <div className="mt-2 space-y-1.5">
-                    {c.solo.map((m) => (
-                      <MemberRow key={m.id} member={m} />
-                    ))}
-                  </div>
-                </div>
-              )}
+              <div className="flex flex-col gap-2.5 p-3.5">
+                {shown.map((g) => (
+                  <GroupCard key={g.id} group={g} />
+                ))}
+              </div>
+            </section>
+          );
+        })}
+
+        {view && view.waiting.filter(matches).length > 0 && (
+          <section className="overflow-hidden rounded-2xl border border-[var(--line)] bg-[var(--surface)]">
+            <div className="flex items-baseline justify-between gap-2 bg-[var(--surface-2)] px-3.5 py-2.5">
+              <span className="text-[13.5px] font-bold">⏳ Waiting for grouping</span>
+              <span className="text-[11px] text-[var(--soft)]">{view.waiting.length}</span>
             </div>
-          </details>
-        ))}
+            <div className="p-3.5">
+              <p className="mb-2 rounded-xl border-[1.5px] border-dashed border-[var(--line)] px-3 py-2 text-[12.5px] text-[var(--soft)]">
+                The organizer places new joiners into crews — usually within a few hours.
+              </p>
+              {view.waiting.filter(matches).map((m) => (
+                <MemberRow key={m.id} member={m} />
+              ))}
+            </div>
+          </section>
+        )}
       </div>
 
-      <p className="mt-8 text-center text-xs text-stone-500">
-        Groups are first-come-first-served and update live as people join. Tap
-        the WhatsApp icon on a group member to coordinate pickup points and
-        fare split. 🌱 Every shared ride is one less car on Whitefield roads.
-      </p>
-    </main>
-  );
-}
-
-function GroupCard({ group }: { group: Group }) {
-  return (
-    <div className="rounded-xl border border-stone-200 bg-stone-50 p-3">
-      <div className="flex items-center justify-between">
-        <p className="font-semibold">
-          {group.kind === "vehicle" ? "🚙 " : "🚕 "}
-          {group.label}
-        </p>
-        <p className="text-sm font-semibold text-emerald-700">
-          Leave by {group.leaveBy}
-        </p>
-      </div>
-      <div className="mt-2 space-y-1.5">
-        {group.members.map((m) => (
-          <MemberRow key={m.id} member={m} />
-        ))}
-      </div>
-      {group.seatsLeft > 0 && (
-        <p className="mt-2 text-xs font-medium text-emerald-700">
-          {group.seatsLeft} seat{group.seatsLeft > 1 ? "s" : ""} still open
+      {board && (
+        <p className="mt-7 text-center text-[11.5px] text-[var(--soft)]">
+          Tap WhatsApp on a crew-mate to fix pickup points &amp; split the fare.
+          <br />🌱 {board.stats.co2Kg} kg CO₂ saved by sharing · every shared ride is one less car on
+          Whitefield roads.
         </p>
       )}
-    </div>
-  );
-}
-
-function MemberRow({ member }: { member: Member }) {
-  return (
-    <div className="flex items-center justify-between gap-2">
-      <p className="min-w-0 truncate text-sm">
-        <span className="font-medium">{member.name}</span>
-        {member.isDriver && (
-          <span className="ml-1 rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-800">
-            {member.vehicleType === "BIKE" ? "BIKE" : "DRIVER"}
-          </span>
-        )}
-        <span className="ml-1.5 text-stone-500">· {member.areaName}</span>
-      </p>
-      <a
-        href={`https://wa.me/91${member.phone}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="shrink-0 rounded-lg bg-emerald-600 px-2.5 py-1 text-xs font-semibold text-white hover:bg-emerald-700"
-      >
-        WhatsApp
-      </a>
-    </div>
+    </main>
   );
 }

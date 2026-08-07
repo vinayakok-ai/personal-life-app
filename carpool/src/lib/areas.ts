@@ -14,6 +14,7 @@ export interface Corridor {
   key: CorridorKey;
   name: string;
   routeHint: string;
+  code: string;
 }
 
 export const CORRIDORS: Corridor[] = [
@@ -21,31 +22,37 @@ export const CORRIDORS: Corridor[] = [
     key: "near",
     name: "Near the venue",
     routeHint: "Whitefield / ITPL side — short hop",
+    code: "WFD",
   },
   {
     key: "southeast",
     name: "South-East corridor",
     routeHint: "via ORR / Sarjapur Road / Marathahalli",
+    code: "ORR",
   },
   {
     key: "centraleast",
     name: "Central-East corridor",
     routeHint: "via Old Airport Road / Varthur Road",
+    code: "OAR",
   },
   {
     key: "northeast",
     name: "North-East corridor",
     routeHint: "via KR Puram / Hoskote Road",
+    code: "KRP",
   },
   {
     key: "west",
     name: "West & Central corridor",
     routeHint: "longer routes — via ORR or city center",
+    code: "WST",
   },
   {
     key: "other",
     name: "Other areas",
     routeHint: "coordinate the route on WhatsApp",
+    code: "OTH",
   },
 ];
 

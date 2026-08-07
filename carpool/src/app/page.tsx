@@ -1,42 +1,32 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { AREAS, AREA_BY_KEY, CORRIDOR_BY_KEY } from "@/lib/areas";
+import { AREAS } from "@/lib/areas";
+import { Confetti, PHONE_KEY, Star, useBoard } from "@/components/shared";
 
-type Days = "SAT" | "SUN" | "BOTH";
+type Vehicle = "CAR" | "BIKE" | null;
 
-export default function JoinPage() {
+export default function JoinWizard() {
+  const { board } = useBoard(60000);
+  const [step, setStep] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [confettiKey, setConfettiKey] = useState(0);
+  const [savedName, setSavedName] = useState("");
+
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [area, setArea] = useState("");
   const [customArea, setCustomArea] = useState("");
-  const [hasVehicle, setHasVehicle] = useState(false);
-  const [vehicleType, setVehicleType] = useState<"CAR" | "BIKE">("CAR");
-  const [spareSeats, setSpareSeats] = useState(2);
+  const [vehicle, setVehicle] = useState<Vehicle>(null);
+  const [seats, setSeats] = useState(2);
   const [sat, setSat] = useState(true);
   const [sun, setSun] = useState(true);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [done, setDone] = useState<null | { updated: boolean }>(null);
-  const [looking, setLooking] = useState(false);
 
-  const days: Days | null = sat && sun ? "BOTH" : sat ? "SAT" : sun ? "SUN" : null;
-
-  const areaOptions = useMemo(
-    () =>
-      [...AREAS].sort((a, b) =>
-        a.key === "other" ? 1 : b.key === "other" ? -1 : a.name.localeCompare(b.name)
-      ),
-    []
-  );
-
-  const selectedArea = AREA_BY_KEY[area];
-
-  async function lookup(p: string) {
-    const digits = p.replace(/\D/g, "").replace(/^91/, "");
+  async function prefill(p: string) {
+    const digits = p.replace(/\D/g, "").replace(/^91(?=\d{10}$)/, "");
     if (digits.length !== 10) return;
-    setLooking(true);
     try {
       const res = await fetch(`/api/me?phone=${digits}`);
       const { rider } = await res.json();
@@ -44,26 +34,19 @@ export default function JoinPage() {
         setName(rider.name);
         setArea(rider.area);
         setCustomArea(rider.customArea ?? "");
-        setHasVehicle(rider.hasVehicle);
-        if (rider.vehicleType === "BIKE" || rider.vehicleType === "CAR")
-          setVehicleType(rider.vehicleType);
-        setSpareSeats(rider.spareSeats || 2);
+        setVehicle(rider.vehicleType ?? null);
+        setSeats(rider.spareSeats || 2);
         setSat(rider.days !== "SUN");
         setSun(rider.days !== "SAT");
       }
-    } finally {
-      setLooking(false);
+    } catch {
+      /* prefill is best-effort */
     }
   }
 
-  async function submit(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-    if (!days) {
-      setError("Pick at least one day.");
-      return;
-    }
+  async function submit() {
     setBusy(true);
+    setError(null);
     try {
       const res = await fetch("/api/join", {
         method: "POST",
@@ -73,10 +56,10 @@ export default function JoinPage() {
           phone,
           area,
           customArea,
-          hasVehicle,
-          vehicleType,
-          spareSeats,
-          days,
+          hasVehicle: !!vehicle,
+          vehicleType: vehicle,
+          spareSeats: seats,
+          days: sat && sun ? "BOTH" : sat ? "SAT" : "SUN",
         }),
       });
       const data = await res.json();
@@ -84,232 +67,244 @@ export default function JoinPage() {
         setError(data.error ?? "Something went wrong — try again.");
         return;
       }
-      setDone({ updated: data.updated });
+      localStorage.setItem(PHONE_KEY, data.rider.phone);
+      setSavedName(data.rider.name);
+      setConfettiKey((k) => k + 1);
+      setStep(4);
     } catch {
-      setError("Network error — try again.");
+      setError("Network error — check your connection and try again.");
     } finally {
       setBusy(false);
     }
   }
 
-  if (done) {
-    return (
-      <main className="mx-auto max-w-md px-4 py-12 text-center">
-        <div className="text-5xl">🎉</div>
-        <h1 className="mt-4 text-2xl font-bold">
-          {done.updated ? "Details updated!" : "You're in!"}
-        </h1>
-        <p className="mt-2 text-stone-600">
-          You've been placed in a ride group with people travelling your way.
-          Ping your group on WhatsApp to fix pickup points and split the fare.
-        </p>
-        <Link
-          href="/board"
-          className="mt-6 inline-block w-full rounded-xl bg-emerald-600 px-6 py-3 font-semibold text-white shadow hover:bg-emerald-700"
-        >
-          See my ride group →
-        </Link>
-        <button
-          onClick={() => setDone(null)}
-          className="mt-3 w-full rounded-xl border border-stone-300 px-6 py-3 font-medium text-stone-700 hover:bg-stone-100"
-        >
-          Edit my details
-        </button>
-      </main>
-    );
-  }
+  const input =
+    "w-full rounded-xl border-[1.5px] border-[var(--line)] bg-[var(--surface)] px-3.5 py-2.5 outline-none focus:border-[var(--coral)]";
+  const btn =
+    "block w-full rounded-[13px] bg-[var(--coral)] px-5 py-3 text-center text-[15.5px] font-bold text-[var(--on-coral)] active:bg-[var(--coral-deep)] disabled:opacity-40";
+  const ghost =
+    "block w-full rounded-[13px] border-[1.5px] border-[var(--line)] bg-[var(--surface)] px-5 py-3 text-center font-semibold";
+  const segBtn = (on: boolean) =>
+    `flex-1 rounded-xl border-[1.5px] px-3 py-2.5 text-[13.5px] font-semibold ${
+      on
+        ? "border-[var(--coral)] bg-[var(--coral-soft)] text-[var(--coral-deep)]"
+        : "border-[var(--line)] bg-[var(--surface)] text-[var(--soft)]"
+    }`;
+
+  const progress = (
+    <div className="mb-6 flex gap-1.5">
+      {[1, 2, 3].map((i) => (
+        <i
+          key={i}
+          className={`h-1 flex-1 rounded-full ${step >= i ? "bg-[var(--coral)]" : "bg-[var(--line)]"}`}
+        />
+      ))}
+    </div>
+  );
+  const err = error && (
+    <p className="mb-3.5 rounded-xl bg-[var(--danger-soft)] px-3.5 py-2.5 text-[13.5px] font-semibold text-[var(--danger)]">
+      {error}
+    </p>
+  );
 
   return (
-    <main className="mx-auto max-w-md px-4 py-8">
-      <header className="text-center">
-        <p className="text-sm font-semibold uppercase tracking-wide text-emerald-700">
-          Claude Impact Lab · Sat &amp; Sun
-        </p>
-        <h1 className="mt-1 text-3xl font-bold">Ride together to Whitefield 🚗</h1>
-        <p className="mt-2 text-stone-600">
-          Polaris School of Technology, 9:00 AM sharp. Join a carpool or cab
-          group from your side of Bangalore — cheaper for everyone, greener for
-          the city.
-        </p>
-        <Link href="/board" className="mt-3 inline-block text-sm font-medium text-emerald-700 underline">
-          Already joined? See the ride board →
-        </Link>
-      </header>
+    <main className="mx-auto max-w-md px-5 pb-20 pt-8">
+      <Confetti fireKey={confettiKey} />
 
-      <form onSubmit={submit} className="mt-8 space-y-5">
-        <div>
-          <label className="mb-1 block text-sm font-medium">Your name</label>
-          <input
-            required
-            maxLength={60}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="e.g. Vinayak"
-            className="w-full rounded-xl border border-stone-300 bg-white px-4 py-3 outline-none focus:border-emerald-600"
-          />
-        </div>
-
-        <div>
-          <label className="mb-1 block text-sm font-medium">
-            WhatsApp number {looking && <span className="text-stone-400">(checking…)</span>}
-          </label>
-          <input
-            required
-            inputMode="numeric"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            onBlur={(e) => lookup(e.target.value)}
-            placeholder="10-digit mobile number"
-            className="w-full rounded-xl border border-stone-300 bg-white px-4 py-3 outline-none focus:border-emerald-600"
-          />
-          <p className="mt-1 text-xs text-stone-500">
-            No login needed — your number is your ID. Enter it again anytime to
-            edit or drop out. It'll be visible to other riders so groups can
-            coordinate on WhatsApp.
-          </p>
-        </div>
-
-        <div>
-          <label className="mb-1 block text-sm font-medium">
-            Which area are you coming from?
-          </label>
-          <select
-            required
-            value={area}
-            onChange={(e) => setArea(e.target.value)}
-            className="w-full rounded-xl border border-stone-300 bg-white px-4 py-3 outline-none focus:border-emerald-600"
-          >
-            <option value="" disabled>
-              Select your area…
-            </option>
-            {areaOptions.map((a) => (
-              <option key={a.key} value={a.key}>
-                {a.name}
-              </option>
-            ))}
-          </select>
-          {area === "other" && (
-            <input
-              required
-              maxLength={60}
-              value={customArea}
-              onChange={(e) => setCustomArea(e.target.value)}
-              placeholder="Type your area, e.g. Kammanahalli"
-              className="mt-2 w-full rounded-xl border border-stone-300 bg-white px-4 py-3 outline-none focus:border-emerald-600"
-            />
-          )}
-          {selectedArea && selectedArea.key !== "other" && (
-            <p className="mt-1 text-xs text-stone-500">
-              {CORRIDOR_BY_KEY[selectedArea.corridor].name} · ~
-              {selectedArea.minutes} min to the venue
-            </p>
-          )}
-        </div>
-
-        <div>
-          <label className="mb-1 block text-sm font-medium">Which days?</label>
-          <div className="grid grid-cols-2 gap-2">
-            <DayToggle label="Saturday" on={sat} set={setSat} />
-            <DayToggle label="Sunday" on={sun} set={setSun} />
+      {step === 0 && (
+        <div className="text-center">
+          <div className="text-[40px] leading-none">
+            <Star />
           </div>
-        </div>
-
-        <div className="rounded-xl border border-stone-200 bg-white p-4">
-          <label className="flex items-center gap-3">
-            <input
-              type="checkbox"
-              checked={hasVehicle}
-              onChange={(e) => setHasVehicle(e.target.checked)}
-              className="size-5 accent-emerald-600"
-            />
-            <span className="font-medium">I have my own vehicle</span>
-          </label>
-          {hasVehicle && (
-            <div className="mt-3 space-y-3">
-              <div className="grid grid-cols-2 gap-2">
-                {(["CAR", "BIKE"] as const).map((t) => (
-                  <button
-                    key={t}
-                    type="button"
-                    onClick={() => {
-                      setVehicleType(t);
-                      if (t === "BIKE" && spareSeats > 1) setSpareSeats(1);
-                    }}
-                    className={`rounded-xl border px-4 py-2 font-medium ${
-                      vehicleType === t
-                        ? "border-emerald-600 bg-emerald-50 text-emerald-800"
-                        : "border-stone-300 text-stone-600"
-                    }`}
-                  >
-                    {t === "CAR" ? "🚗 Car" : "🏍️ Bike"}
-                  </button>
-                ))}
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium">
-                  Spare seats you can offer
-                </label>
-                <select
-                  value={spareSeats}
-                  onChange={(e) => setSpareSeats(Number(e.target.value))}
-                  className="w-full rounded-xl border border-stone-300 bg-white px-4 py-3 outline-none focus:border-emerald-600"
-                >
-                  {Array.from(
-                    { length: (vehicleType === "BIKE" ? 1 : 6) + 1 },
-                    (_, i) => i
-                  ).map((n) => (
-                    <option key={n} value={n}>
-                      {n === 0 ? "0 — riding solo" : n}
-                    </option>
-                  ))}
-                </select>
-              </div>
+          <h1 className="serif mt-3 text-[30px] font-bold leading-[1.15] [text-wrap:balance]">
+            Don&apos;t ride to Impact Lab alone.
+          </h1>
+          <p className="mt-2 text-[var(--soft)]">
+            Polaris School of Technology, Whitefield · Sat &amp; Sun · doors 9:00 AM
+          </p>
+          {board && (
+            <div className="mt-4 flex gap-2">
+              <Stat n={String(board.stats.riders)} l="riders" />
+              <Stat n={String(board.stats.sharing)} l="sharing" />
+              <Stat n={`₹${(board.stats.savedPerDay / 1000).toFixed(1)}k`} l="saved / day" />
+              <Stat n={`${board.stats.co2Kg}kg`} l="CO₂ cut" />
             </div>
           )}
-        </div>
-
-        {error && (
-          <p className="rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
-            {error}
+          <button className={`${btn} mt-5`} onClick={() => setStep(1)}>
+            Find my ride crew →
+          </button>
+          <Link href="/board" className={`${ghost} mt-2.5`}>
+            Just show me the groups
+          </Link>
+          <p className="mt-4 text-[11.5px] text-[var(--soft)]">
+            Takes ~30 seconds · two days of solo cabs ≈ ₹2,000. Split it. 🌱
           </p>
-        )}
+        </div>
+      )}
 
-        <button
-          disabled={busy}
-          className="w-full rounded-xl bg-emerald-600 px-6 py-3.5 text-lg font-semibold text-white shadow hover:bg-emerald-700 disabled:opacity-50"
-        >
-          {busy ? "Joining…" : "Find my ride group"}
-        </button>
-        <p className="text-center text-xs text-stone-500">
-          Groups are first-come-first-served within your travel corridor. Two
-          days of solo cabs ≈ ₹2,000+ — split it instead. 🌱
-        </p>
-      </form>
+      {step === 1 && (
+        <div>
+          {progress}
+          <h2 className="serif mb-1 text-[25px] font-bold leading-tight">First, who are you?</h2>
+          <p className="mb-5 text-sm text-[var(--soft)]">
+            Your number is your ID — re-enter it later to edit or drop out. It&apos;s visible to your
+            ride crew so you can coordinate on WhatsApp.
+          </p>
+          {err}
+          <div className="mb-3.5">
+            <label className="mb-1 block text-[12.5px] font-bold">Name</label>
+            <input className={input} maxLength={60} placeholder="e.g. Vinayak" value={name} onChange={(e) => setName(e.target.value)} />
+          </div>
+          <div className="mb-3.5">
+            <label className="mb-1 block text-[12.5px] font-bold">WhatsApp number</label>
+            <input className={input} inputMode="numeric" placeholder="10-digit mobile" value={phone} onChange={(e) => setPhone(e.target.value)} onBlur={(e) => prefill(e.target.value)} />
+          </div>
+          <div className="mt-5 flex gap-2">
+            <button className={`${ghost} flex-none basis-24`} onClick={() => setStep(0)}>Back</button>
+            <button
+              className={btn}
+              onClick={() => {
+                const digits = phone.replace(/\D/g, "").replace(/^91(?=\d{10}$)/, "");
+                if (!name.trim()) setError("Please enter your name.");
+                else if (!/^[6-9]\d{9}$/.test(digits)) setError("That doesn't look like a 10-digit mobile number.");
+                else { setError(null); setStep(2); }
+              }}
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
+
+      {step === 2 && (
+        <div>
+          {progress}
+          <h2 className="serif mb-1 text-[25px] font-bold leading-tight">Where are you starting from?</h2>
+          <p className="mb-5 text-sm text-[var(--soft)]">We group people whose routes to Whitefield overlap.</p>
+          {err}
+          <div className="grid grid-cols-2 gap-2">
+            {AREAS.map((a) => (
+              <button
+                key={a.key}
+                onClick={() => { setArea(a.key); setError(null); }}
+                className={`rounded-xl border-[1.5px] px-2.5 py-2 text-left text-[13px] font-semibold ${
+                  area === a.key
+                    ? "border-[var(--coral)] bg-[var(--coral-soft)]"
+                    : "border-[var(--line)] bg-[var(--surface)]"
+                }`}
+              >
+                {a.name}
+                <small className="block text-[10.5px] font-normal text-[var(--soft)]">
+                  {a.key === "other" ? "anywhere else" : `~${a.minutes} min away`}
+                </small>
+              </button>
+            ))}
+          </div>
+          {area === "other" && (
+            <input className={`${input} mt-3`} maxLength={60} placeholder="Type your area, e.g. Kammanahalli" value={customArea} onChange={(e) => setCustomArea(e.target.value)} />
+          )}
+          <div className="mt-5 flex gap-2">
+            <button className={`${ghost} flex-none basis-24`} onClick={() => setStep(1)}>Back</button>
+            <button
+              className={btn}
+              onClick={() => {
+                if (!area) setError("Tap the area you're coming from.");
+                else if (area === "other" && !customArea.trim()) setError("Type your area name.");
+                else { setError(null); setStep(3); }
+              }}
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
+
+      {step === 3 && (
+        <div>
+          {progress}
+          <h2 className="serif mb-1 text-[25px] font-bold leading-tight">Last one — days &amp; wheels.</h2>
+          <p className="mb-5 text-sm text-[var(--soft)]">Vehicle owners become crew captains and fill their spare seats.</p>
+          {err}
+          <div className="mb-4">
+            <label className="mb-1 block text-[12.5px] font-bold">I&apos;m going on</label>
+            <div className="flex gap-2">
+              <button className={segBtn(sat)} onClick={() => setSat(!sat)}>{sat ? "✓ " : ""}Saturday</button>
+              <button className={segBtn(sun)} onClick={() => setSun(!sun)}>{sun ? "✓ " : ""}Sunday</button>
+            </div>
+          </div>
+          <BigOpt e="🚕" t="No vehicle — I'll share" d="Join a car with a spare seat, or split a cab 4 ways" on={vehicle === null} onClick={() => setVehicle(null)} />
+          <BigOpt e="🚗" t="I'm driving a car" d="Offer your spare seats — be the hero" on={vehicle === "CAR"} onClick={() => setVehicle("CAR")} />
+          <BigOpt e="🏍️" t="I'm on a bike" d="Room for one pillion, if you're offering" on={vehicle === "BIKE"} onClick={() => { setVehicle("BIKE"); setSeats(Math.min(seats, 1)); }} />
+          {vehicle && (
+            <div className="mb-1 mt-3">
+              <label className="mb-1 block text-[12.5px] font-bold">Spare seats</label>
+              <select className={input} value={seats} onChange={(e) => setSeats(Number(e.target.value))}>
+                {Array.from({ length: (vehicle === "BIKE" ? 1 : 6) + 1 }, (_, i) => (
+                  <option key={i} value={i}>{i === 0 ? "0 — riding solo" : i}</option>
+                ))}
+              </select>
+            </div>
+          )}
+          <div className="mt-5 flex gap-2">
+            <button className={`${ghost} flex-none basis-24`} onClick={() => setStep(2)}>Back</button>
+            <button
+              className={btn}
+              disabled={busy}
+              onClick={() => {
+                if (!sat && !sun) { setError("Pick at least one day."); return; }
+                submit();
+              }}
+            >
+              {busy ? "Joining…" : "Join the carpool ✳️"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {step === 4 && (
+        <div className="text-center">
+          <div className="text-[40px]">🎉</div>
+          <h1 className="serif mt-3 text-[28px] font-bold leading-[1.15] [text-wrap:balance]">
+            You&apos;re on the manifest, {savedName}.
+          </h1>
+          <p className="mt-2 text-[var(--soft)]">
+            The organizer will slot you into a crew from your corridor. Your ride ticket — and when
+            to leave — will appear on the board.
+          </p>
+          <Link href="/board" className={`${btn} mt-6`}>
+            See my ride ticket →
+          </Link>
+          <button className={`${ghost} mt-2.5`} onClick={() => setStep(1)}>
+            Edit my details
+          </button>
+        </div>
+      )}
     </main>
   );
 }
 
-function DayToggle({
-  label,
-  on,
-  set,
-}: {
-  label: string;
-  on: boolean;
-  set: (v: boolean) => void;
-}) {
+function Stat({ n, l }: { n: string; l: string }) {
+  return (
+    <div className="flex-1 rounded-[13px] border border-[var(--line)] bg-[var(--surface)] px-1 py-2.5 text-center">
+      <div className="serif text-[20px] font-bold text-[var(--coral-deep)]">{n}</div>
+      <div className="text-[10.5px] font-semibold uppercase tracking-wide text-[var(--soft)]">{l}</div>
+    </div>
+  );
+}
+
+function BigOpt({ e, t, d, on, onClick }: { e: string; t: string; d: string; on: boolean; onClick: () => void }) {
   return (
     <button
-      type="button"
-      onClick={() => set(!on)}
-      className={`rounded-xl border px-4 py-3 font-medium ${
-        on
-          ? "border-emerald-600 bg-emerald-50 text-emerald-800"
-          : "border-stone-300 text-stone-600"
+      onClick={onClick}
+      className={`mb-2.5 flex w-full items-center gap-3 rounded-2xl border-[1.5px] px-4 py-3.5 text-left ${
+        on ? "border-[var(--coral)] bg-[var(--coral-soft)]" : "border-[var(--line)] bg-[var(--surface)]"
       }`}
     >
-      {on ? "✓ " : ""}
-      {label}
+      <span className="text-2xl">{e}</span>
+      <span>
+        <span className="block text-[15px] font-bold">{t}</span>
+        <span className="block text-xs text-[var(--soft)]">{d}</span>
+      </span>
     </button>
   );
 }

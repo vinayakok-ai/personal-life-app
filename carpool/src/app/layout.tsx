@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Impact Lab Carpool — ride together to Whitefield",
   description:
-    "Find your ride group for Claude Impact Lab at Polaris School of Technology, Whitefield. Share a cab or a seat, save money, travel greener.",
+    "Find your ride crew for Claude Impact Lab at Polaris School of Technology, Whitefield. Share a car or split a cab — cheaper for you, greener for Bangalore.",
 };
 
 export const viewport: Viewport = {

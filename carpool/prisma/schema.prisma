@@ -8,14 +8,30 @@ datasource db {
 }
 
 model Rider {
-  id          String   @id @default(cuid())
+  id          String     @id @default(cuid())
   name        String
-  phone       String   @unique
+  phone       String     @unique
   area        String
   customArea  String?
-  hasVehicle  Boolean  @default(false)
+  hasVehicle  Boolean    @default(false)
   vehicleType String?
-  spareSeats  Int      @default(0)
-  days        String   @default("BOTH")
-  createdAt   DateTime @default(now())
+  spareSeats  Int        @default(0)
+  days        String     @default("BOTH")
+  createdAt   DateTime   @default(now())
+  satGroupId  String?
+  satGroup    RideGroup? @relation("SatMembers", fields: [satGroupId], references: [id], onDelete: SetNull)
+  sunGroupId  String?
+  sunGroup    RideGroup? @relation("SunMembers", fields: [sunGroupId], references: [id], onDelete: SetNull)
+}
+
+model RideGroup {
+  id         String   @id @default(cuid())
+  day        String
+  corridor   String
+  kind       String
+  anchorId   String?
+  auto       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  satMembers Rider[]  @relation("SatMembers")
+  sunMembers Rider[]  @relation("SunMembers")
 }
