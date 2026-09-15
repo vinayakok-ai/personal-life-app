@@ -22,9 +22,10 @@ async function icon(name, color, size = 256) {
 
   const W = 10, H = 5.625, M = 0.5;
 
-  function darkSlide() { const s = pres.addSlide(); s.background = { color: C.plum }; return s; }
+  function wrapSlide(s) { const orig = s.addText.bind(s); s.addText = (t, o = {}) => orig(t, Object.assign({ valign: "top" }, o)); return s; }
+  function darkSlide() { const s = wrapSlide(pres.addSlide()); s.background = { color: C.plum }; return s; }
   function lightSlide(title, kicker) {
-    const s = pres.addSlide(); s.background = { color: C.white };
+    const s = wrapSlide(pres.addSlide()); s.background = { color: C.white };
     if (kicker) s.addText(kicker.toUpperCase(), { x: M, y: 0.32, w: 6, h: 0.25, fontFace: FONT_B, fontSize: 10, color: C.rose, bold: true, charSpacing: 2, margin: 0, isTextBox: true });
     s.addText(title, { x: M, y: 0.55, w: 9, h: 0.6, fontFace: FONT_H, fontSize: 28, color: C.plum, bold: true, valign: "top", margin: 0, isTextBox: true });
     s.addText("Mia at Work  ·  Proposal for Mia by Tanishq", { x: M, y: H - 0.4, w: 6, h: 0.25, fontFace: FONT_B, fontSize: 9, color: C.muted, margin: 0, isTextBox: true });
@@ -149,7 +150,7 @@ async function icon(name, color, size = 256) {
     const rows = [["Manyata Tech Park", "Hebbal, North", "Largest campus, central food court plaza", "Round 1"], ["Embassy TechVillage", "Outer Ring Road", "Open amphitheatre, strong footfall at lunch", "Round 1 + Finale"], ["Bagmane Tech Park", "CV Raman Nagar", "Compact, dense, easy stage setup", "Round 1"], ["RMZ Ecoworld", "Bellandur", "Central lawn, evening-friendly", "Round 1"]];
     const tbl = [[{ text: "Park", options: { bold: true, color: C.white, fill: { color: C.plum } } }, { text: "Zone", options: { bold: true, color: C.white, fill: { color: C.plum } } }, { text: "Why it works", options: { bold: true, color: C.white, fill: { color: C.plum } } }, { text: "Role", options: { bold: true, color: C.white, fill: { color: C.plum } } }]];
     rows.forEach((r, i) => tbl.push(r.map(t => ({ text: t, options: { fill: { color: i % 2 ? C.white : C.blush } } }))));
-    s.addTable(tbl, { x: M, y: 1.4, w: 5.6, colW: [1.6, 1.2, 2.0, 0.8], fontFace: FONT_B, fontSize: 10.5, color: C.ink, border: { type: "solid", color: C.line, pt: 0.5 }, rowH: 0.42 });
+    s.addTable(tbl, { x: M, y: 1.4, w: 5.6, colW: [1.6, 1.2, 2.0, 0.8], fontFace: FONT_B, fontSize: 10.5, color: C.ink, border: { type: "solid", color: C.line, pt: 0.5 }, rowH: 0.46, valign: "middle" });
     card(s, 6.5, 1.4, 3.0, 3.1);
     s.addText("Selection criteria", { x: 6.7, y: 1.55, w: 2.6, h: 0.3, fontFace: FONT_B, fontSize: 14, bold: true, color: C.plum, margin: 0, isTextBox: true });
     bullets(s, ["Lunch-hour footfall of 3,000+ in a single plaza", "Park management open to tenant engagement events", "Power, security and stage-able open area", "Mia or Tanishq store within 15 minutes", "Willingness to co-promote on internal channels"], 6.7, 1.95, 2.6, 2.5, { fontSize: 11 });
@@ -271,7 +272,7 @@ async function icon(name, color, size = 256) {
     const rows = [["Venue and permissions", "Park scouting, contracts, permissions, security, insurance", "Sign-off on final park list", "Week 2"], ["Influencers and jury", "Shortlist, contracts, briefs, content calendar", "Approval of jury and brand brief", "Week 2"], ["Registrations", "Landing page, ads, park promotion, shortlisting", "Assets and brand guidelines", "Week 4"], ["Production", "Stage, ramp, AV, branding, zones, crew", "Jewellery for styling and gifting, store offers", "Week 4, Week 8"], ["Models and styling", "Choreographer, pro models, stylists, hair and makeup", "Approval of looks and collection edit", "Week 3, Week 7"], ["Content and PR", "Crew, editing, 48-hour delivery, media pitching", "Posting on Mia handles, press approvals", "Rolling"], ["Measurement", "Dashboard, weekly report, post-season review", "Store sales data for the lift analysis", "Weekly"]];
     const tbl = [hdr.map(h => ({ text: h, options: { bold: true, color: C.white, fill: { color: C.plum } } }))];
     rows.forEach((r, i) => tbl.push(r.map((t, j) => ({ text: t, options: { bold: j === 0, fill: { color: i % 2 ? C.white : C.blush } } }))));
-    s.addTable(tbl, { x: M, y: 1.35, w: 9, colW: [1.7, 3.4, 2.7, 1.2], fontFace: FONT_B, fontSize: 10, color: C.ink, border: { type: "solid", color: C.line, pt: 0.5 }, rowH: 0.38, valign: "middle" });
+    s.addTable(tbl, { x: M, y: 1.35, w: 9, colW: [1.7, 3.4, 2.7, 1.2], fontFace: FONT_B, fontSize: 10, color: C.ink, border: { type: "solid", color: C.line, pt: 0.5 }, rowH: 0.42, valign: "middle" });
   }
 
   // 16. Budget
