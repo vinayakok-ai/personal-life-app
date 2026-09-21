@@ -25,7 +25,7 @@ export function badhakesha(asc: Sign): Graha {
 import { dignityOf, parseDegree } from "./ingest.ts";
 import { compoundRelation, aspectsHouse } from "./engine.ts";
 
-export type Topic = "marriage" | "career" | "business" | "wealth" | "children" | "property" | "health" | "foreign" | "education" | "siblings" | "mother" | "father" | "general";
+export type Topic = "marriage" | "romance" | "career" | "business" | "wealth" | "children" | "property" | "health" | "foreign" | "education" | "siblings" | "mother" | "father" | "general";
 export type Signification = {
   topic: Topic; primary: number[]; secondary: number[]; karakas: Planet[];
   charakaraka?: "AK" | "AmK" | "BK" | "MK" | "PK" | "GK" | "DK"; arudhaOf?: number; varga?: "D9" | "D10" | "D4" | "D7"; vargaHouse?: number;
@@ -33,6 +33,7 @@ export type Signification = {
 export const SIGNIFICATIONS: Record<Topic, Signification> = {
   marriage: { topic: "marriage", primary: [7], secondary: [2, 11], karakas: ["Venus"], charakaraka: "DK", arudhaOf: 12, varga: "D9", vargaHouse: 7 },
   career: { topic: "career", primary: [10], secondary: [6, 2, 11], karakas: ["Sun", "Saturn", "Mercury"], charakaraka: "AmK", arudhaOf: 10, varga: "D10", vargaHouse: 10 },
+  romance: { topic: "romance", primary: [5], secondary: [7, 11], karakas: ["Venus"], charakaraka: "DK", arudhaOf: 5, varga: "D9", vargaHouse: 5 },
   business: { topic: "business", primary: [7], secondary: [10, 11, 2, 3], karakas: ["Mercury", "Venus"], charakaraka: "AmK", arudhaOf: 7, varga: "D10", vargaHouse: 7 },
   wealth: { topic: "wealth", primary: [2], secondary: [11, 5, 9], karakas: ["Jupiter"], arudhaOf: 1 },
   children: { topic: "children", primary: [5], secondary: [9, 11], karakas: ["Jupiter"], charakaraka: "PK", varga: "D7", vargaHouse: 5 },
@@ -46,6 +47,7 @@ export const SIGNIFICATIONS: Record<Topic, Signification> = {
   general: { topic: "general", primary: [1], secondary: [9, 10], karakas: ["Sun", "Moon"], charakaraka: "AK", arudhaOf: 1 },
 };
 const TOPIC_RE: [Topic, RegExp][] = [
+  ["romance", /\b(romance|romantic|dating|girlfriend|boyfriend|ex|love|affair|crush|get back)\b/i],
   ["marriage", /\b(marriage|marr(?:y|ied)|wedding|spouse|partner|relationship|wife|husband|divorce)\b/i],
   ["business", /\b(business|startup|start-up|founder|venture|company|trade|partnership|client|customer|sales|funding)\b/i],
   ["career", /\b(career|job|promotion|work|profession|employ|boss|salary|role)\b/i],
@@ -329,7 +331,7 @@ function lossConnectionBase(ing: Ingested, p: Planet, sig: Signification): { c: 
   const cands: [number, string][] = [];
   const rel = (h: number, n: number) => ((h - 1 + n - 1) % 12) + 1; // n-th house from house h
   // Marakas (2nd/7th from the bhava) apply only where the bhava signifies a person (BPHS); for wealth/career/etc. only 8th/12th/6th.
-  const person = ["siblings", "mother", "father", "children", "marriage", "health", "general"].includes(sig.topic);
+  const person = ["siblings", "mother", "father", "children", "marriage", "romance", "health", "general"].includes(sig.topic);
   const rules: [number, number, string][] = person
     ? [[8, 1.0, "8th"], [12, 1.0, "12th"], [2, 0.8, "2nd (maraka)"], [7, 0.8, "7th (maraka)"], [6, 0.6, "6th"]]
     : [[8, 1.0, "8th"], [12, 1.0, "12th"], [6, 0.6, "6th"]];
@@ -402,7 +404,7 @@ export function trigger(ing: Ingested, sig: Signification, active: ActiveDasha, 
     else if (t.Ketu && targets.includes(t.Ketu.sign)) terms.push({ factor: `Ketu transit ${t.Ketu.sign} on a target sign`, points: 4, source: "transit" });
     // Loss transits: Saturn / nodes over the house, its lord, the karaka; Sade Sati.
     const lt: Term[] = [];
-    const personTopic = ["siblings", "mother", "father", "children", "marriage", "health", "general"].includes(sig.topic);
+    const personTopic = ["siblings", "mother", "father", "children", "marriage", "romance", "health", "general"].includes(sig.topic);
     const karakaSigns = personTopic ? (sig.karakas.map((k) => by(ing, k)?.sign).filter(Boolean) as Sign[]) : [];
     const afflictTargets = [...new Set([...primarySigns.slice(0, 1), ...lordSigns.slice(0, 1), ...karakaSigns])];
     if (afflictTargets.includes(t.Saturn.sign)) lt.push({ factor: `Saturn transit ${t.Saturn.sign} on house/lord/karaka`, points: 12, source: "loss-transit" });
