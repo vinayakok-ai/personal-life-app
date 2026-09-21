@@ -1,7 +1,7 @@
 1. PLANETARY POSITIONS TABLE
 | Planet | Rasi (D1) | Degrees (D°M'S") | Nakshatra & Pada | Star Lord | Dignity | Status (R/C) |
 |---|---|---|---|---|---|---|
-| Ascendant | Capricorn | 7°01'08" | Uttara Ashadha-4 | Sun | — | — |
+| Ascendant | Capricorn | 3°26'47" | Uttara Ashadha-3 | Sun | — | — |
 | Sun | Scorpio | 8°52'44" | Anuradha-2 | Saturn | Friend | D |
 | Moon | Capricorn | 16°59'03" | Shravana-3 | Moon | Neutral | D |
 | Mars | Virgo | 4°55'01" | Uttara Phalguni-3 | Sun | Enemy | D |
@@ -15,18 +15,18 @@
 2. BHAVA CHALIT & CUSPS TABLE
 | House | Sign on Cusp | Cusp Degree | Occupying Planets | Rasi vs Chalit Shift |
 |---|---|---|---|---|
-| 1 | Sagittarius | 23°36'39" | Moon | none |
-| 2 | Capricorn | 23°36'39" | Jupiter, Ketu | none |
-| 3 | Aquarius | 26°47'39" | — | none |
-| 4 | Pisces | 29°58'40" | Saturn | none |
-| 5 | Aries | 29°58'40" | — | none |
-| 6 | Taurus | 26°47'39" | — | none |
-| 7 | Gemini | 23°36'39" | — | none |
-| 8 | Cancer | 23°36'39" | Rahu | none |
-| 9 | Leo | 26°47'39" | Mars | none |
-| 10 | Virgo | 29°58'40" | — | none |
-| 11 | Libra | 29°58'40" | Sun, Mercury, Venus | none |
-| 12 | Scorpio | 26°47'39" | — | none |
+| 1 | Sagittarius | 20°16'45" | Moon | none |
+| 2 | Capricorn | 20°16'45" | Ketu | none |
+| 3 | Aquarius | 23°56'41" | Jupiter | Jupiter (Rasi H2) |
+| 4 | Pisces | 27°36'37" | Saturn | none |
+| 5 | Aries | 27°36'37" | — | none |
+| 6 | Taurus | 23°56'41" | — | none |
+| 7 | Gemini | 20°16'45" | — | none |
+| 8 | Cancer | 20°16'45" | Rahu | none |
+| 9 | Leo | 23°56'41" | Mars | none |
+| 10 | Virgo | 27°36'37" | — | none |
+| 11 | Libra | 27°36'37" | Sun, Mercury, Venus | none |
+| 12 | Scorpio | 23°56'41" | — | none |
 
 3. ASHTAKAVARGA (SAV) TABLE
 | House | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 |
@@ -815,10 +815,10 @@ Not Available in Text.
 | PD (Sun > Venus) | Ketu | 2113-08-09 | 2113-08-31 |
 
 6. AVAILABLE DIVISIONAL CHARTS
-D9: Ascendant Pisces; Sun in Virgo, Moon in Gemini, Mars in Aquarius, Mercury in Capricorn, Jupiter in Taurus, Venus in Scorpio, Saturn in Taurus, Rahu in Aries, Ketu in Libra
-D10: Ascendant Scorpio; Sun in Virgo, Moon in Aquarius, Mars in Gemini, Mercury in Aquarius, Jupiter in Libra, Venus in Sagittarius, Saturn in Taurus, Rahu in Leo, Ketu in Aquarius
+D9: Ascendant Aquarius; Sun in Virgo, Moon in Gemini, Mars in Aquarius, Mercury in Capricorn, Jupiter in Taurus, Venus in Scorpio, Saturn in Taurus, Rahu in Aries, Ketu in Libra
+D10: Ascendant Libra; Sun in Virgo, Moon in Aquarius, Mars in Gemini, Mercury in Aquarius, Jupiter in Libra, Venus in Sagittarius, Saturn in Taurus, Rahu in Leo, Ketu in Aquarius
 D4: Ascendant Capricorn; Sun in Aquarius, Moon in Cancer, Mars in Virgo, Mercury in Leo, Jupiter in Scorpio, Venus in Taurus, Saturn in Aries, Rahu in Leo, Ketu in Aquarius
-D7: Ascendant Leo; Sun in Cancer, Moon in Libra, Mars in Aries, Mercury in Libra, Jupiter in Cancer, Venus in Leo, Saturn in Aries, Rahu in Leo, Ketu in Aquarius
+D7: Ascendant Cancer; Sun in Cancer, Moon in Libra, Mars in Aries, Mercury in Libra, Jupiter in Cancer, Venus in Leo, Saturn in Aries, Rahu in Leo, Ketu in Aquarius
 
 7. PARSER UNCERTAINTY & MISSING DATA LEDGER
 - [derived] Chalit occupancy derived from the supplied bhava-begin cusp degrees (the chart gave cusps only).

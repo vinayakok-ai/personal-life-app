@@ -6,12 +6,12 @@
   "birth": {
    "date": "1998-11-25",
    "time": "10:35 (UTC+5.5)",
-   "place": "13.283333333333333N 77.8E"
+   "place": "Vijayapura (Bijapur) city, BLDE hospital, 16°50N 75°43E"
   }
  },
  "ascendant": {
   "sign": "Capricorn",
-  "degree": 7.019022333227781
+  "degree": 3.446277816821521
  },
  "planets": [
   {
@@ -73,62 +73,62 @@
   {
    "house": 1,
    "cuspSign": "Sagittarius",
-   "cuspDegree": 23.61076373344565
+   "cuspDegree": 20.279098155474685
   },
   {
    "house": 2,
    "cuspSign": "Capricorn",
-   "cuspDegree": 23.61076373344565
+   "cuspDegree": 20.279098155474685
   },
   {
    "house": 3,
    "cuspSign": "Aquarius",
-   "cuspDegree": 26.794246533881278
+   "cuspDegree": 23.9447388327809
   },
   {
    "house": 4,
    "cuspSign": "Pisces",
-   "cuspDegree": 29.97772933431696
+   "cuspDegree": 27.61037951008717
   },
   {
    "house": 5,
    "cuspSign": "Aries",
-   "cuspDegree": 29.977729334316983
+   "cuspDegree": 27.610379510087192
   },
   {
    "house": 6,
    "cuspSign": "Taurus",
-   "cuspDegree": 26.794246533881335
+   "cuspDegree": 23.944738832780956
   },
   {
    "house": 7,
    "cuspSign": "Gemini",
-   "cuspDegree": 23.61076373344565
+   "cuspDegree": 20.279098155474685
   },
   {
    "house": 8,
    "cuspSign": "Cancer",
-   "cuspDegree": 23.61076373344568
+   "cuspDegree": 20.279098155474685
   },
   {
    "house": 9,
    "cuspSign": "Leo",
-   "cuspDegree": 26.794246533881363
+   "cuspDegree": 23.944738832780956
   },
   {
    "house": 10,
    "cuspSign": "Virgo",
-   "cuspDegree": 29.97772933431702
+   "cuspDegree": 27.610379510087228
   },
   {
    "house": 11,
    "cuspSign": "Libra",
-   "cuspDegree": 29.97772933431699
+   "cuspDegree": 27.6103795100872
   },
   {
    "house": 12,
    "cuspSign": "Scorpio",
-   "cuspDegree": 26.794246533881335
+   "cuspDegree": 23.944738832780956
   }
  ],
  "savBySign": [

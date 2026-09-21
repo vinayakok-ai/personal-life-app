@@ -9,7 +9,7 @@ import { NATURAL_BENEFICS, NATURAL_MALEFICS, SIGN_LORD, SPECIAL_ASPECTS, houseFr
 import { dignityOf, parseDegree } from "./ingest.ts";
 import { compoundRelation, aspectsHouse } from "./engine.ts";
 
-export type Topic = "marriage" | "career" | "wealth" | "children" | "property" | "health" | "foreign" | "education" | "siblings" | "mother" | "father" | "general";
+export type Topic = "marriage" | "career" | "business" | "wealth" | "children" | "property" | "health" | "foreign" | "education" | "siblings" | "mother" | "father" | "general";
 export type Signification = {
   topic: Topic; primary: number[]; secondary: number[]; karakas: Planet[];
   charakaraka?: "AK" | "AmK" | "BK" | "MK" | "PK" | "GK" | "DK"; arudhaOf?: number; varga?: "D9" | "D10" | "D4" | "D7"; vargaHouse?: number;
@@ -17,6 +17,7 @@ export type Signification = {
 export const SIGNIFICATIONS: Record<Topic, Signification> = {
   marriage: { topic: "marriage", primary: [7], secondary: [2, 11], karakas: ["Venus"], charakaraka: "DK", arudhaOf: 12, varga: "D9", vargaHouse: 7 },
   career: { topic: "career", primary: [10], secondary: [6, 2, 11], karakas: ["Sun", "Saturn", "Mercury"], charakaraka: "AmK", arudhaOf: 10, varga: "D10", vargaHouse: 10 },
+  business: { topic: "business", primary: [7, 10], secondary: [11, 2, 3], karakas: ["Mercury", "Venus"], charakaraka: "AmK", arudhaOf: 7, varga: "D10", vargaHouse: 7 },
   wealth: { topic: "wealth", primary: [2, 11], secondary: [5, 9], karakas: ["Jupiter"], arudhaOf: 1 },
   children: { topic: "children", primary: [5], secondary: [9, 11], karakas: ["Jupiter"], charakaraka: "PK", varga: "D7", vargaHouse: 5 },
   property: { topic: "property", primary: [4], secondary: [11, 2], karakas: ["Mars", "Venus"], charakaraka: "MK", varga: "D4", vargaHouse: 4 },
@@ -30,7 +31,8 @@ export const SIGNIFICATIONS: Record<Topic, Signification> = {
 };
 const TOPIC_RE: [Topic, RegExp][] = [
   ["marriage", /\b(marriage|marr(?:y|ied)|wedding|spouse|partner|relationship|wife|husband|divorce)\b/i],
-  ["career", /\b(career|job|promotion|work|profession|business|startup|employ|boss|salary|role)\b/i],
+  ["business", /\b(business|startup|start-up|founder|venture|company|trade|partnership|client|customer|sales|funding)\b/i],
+  ["career", /\b(career|job|promotion|work|profession|employ|boss|salary|role)\b/i],
   ["children", /\b(child|children|kids?|pregnan\w*|conceiv\w*|son|daughter)\b/i],
   ["property", /\b(property|home|land|flat|apartment|vehicle|car)\b/i],
   ["wealth", /\b(money|wealth|income|finance|gain|debt|loan|savings)\b/i],
@@ -83,6 +85,56 @@ function gandantaOrSandhi(p: PlanetRow): boolean {
   return ([3, 7, 11].includes(si) && p.degree > 26.6667) || ([0, 4, 8].includes(si) && p.degree < 3.3333) || p.degree < 1 || p.degree > 29;
 }
 
+// ---- Named yogas (Parashari), scored by topic relevance ----
+function topicYogas(ing: Ingested, sig: Signification): [string, number][] {
+  const asc = ing.ascendant.sign, out: [string, number][] = [];
+  const t = sig.topic;
+  const conj = (a: PlanetRow, b: PlanetRow) => a.sign === b.sign;
+  const mutual = (a: PlanetRow, b: PlanetRow) => conj(a, b) || (aspectsHouse(a, asc, b.house) && aspectsHouse(b, asc, a.house));
+  const L = (h: number) => by(ing, lordOf(asc, h));
+  const l1 = L(1), l2 = L(2), l4 = L(4), l5 = L(5), l7 = L(7), l9 = L(9), l10 = L(10), l11 = L(11);
+  const moon = by(ing, "Moon"), jup = by(ing, "Jupiter"), sun = by(ing, "Sun"), mer = by(ing, "Mercury"), mars = by(ing, "Mars");
+  // Dharma-Karmadhipati: 9L–10L together
+  if (l9 && l10 && l9.planet !== l10.planet && mutual(l9, l10)) out.push(["Dharma-Karmadhipati yoga (9L–10L)", t === "career" ? 8 : t === "wealth" ? 4 : t === "father" ? 4 : 2]);
+  // Raja yoga: a kendra lord with a trikona lord (excluding the same planet)
+  const kendraL = [1, 4, 7, 10].map(L), trikonaL = [5, 9].map(L);
+  let raja = false;
+  for (const k of kendraL) for (const tr of trikonaL) if (k && tr && k.planet !== tr.planet && mutual(k, tr)) raja = true;
+  if (raja) out.push(["Raja yoga (kendra lord with trikona lord)", ["career", "wealth", "general", "father"].includes(t) ? 5 : 2]);
+  // Dhana yoga: 2L/11L linked with 5L/9L/1L
+  const dhanaA = [l2, l11], dhanaB = [l5, l9, l1];
+  let dhana = false;
+  for (const a of dhanaA) for (const b of dhanaB) if (a && b && a.planet !== b.planet && mutual(a, b)) dhana = true;
+  if (dhana) out.push(["Dhana yoga (2/11 lord with 1/5/9 lord)", t === "wealth" ? 6 : t === "career" ? 3 : 1]);
+  // Gajakesari
+  if (moon && jup && [1, 4, 7, 10].includes(houseFrom(moon.sign, jup.sign))) out.push(["Gajakesari yoga", ["career", "wealth", "general", "education", "health"].includes(t) ? 4 : 2]);
+  // Budhaditya
+  if (sun && mer && conj(sun, mer)) out.push(["Budhaditya yoga", ["career", "education"].includes(t) ? 3 : 1]);
+  // Chandra-Mangala
+  if (moon && mars && conj(moon, mars)) out.push(["Chandra-Mangala yoga", t === "wealth" ? 4 : 1]);
+  // Pancha Mahapurusha
+  const mp: Record<string, Graha> = { Ruchaka: "Mars", Bhadra: "Mercury", Hamsa: "Jupiter", Malavya: "Venus", Sasa: "Saturn" };
+  for (const [n, g] of Object.entries(mp)) { const p = by(ing, g); if (p && [1, 4, 7, 10].includes(p.house) && ["Exalted", "Own", "Moolatrikona"].includes(p.dignity)) out.push([`${n} Mahapurusha yoga`, ["career", "general", "health"].includes(t) ? 6 : 3]); }
+  // Kemadruma
+  if (moon) { const nb = ing.planets.filter((p) => !["Moon", "Sun", "Rahu", "Ketu"].includes(p.planet) && [2, 12].includes(houseFrom(moon.sign, p.sign))); if (!nb.length) out.push(["Kemadruma yoga", ["wealth", "health", "general"].includes(t) ? -4 : -1]); }
+  // Kartari on the primary house: malefics in 12th and 2nd from it
+  const h0 = sig.primary[0];
+  const prev = ((h0 + 10) % 12) + 1, next = (h0 % 12) + 1;
+  const malIn = (h: number) => ing.planets.some((p) => p.house === h && NATURAL_MALEFICS.includes(p.planet));
+  const benIn = (h: number) => ing.planets.some((p) => p.house === h && NATURAL_BENEFICS.includes(p.planet));
+  if (malIn(prev) && malIn(next)) out.push([`Papa-kartari on H${h0}`, -5]);
+  else if (benIn(prev) && benIn(next)) out.push([`Shubha-kartari on H${h0}`, 4]);
+  // Marriage-specific: Venus–Jupiter link, Mars in 1/2/4/7/8/12 (Kuja dosha, simplified)
+  if (t === "marriage") {
+    const ven = by(ing, "Venus");
+    if (ven && jup && mutual(ven, jup)) out.push(["Venus–Jupiter link", 4]);
+    if (mars && [1, 2, 4, 7, 8, 12].includes(mars.house) && !(mars.dignity === "Own" || mars.dignity === "Exalted")) out.push(["Kuja dosha (simplified)", -3]);
+    if (l7 && l1 && l7.planet !== l1.planet && mutual(l7, l1)) out.push(["1L–7L link", 4]);
+    if (l4 && ven && ven.house === 4) out.push(["Venus in the 4th", 2]);
+  }
+  return out;
+}
+
 // ---- PROMISE ----
 export function promise(ing: Ingested, sig: Signification): PromiseResult {
   const asc = ing.ascendant.sign;
@@ -101,6 +153,35 @@ export function promise(ing: Ingested, sig: Signification): PromiseResult {
     if (lp.house === h) add(`${lord} in its own house H${h}`, 8 * w, "placement");
     else if (DUSTHANA.includes(lp.house)) add(`${lord} in dusthana H${lp.house}`, -8 * w, "placement");
     else if (KENDRA_TRIKONA.includes(lp.house)) add(`${lord} in kendra/trikona H${lp.house}`, 6 * w, "placement");
+    else if (lp.house === 11) add(`${lord} in H11 (labha)`, 5 * w, "placement");
+    else if (lp.house === 2) add(`${lord} in H2`, 3 * w, "placement");
+    else if (lp.house === 3) add(`${lord} in H3`, 1 * w, "placement");
+    // Relative placement: lord in 6/8/12 *from its own house* weakens it (BPHS), kendra/trikona from it strengthens.
+    const relH = ((lp.house - h + 12) % 12) + 1;
+    if ([6, 8, 12].includes(relH) && !DUSTHANA.includes(lp.house)) add(`${lord} in ${relH}th from H${h}`, -3 * w, "placement");
+    // Conjunctions and aspects on the lord.
+    const withLord = ing.planets.filter((p) => p.planet !== lord && p.sign === lp.sign);
+    for (const p of withLord) {
+      if (NATURAL_BENEFICS.includes(p.planet)) add(`${p.planet} conjunct H${h} lord`, 3 * w, "conjunction");
+      else if (["Saturn", "Mars", "Rahu", "Ketu"].includes(p.planet)) add(`${p.planet} conjunct H${h} lord`, -2 * w, "conjunction");
+    }
+    for (const p of ing.planets) {
+      if (p.sign === lp.sign || p.planet === lord) continue;
+      if (aspectsHouse(p, asc, lp.house)) {
+        if (p.planet === "Jupiter") add(`Jupiter aspects H${h} lord`, 3 * w, "aspects");
+        else if (["Saturn", "Mars", "Rahu"].includes(p.planet)) add(`${p.planet} aspects H${h} lord`, -2 * w, "aspects");
+      }
+    }
+    // Dispositor condition and exchange.
+    if (isGraha(lord)) {
+      const dispP = SIGN_LORD[lp.sign];
+      const dp = by(ing, dispP);
+      if (dp && dispP !== lord) {
+        if (KENDRA_TRIKONA.includes(dp.house)) add(`${lord}'s dispositor ${dispP} in kendra/trikona`, 2 * w, "dispositor");
+        else if (DUSTHANA.includes(dp.house)) add(`${lord}'s dispositor ${dispP} in dusthana`, -2 * w, "dispositor");
+        if (isGraha(dispP) && SIGN_LORD[dp.sign] === lord) add(`Parivartana: ${lord} ⇄ ${dispP}`, 5 * w, "yoga");
+      }
+    }
     if (lp.combust) add(`${lord} combust`, -8 * w, "combustion");
     if (lp.retrograde) tags.push(`${lord} retrograde (delay)`);
     if (gandantaOrSandhi(lp)) add(`${lord} in gandanta/sandhi`, -5 * w, "sensitivity");
@@ -130,7 +211,24 @@ export function promise(ing: Ingested, sig: Signification): PromiseResult {
     const kp = by(ing, k); if (!kp) continue;
     add(`Karaka ${k} ${kp.dignity}`, dignityPts(kp.dignity) * 0.5 / sig.karakas.length, "karaka");
     if (kp.combust) add(`Karaka ${k} combust`, -4 / sig.karakas.length, "karaka");
+    const h0 = sig.primary[0], l0 = by(ing, lordOf(asc, h0));
+    if (kp.house === h0 || aspectsHouse(kp, asc, h0)) add(`Karaka ${k} ${kp.house === h0 ? "in" : "aspects"} H${h0}`, 3 / sig.karakas.length, "karaka");
+    if (l0 && l0.planet !== k && l0.sign === kp.sign) add(`Karaka ${k} conjunct H${h0} lord`, 3 / sig.karakas.length, "karaka");
+    if (DUSTHANA.includes(kp.house)) add(`Karaka ${k} in dusthana H${kp.house}`, -3 / sig.karakas.length, "karaka");
   }
+  // Lagna lord: the native's capacity, applied to every topic at half weight.
+  {
+    const ll = lordOf(asc, 1), lp = by(ing, ll);
+    if (lp && !sig.primary.includes(1)) {
+      let d = dignityPts(lp.dignity); if (neechaBhanga(ing, lp)) d = 0;
+      add(`Lagna lord ${ll} ${lp.dignity}`, d * 0.5, "lagna-lord");
+      if (KENDRA_TRIKONA.includes(lp.house)) add(`Lagna lord in kendra/trikona H${lp.house}`, 3, "lagna-lord");
+      else if (DUSTHANA.includes(lp.house)) add(`Lagna lord in dusthana H${lp.house}`, -4, "lagna-lord");
+      if (lp.combust) add(`Lagna lord combust`, -3, "lagna-lord");
+    }
+  }
+  // Named yogas scored per topic.
+  for (const [name, pts] of topicYogas(ing, sig)) add(name, pts, "yoga");
   if (sig.varga) {
     const v = ing.vargas[sig.varga];
     if (v) {
@@ -151,6 +249,9 @@ export function promise(ing: Ingested, sig: Signification): PromiseResult {
 
 // ---- TRIGGER ----
 export function connection(ing: Ingested, p: Planet, sig: Signification): { c: number; via: string } {
+  return inherit(ing, p, (q) => connectionBase(ing, q, sig));
+}
+function connectionBase(ing: Ingested, p: Planet, sig: Signification): { c: number; via: string } {
   const asc = ing.ascendant.sign, pr = by(ing, p);
   if (!pr) return { c: 0, via: "absent" };
   const cands: [number, string][] = [];
@@ -162,6 +263,16 @@ export function connection(ing: Ingested, p: Planet, sig: Signification): { c: n
     if (lp && (lp.starLord === p || SIGN_LORD[lp.sign] === p) && p !== lord) cands.push([0.7, `${lp.starLord === p ? "star lord" : "dispositor"} of H${h} lord ${lord}`]);
     if (aspectsHouse(pr, asc, h)) cands.push([(SPECIAL_ASPECTS[p] ?? []).some((d) => ((pr.house - 1 + d - 1) % 12) + 1 === h) ? 0.4 : 0.25, `aspects H${h}`]);
     if ((p === "Rahu" || p === "Ketu") && lp && SIGN_LORD[pr.sign] === lord) cands.push([0.6, `node disposed by H${h} lord ${lord}`]);
+  }
+  // Conjunction with / nakshatra of / dispositor of the primary lord (KP-style star linkage and Parashari sambandha)
+  for (const h of sig.primary) {
+    const lord = lordOf(asc, h), lp = by(ing, lord);
+    if (!lp || p === lord) continue;
+    if (pr.sign === lp.sign) cands.push([0.8, `conjunct H${h} lord ${lord}`]);
+    if (pr.starLord === lord) cands.push([0.6, `in the star of H${h} lord ${lord}`]);
+    const occupants = ing.planets.filter((x) => x.house === h);
+    if (occupants.some((o) => SIGN_LORD[o.sign] === p) && isGraha(p)) cands.push([0.5, `dispositor of H${h} occupants`]);
+    if (aspectsHouse(lp, asc, pr.house)) cands.push([0.4, `aspected by H${h} lord ${lord}`]);
   }
   if (sig.karakas.includes(p)) cands.push([0.8, "karaka"]);
   if (sig.charakaraka && ck[sig.charakaraka] === p) cands.push([0.6, sig.charakaraka]);
@@ -175,8 +286,25 @@ export function connection(ing: Ingested, p: Planet, sig: Signification): { c: n
   return { c, via };
 }
 
+/** Parashari: nodes act through their dispositor and conjunct planets; KP: every planet also signifies through its star lord. */
+function inherit(ing: Ingested, p: Planet, base: (q: Planet) => { c: number; via: string }): { c: number; via: string } {
+  const pr = by(ing, p);
+  let best = base(p);
+  if (!pr) return best;
+  const consider = (q: Planet, f: number, how: string) => { if (q === p) return; const r = base(q); const c = Math.round(r.c * f * 100) / 100; if (c > best.c) best = { c, via: `${how} ${q}: ${r.via}` }; };
+  if (p === "Rahu" || p === "Ketu") {
+    consider(SIGN_LORD[pr.sign], 0.8, "via dispositor");
+    for (const o of ing.planets) if (o.sign === pr.sign && o.planet !== p) consider(o.planet, 0.8, "via conjunct");
+  }
+  consider(pr.starLord, 0.7, "via star lord");
+  return best;
+}
+
 /** Loss/affliction link of a dasha planet to the topic (BPHS: 8th/12th from the bhava, marakas from the bhava, malefics on it). */
 export function lossConnection(ing: Ingested, p: Planet, sig: Signification): { c: number; via: string } {
+  return inherit(ing, p, (q) => lossConnectionBase(ing, q, sig));
+}
+function lossConnectionBase(ing: Ingested, p: Planet, sig: Signification): { c: number; via: string } {
   const asc = ing.ascendant.sign, pr = by(ing, p);
   if (!pr) return { c: 0, via: "absent" };
   const cands: [number, string][] = [];
