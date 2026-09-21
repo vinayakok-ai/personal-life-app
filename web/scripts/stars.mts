@@ -6,15 +6,23 @@
 //   v4 (two-axis):  node scripts/stars.mts v4      <chart.json> <query.json>
 //                   node scripts/stars.mts v4scan  <chart.json> <query.json> <from> <to>
 //                   node scripts/stars.mts backtest <chart.json> <events.json> <from> <to>
+//                   node scripts/stars.mts retrodict <chart.json> <from> <to> [threshold]   (blind: no events)
 // chart.json may carry a top-level "compute" block ({ vargas, dashaDepth, birthDate, birthTime })
 // and query.json may set "transits": "compute" — both dilute the zero-calculation law (see compute.ts).
 import { readFileSync } from "node:fs";
 import { execute, ingest, renderExecution, renderIngestion, type ChartInput } from "../src/lib/stars/index.ts";
 import { prepareChart, prepareQuery, validateNatal, type ComputeOptions } from "../src/lib/stars/compute.ts";
 import { renderScan, scan } from "../src/lib/stars/scan.ts";
-import { backtest, renderBacktest, renderScanV4, renderV4, runV4, scanV4, type LifeEvent } from "../src/lib/stars/v4-run.ts";
+import { backtest, renderBacktest, renderRetro, renderScanV4, renderV4, retrodict, runV4, scanV4, type LifeEvent } from "../src/lib/stars/v4-run.ts";
 
 const [mode, chartPath, queryPath, from, to] = process.argv.slice(2);
+if (mode === "retrodict" && chartPath && queryPath && from) {
+  const raw0 = JSON.parse(readFileSync(chartPath, "utf8")) as ChartInput & { compute?: ComputeOptions };
+  const c0 = raw0.compute ? prepareChart(raw0, raw0.compute).chart : raw0;
+  const thr = to ? Number(to) : 55;
+  console.log(renderRetro(retrodict(c0, queryPath, from, thr), thr));
+  process.exit(0);
+}
 if (!mode || !chartPath || (mode !== "ingest" && !queryPath) || (["scan", "v4scan", "backtest"].includes(mode) && (!from || !to))) {
   console.error("usage: stars.mts ingest <chart> | execute <chart> <query> | scan <chart> <query> <from> <to> | v4 <chart> <query> | v4scan <chart> <query> <from> <to> | backtest <chart> <events> <from> <to>");
   process.exit(2);

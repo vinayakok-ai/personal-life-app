@@ -85,3 +85,37 @@ export function renderScanV4(rows: V4Result[]): string {
 export function renderBacktest(b: ReturnType<typeof backtest>): string {
   return [md([["Event", "Date", "Topic", "Window", "T", "Rank", "Percentile", "Cell"], ...b.rows.map((r) => [r.event.label, r.event.date, r.event.topic, r.window, String(r.T), `${r.rank}/${r.of}`, String(r.percentile), r.cell])]), "", b.summary].join("\n");
 }
+
+// ---- Blind retrodiction: the engine commits to past windows without seeing any events ----
+export type Retro = { topic: Topic; P: number; coveragePct: number; windows: { from: string; to: string; T: number; cell: string; dashas: string; tags: string }[] };
+
+/** Merge adjacent PD windows whose T ≥ threshold, per topic; report the merged runs ranked by peak T. */
+export function retrodict(chart: ChartInput, from: string, to: string, threshold = 55, topN = 6): Retro[] {
+  const topics = (Object.keys(SIGNIFICATIONS) as Topic[]).filter((t) => t !== "general");
+  return topics.map((topic) => {
+    const rows = scanV4(chart, { text: topic }, from, to);
+    const runs: Retro["windows"] = [];
+    let cur: (Retro["windows"][number] & { peak: number }) | null = null;
+    for (const r of rows) {
+      const ok = r.trigger.T >= threshold;
+      if (ok && cur) { cur.to = r.window[1]; cur.T = Math.max(cur.T, r.trigger.T); if (r.trigger.T > cur.peak) { cur.peak = r.trigger.T; cur.cell = r.cell.name; cur.dashas = `${r.active.MD}/${r.active.AD}/${r.active.PD}`; } cur.tags = [...new Set([...cur.tags.split("; ").filter(Boolean), ...r.trigger.tags])].join("; "); }
+      else if (ok) cur = { from: r.window[0], to: r.window[1], T: r.trigger.T, peak: r.trigger.T, cell: r.cell.name, dashas: `${r.active.MD}/${r.active.AD}/${r.active.PD}`, tags: r.trigger.tags.join("; ") };
+      else if (cur) { runs.push(cur); cur = null; }
+    }
+    if (cur) runs.push(cur);
+    const days = (a: string, b: string) => jdOf(b) - jdOf(a);
+    const total = days(from, to) || 1;
+    const covered = rows.filter((r) => r.trigger.T >= threshold).reduce((a, r) => a + days(r.window[0], r.window[1]), 0);
+    return { topic, P: rows[0]?.promise.P ?? 0, coveragePct: Math.round((covered / total) * 100), windows: runs.sort((a, b) => b.T - a.T).slice(0, topN).sort((a, b) => a.from.localeCompare(b.from)) };
+  });
+}
+
+export function renderRetro(rs: Retro[], threshold: number): string {
+  const out = [`Blind retrodiction — windows where Trigger T ≥ ${threshold}, merged when contiguous. The engine has seen no life events.`, ""];
+  for (const r of rs) {
+    out.push(`### ${r.topic}  (Promise P = ${r.P}; ${r.coveragePct}% of the period is above threshold — lower is more specific)`);
+    out.push(r.windows.length ? md([["From", "To", "Peak T", "Cell at peak", "MD/AD/PD at peak", "Tags"], ...r.windows.map((w) => [w.from, w.to, String(w.T), w.cell, w.dashas, w.tags || "—"])]) : "_no window reached the threshold_");
+    out.push("");
+  }
+  return out.join("\n");
+}
