@@ -1,0 +1,727 @@
+{
+ "meta": {
+  "name": "Friend (03:18)",
+  "ayanamsa": "Lahiri (23.8334°)",
+  "source": "Computed by Swiss Ephemeris (Moshier) from birth data",
+  "birth": {
+   "date": "1998-06-17",
+   "time": "03:18 (UTC+5.5)",
+   "place": "21.216666666666665N 81.41666666666667E"
+  }
+ },
+ "ascendant": {
+  "sign": "Aries",
+  "degree": 29.43194455249796
+ },
+ "planets": [
+  {
+   "planet": "Sun",
+   "sign": "Gemini",
+   "degree": 1.7017929588649139,
+   "retrograde": false
+  },
+  {
+   "planet": "Moon",
+   "sign": "Aquarius",
+   "degree": 24.73086528201179,
+   "retrograde": false
+  },
+  {
+   "planet": "Mars",
+   "sign": "Taurus",
+   "degree": 22.84234019580029,
+   "retrograde": false
+  },
+  {
+   "planet": "Mercury",
+   "sign": "Gemini",
+   "degree": 9.73567385516408,
+   "retrograde": false
+  },
+  {
+   "planet": "Jupiter",
+   "sign": "Pisces",
+   "degree": 2.698054116483945,
+   "retrograde": false
+  },
+  {
+   "planet": "Venus",
+   "sign": "Aries",
+   "degree": 27.166220717609498,
+   "retrograde": false
+  },
+  {
+   "planet": "Saturn",
+   "sign": "Aries",
+   "degree": 6.88952412368782,
+   "retrograde": false
+  },
+  {
+   "planet": "Rahu",
+   "sign": "Leo",
+   "degree": 11.053280213204147,
+   "retrograde": true
+  },
+  {
+   "planet": "Ketu",
+   "sign": "Aquarius",
+   "degree": 11.053280213204175,
+   "retrograde": true
+  }
+ ],
+ "bhavaChalit": [
+  {
+   "house": 1,
+   "cuspSign": "Aries",
+   "cuspDegree": 12.374189693456628
+  },
+  {
+   "house": 2,
+   "cuspSign": "Taurus",
+   "cuspDegree": 12.374189693456614
+  },
+  {
+   "house": 3,
+   "cuspSign": "Gemini",
+   "cuspDegree": 8.258679975373909
+  },
+  {
+   "house": 4,
+   "cuspSign": "Cancer",
+   "cuspDegree": 4.143170257291203
+  },
+  {
+   "house": 5,
+   "cuspSign": "Leo",
+   "cuspDegree": 4.143170257291189
+  },
+  {
+   "house": 6,
+   "cuspSign": "Virgo",
+   "cuspDegree": 8.258679975373894
+  },
+  {
+   "house": 7,
+   "cuspSign": "Libra",
+   "cuspDegree": 12.3741896934566
+  },
+  {
+   "house": 8,
+   "cuspSign": "Scorpio",
+   "cuspDegree": 12.3741896934566
+  },
+  {
+   "house": 9,
+   "cuspSign": "Sagittarius",
+   "cuspDegree": 8.258679975373894
+  },
+  {
+   "house": 10,
+   "cuspSign": "Capricorn",
+   "cuspDegree": 4.143170257291217
+  },
+  {
+   "house": 11,
+   "cuspSign": "Aquarius",
+   "cuspDegree": 4.143170257291217
+  },
+  {
+   "house": 12,
+   "cuspSign": "Pisces",
+   "cuspDegree": 8.258679975373866
+  }
+ ],
+ "savBySign": [
+  32,
+  20,
+  27,
+  27,
+  28,
+  25,
+  23,
+  27,
+  30,
+  32,
+  39,
+  27
+ ],
+ "bav": {
+  "Sun": {
+   "Aries": [
+    "Sun",
+    "Moon",
+    "Mercury",
+    "Saturn"
+   ],
+   "Taurus": [
+    "Mars",
+    "Mercury",
+    "Saturn"
+   ],
+   "Gemini": [
+    "Sun",
+    "Mars",
+    "Ascendant"
+   ],
+   "Cancer": [
+    "Sun",
+    "Moon",
+    "Jupiter",
+    "Saturn",
+    "Ascendant"
+   ],
+   "Leo": [
+    "Mars",
+    "Mercury",
+    "Jupiter"
+   ],
+   "Virgo": [
+    "Sun",
+    "Venus",
+    "Ascendant"
+   ],
+   "Libra": [
+    "Mercury",
+    "Venus",
+    "Saturn"
+   ],
+   "Scorpio": [
+    "Moon",
+    "Mars",
+    "Mercury",
+    "Jupiter",
+    "Saturn"
+   ],
+   "Sagittarius": [
+    "Sun",
+    "Moon",
+    "Mars",
+    "Saturn"
+   ],
+   "Capricorn": [
+    "Sun",
+    "Mars",
+    "Jupiter",
+    "Saturn",
+    "Ascendant"
+   ],
+   "Aquarius": [
+    "Sun",
+    "Mars",
+    "Mercury",
+    "Saturn",
+    "Ascendant"
+   ],
+   "Pisces": [
+    "Sun",
+    "Mars",
+    "Mercury",
+    "Venus",
+    "Ascendant"
+   ]
+  },
+  "Moon": {
+   "Aries": [
+    "Sun",
+    "Moon",
+    "Mercury"
+   ],
+   "Taurus": [],
+   "Gemini": [
+    "Mars",
+    "Mercury",
+    "Jupiter",
+    "Venus",
+    "Saturn",
+    "Ascendant"
+   ],
+   "Cancer": [
+    "Moon",
+    "Mars",
+    "Venus"
+   ],
+   "Leo": [
+    "Sun",
+    "Moon",
+    "Mercury",
+    "Venus",
+    "Saturn"
+   ],
+   "Virgo": [
+    "Mars",
+    "Mercury",
+    "Jupiter",
+    "Saturn",
+    "Ascendant"
+   ],
+   "Libra": [
+    "Mars",
+    "Mercury",
+    "Jupiter",
+    "Venus"
+   ],
+   "Scorpio": [
+    "Sun",
+    "Moon"
+   ],
+   "Sagittarius": [
+    "Sun",
+    "Moon",
+    "Mercury",
+    "Jupiter",
+    "Venus"
+   ],
+   "Capricorn": [
+    "Sun",
+    "Mars",
+    "Mercury",
+    "Jupiter",
+    "Venus",
+    "Ascendant"
+   ],
+   "Aquarius": [
+    "Moon",
+    "Mars",
+    "Jupiter",
+    "Venus",
+    "Saturn",
+    "Ascendant"
+   ],
+   "Pisces": [
+    "Sun",
+    "Mars",
+    "Mercury",
+    "Jupiter"
+   ]
+  },
+  "Mars": {
+   "Aries": [
+    "Sun",
+    "Moon",
+    "Mercury",
+    "Saturn",
+    "Ascendant"
+   ],
+   "Taurus": [
+    "Mars"
+   ],
+   "Gemini": [
+    "Mars",
+    "Ascendant"
+   ],
+   "Cancer": [
+    "Moon",
+    "Saturn"
+   ],
+   "Leo": [
+    "Sun",
+    "Mars",
+    "Mercury",
+    "Jupiter"
+   ],
+   "Virgo": [
+    "Venus",
+    "Ascendant"
+   ],
+   "Libra": [
+    "Sun",
+    "Mercury",
+    "Saturn"
+   ],
+   "Scorpio": [
+    "Sun",
+    "Mars",
+    "Mercury",
+    "Venus",
+    "Saturn"
+   ],
+   "Sagittarius": [
+    "Moon",
+    "Mars",
+    "Jupiter",
+    "Saturn"
+   ],
+   "Capricorn": [
+    "Jupiter",
+    "Saturn",
+    "Ascendant"
+   ],
+   "Aquarius": [
+    "Mars",
+    "Jupiter",
+    "Venus",
+    "Saturn",
+    "Ascendant"
+   ],
+   "Pisces": [
+    "Sun",
+    "Mars",
+    "Venus"
+   ]
+  },
+  "Mercury": {
+   "Aries": [
+    "Sun",
+    "Mercury",
+    "Venus",
+    "Saturn",
+    "Ascendant"
+   ],
+   "Taurus": [
+    "Sun",
+    "Moon",
+    "Mars",
+    "Mercury",
+    "Venus",
+    "Saturn",
+    "Ascendant"
+   ],
+   "Gemini": [
+    "Mars",
+    "Mercury",
+    "Venus"
+   ],
+   "Cancer": [
+    "Moon",
+    "Venus",
+    "Saturn",
+    "Ascendant"
+   ],
+   "Leo": [
+    "Mars",
+    "Mercury",
+    "Jupiter",
+    "Venus"
+   ],
+   "Virgo": [
+    "Moon",
+    "Ascendant"
+   ],
+   "Libra": [
+    "Sun",
+    "Mercury",
+    "Jupiter",
+    "Saturn"
+   ],
+   "Scorpio": [
+    "Sun",
+    "Moon",
+    "Mars",
+    "Mercury",
+    "Venus",
+    "Saturn",
+    "Ascendant"
+   ],
+   "Sagittarius": [
+    "Moon",
+    "Mars",
+    "Venus",
+    "Saturn"
+   ],
+   "Capricorn": [
+    "Mars",
+    "Jupiter",
+    "Saturn",
+    "Ascendant"
+   ],
+   "Aquarius": [
+    "Sun",
+    "Mars",
+    "Mercury",
+    "Jupiter",
+    "Venus",
+    "Saturn",
+    "Ascendant"
+   ],
+   "Pisces": [
+    "Moon",
+    "Mars",
+    "Mercury"
+   ]
+  },
+  "Jupiter": {
+   "Aries": [
+    "Sun",
+    "Mercury",
+    "Jupiter",
+    "Ascendant"
+   ],
+   "Taurus": [
+    "Mars",
+    "Jupiter",
+    "Venus",
+    "Ascendant"
+   ],
+   "Gemini": [
+    "Sun",
+    "Moon",
+    "Mars",
+    "Mercury",
+    "Jupiter",
+    "Saturn"
+   ],
+   "Cancer": [
+    "Sun",
+    "Mercury",
+    "Ascendant"
+   ],
+   "Leo": [
+    "Sun",
+    "Moon",
+    "Mars",
+    "Venus",
+    "Saturn",
+    "Ascendant"
+   ],
+   "Virgo": [
+    "Sun",
+    "Mercury",
+    "Jupiter",
+    "Venus",
+    "Saturn",
+    "Ascendant"
+   ],
+   "Libra": [
+    "Moon",
+    "Mercury",
+    "Jupiter",
+    "Ascendant"
+   ],
+   "Scorpio": [
+    "Mars",
+    "Mercury"
+   ],
+   "Sagittarius": [
+    "Sun",
+    "Moon",
+    "Mars",
+    "Jupiter",
+    "Venus",
+    "Ascendant"
+   ],
+   "Capricorn": [
+    "Sun",
+    "Jupiter",
+    "Venus",
+    "Ascendant"
+   ],
+   "Aquarius": [
+    "Sun",
+    "Mars",
+    "Mercury",
+    "Venus",
+    "Ascendant"
+   ],
+   "Pisces": [
+    "Sun",
+    "Moon",
+    "Mars",
+    "Mercury",
+    "Jupiter",
+    "Saturn"
+   ]
+  },
+  "Venus": {
+   "Aries": [
+    "Sun",
+    "Moon",
+    "Mars",
+    "Mercury",
+    "Venus",
+    "Ascendant"
+   ],
+   "Taurus": [
+    "Sun",
+    "Moon",
+    "Venus",
+    "Ascendant"
+   ],
+   "Gemini": [
+    "Moon",
+    "Venus",
+    "Saturn",
+    "Ascendant"
+   ],
+   "Cancer": [
+    "Mars",
+    "Jupiter",
+    "Venus",
+    "Saturn",
+    "Ascendant"
+   ],
+   "Leo": [
+    "Mercury",
+    "Venus",
+    "Saturn",
+    "Ascendant"
+   ],
+   "Virgo": [
+    "Moon",
+    "Mars"
+   ],
+   "Libra": [
+    "Moon",
+    "Mars",
+    "Mercury",
+    "Jupiter"
+   ],
+   "Scorpio": [
+    "Mercury",
+    "Jupiter",
+    "Venus",
+    "Saturn",
+    "Ascendant"
+   ],
+   "Sagittarius": [
+    "Moon",
+    "Jupiter",
+    "Venus",
+    "Saturn",
+    "Ascendant"
+   ],
+   "Capricorn": [
+    "Sun",
+    "Moon",
+    "Mars",
+    "Jupiter",
+    "Venus",
+    "Saturn"
+   ],
+   "Aquarius": [
+    "Moon",
+    "Mercury",
+    "Venus",
+    "Saturn",
+    "Ascendant"
+   ],
+   "Pisces": [
+    "Moon",
+    "Mars"
+   ]
+  },
+  "Saturn": {
+   "Aries": [
+    "Sun",
+    "Moon",
+    "Mars",
+    "Mercury",
+    "Ascendant"
+   ],
+   "Taurus": [
+    "Mercury"
+   ],
+   "Gemini": [
+    "Sun",
+    "Saturn",
+    "Ascendant"
+   ],
+   "Cancer": [
+    "Sun",
+    "Moon",
+    "Mars",
+    "Jupiter",
+    "Ascendant"
+   ],
+   "Leo": [
+    "Jupiter",
+    "Saturn"
+   ],
+   "Virgo": [
+    "Sun",
+    "Mars",
+    "Venus",
+    "Saturn",
+    "Ascendant"
+   ],
+   "Libra": [
+    "Mars"
+   ],
+   "Scorpio": [
+    "Mercury"
+   ],
+   "Sagittarius": [
+    "Sun",
+    "Moon"
+   ],
+   "Capricorn": [
+    "Sun",
+    "Mercury",
+    "Jupiter",
+    "Ascendant"
+   ],
+   "Aquarius": [
+    "Mars",
+    "Mercury",
+    "Jupiter",
+    "Venus",
+    "Saturn",
+    "Ascendant"
+   ],
+   "Pisces": [
+    "Sun",
+    "Mars",
+    "Mercury",
+    "Venus"
+   ]
+  }
+ },
+ "dashas": [],
+ "ledgerNotes": [
+  "Entire chart computed from birth data (Swiss Ephemeris, Lahiri, mean node, Sripati bhavas, BPHS Ashtakavarga). Shadbala and Bhava Bala not computed — supply from software if wanted."
+ ],
+ "compute": {
+  "vargas": [
+   "D9",
+   "D10",
+   "D4",
+   "D7"
+  ],
+  "dashaDepth": "PD",
+  "birthDate": "1998-06-17",
+  "birthTime": "03:18"
+ },
+ "shadbala": [
+  {
+   "planet": "Sun",
+   "points": 509.36,
+   "ratio": 1.7,
+   "digBala": 15.62
+  },
+  {
+   "planet": "Moon",
+   "points": 443.95,
+   "ratio": 1.23,
+   "digBala": 12.07
+  },
+  {
+   "planet": "Mars",
+   "points": 570.61,
+   "ratio": 1.9,
+   "digBala": 18.58
+  },
+  {
+   "planet": "Mercury",
+   "points": 457.57,
+   "ratio": 1.09,
+   "digBala": 47.1
+  },
+  {
+   "planet": "Jupiter",
+   "points": 498.34,
+   "ratio": 1.28,
+   "digBala": 40.55
+  },
+  {
+   "planet": "Venus",
+   "points": 406.11,
+   "ratio": 1.23,
+   "digBala": 32.87
+  },
+  {
+   "planet": "Saturn",
+   "points": 276.91,
+   "ratio": 0.92,
+   "digBala": 8.06
+  }
+ ]
+}
