@@ -9,7 +9,7 @@ import { NATURAL_BENEFICS, NATURAL_MALEFICS, SIGN_LORD, SPECIAL_ASPECTS, houseFr
 import { dignityOf, parseDegree } from "./ingest.ts";
 import { compoundRelation, aspectsHouse } from "./engine.ts";
 
-export type Topic = "marriage" | "career" | "wealth" | "children" | "property" | "health" | "foreign" | "education" | "general";
+export type Topic = "marriage" | "career" | "wealth" | "children" | "property" | "health" | "foreign" | "education" | "siblings" | "mother" | "father" | "general";
 export type Signification = {
   topic: Topic; primary: number[]; secondary: number[]; karakas: Planet[];
   charakaraka?: "AK" | "AmK" | "BK" | "MK" | "PK" | "GK" | "DK"; arudhaOf?: number; varga?: "D9" | "D10" | "D4" | "D7"; vargaHouse?: number;
@@ -23,6 +23,9 @@ export const SIGNIFICATIONS: Record<Topic, Signification> = {
   health: { topic: "health", primary: [1, 6], secondary: [8], karakas: ["Sun", "Moon"], charakaraka: "AK" },
   foreign: { topic: "foreign", primary: [12, 9], secondary: [3, 7], karakas: ["Rahu"] },
   education: { topic: "education", primary: [4, 5], secondary: [9, 2], karakas: ["Mercury", "Jupiter"] },
+  siblings: { topic: "siblings", primary: [3], secondary: [11], karakas: ["Mars"], charakaraka: "BK" },
+  mother: { topic: "mother", primary: [4], secondary: [], karakas: ["Moon"], charakaraka: "MK" },
+  father: { topic: "father", primary: [9], secondary: [10], karakas: ["Sun"], charakaraka: "PK" },
   general: { topic: "general", primary: [1], secondary: [9, 10], karakas: ["Sun", "Moon"], charakaraka: "AK", arudhaOf: 1 },
 };
 const TOPIC_RE: [Topic, RegExp][] = [
@@ -34,12 +37,16 @@ const TOPIC_RE: [Topic, RegExp][] = [
   ["health", /\b(health|illness|disease|surgery|medical|sick|mind|mental|mood)\b/i],
   ["foreign", /\b(abroad|foreign|overseas|relocat\w*|migrat\w*|visa|travel)\b/i],
   ["education", /\b(study|studies|education|exam|degree|college|university)\b/i],
+  ["siblings", /\b(sibling|brother|sister)\b/i],
+  ["mother", /\b(mother|mom|mum)\b/i],
+  ["father", /\b(father|dad)\b/i],
 ];
 export const topicOf = (text: string): Topic => TOPIC_RE.find(([, re]) => re.test(text))?.[0] ?? "general";
 
 export type Term = { factor: string; points: number; source: string };
 export type PromiseResult = { P: number; raw: number; terms: Term[]; tags: string[] };
-export type TriggerResult = { T: number; dasha: { planet: Planet; level: string; c: number; via: string; points: number }[]; transit: Term[]; tags: string[]; dashaPoints: number; transitPoints: number };
+export type Tone = "favourable" | "mixed" | "adverse";
+export type TriggerResult = { T: number; Tgain: number; Tloss: number; tone: Tone; toneScore: number; toneWhy: string[]; loss: { planet: Planet; level: string; c: number; via: string; points: number }[]; lossTransit: Term[]; dasha: { planet: Planet; level: string; c: number; via: string; points: number }[]; transit: Term[]; tags: string[]; dashaPoints: number; transitPoints: number };
 export type Cell = { name: string; level: number; note: string };
 
 // ---- helpers ----
@@ -168,6 +175,36 @@ export function connection(ing: Ingested, p: Planet, sig: Signification): { c: n
   return { c, via };
 }
 
+/** Loss/affliction link of a dasha planet to the topic (BPHS: 8th/12th from the bhava, marakas from the bhava, malefics on it). */
+export function lossConnection(ing: Ingested, p: Planet, sig: Signification): { c: number; via: string } {
+  const asc = ing.ascendant.sign, pr = by(ing, p);
+  if (!pr) return { c: 0, via: "absent" };
+  const cands: [number, string][] = [];
+  const rel = (h: number, n: number) => ((h - 1 + n - 1) % 12) + 1; // n-th house from house h
+  // Marakas (2nd/7th from the bhava) apply only where the bhava signifies a person (BPHS); for wealth/career/etc. only 8th/12th/6th.
+  const person = ["siblings", "mother", "father", "children", "marriage", "health", "general"].includes(sig.topic);
+  const rules: [number, number, string][] = person
+    ? [[8, 1.0, "8th"], [12, 1.0, "12th"], [2, 0.8, "2nd (maraka)"], [7, 0.8, "7th (maraka)"], [6, 0.6, "6th"]]
+    : [[8, 1.0, "8th"], [12, 1.0, "12th"], [6, 0.6, "6th"]];
+  for (const h of sig.primary.slice(0, 1)) {
+    for (const [n, w, label] of rules) {
+      const hh = rel(h, n);
+      if (isGraha(p) && lordOf(asc, hh) === p) cands.push([w, `lord of ${label} from H${h} (H${hh})`]);
+      if (pr.house === hh && (n === 8 || n === 12)) cands.push([0.7, `in ${label} from H${h}`]);
+    }
+    if (pr.house === h && NATURAL_MALEFICS.includes(p)) cands.push([0.6, `malefic in H${h}`]);
+    if ((p === "Rahu" || p === "Ketu") && (pr.house === h || pr.house === rel(h, 8))) cands.push([0.7, `node on H${h}/8th`]);
+    if (NATURAL_MALEFICS.includes(p) && pr.house !== h && aspectsHouse(pr, asc, h)) cands.push([0.4, `malefic aspect on H${h}`]);
+    const lord = lordOf(asc, h), lp = by(ing, lord);
+    if (lp && p !== lord && pr.sign === lp.sign && NATURAL_MALEFICS.includes(p)) cands.push([0.5, `malefic conjunct H${h} lord`]);
+  }
+  if (isGraha(p) && [6, 8, 12].some((h) => lordOf(asc, h) === p)) cands.push([0.5, "dusthana lord from lagna"]);
+  for (const k of sig.karakas) { const kp = by(ing, k); if (kp && p !== k && NATURAL_MALEFICS.includes(p) && (pr.sign === kp.sign || aspectsHouse(pr, asc, kp.house))) cands.push([0.4, `malefic on karaka ${k}`]); }
+  if (!cands.length) return { c: 0, via: "no link" };
+  const [c, via] = cands.reduce((a, b) => (b[0] > a[0] ? b : a));
+  return { c, via };
+}
+
 export type ActiveDasha = { MD?: Planet; AD?: Planet; PD?: Planet };
 export function trigger(ing: Ingested, sig: Signification, active: ActiveDasha, transits: TransitInput[]): TriggerResult {
   const asc = ing.ascendant.sign;
@@ -180,8 +217,17 @@ export function trigger(ing: Ingested, sig: Signification, active: ActiveDasha, 
     const pts = Math.round(W[lvl] * c * 10) / 10;
     dasha.push({ planet: p, level: lvl, c, via, points: pts }); dashaPoints += pts;
   }
+  const loss: TriggerResult["loss"] = [];
+  let lossDashaPoints = 0;
+  for (const lvl of ["MD", "AD", "PD"] as const) {
+    const p = active[lvl]; if (!p) continue;
+    const { c, via } = lossConnection(ing, p, sig);
+    const pts = Math.round(W[lvl] * c * 10) / 10;
+    loss.push({ planet: p, level: lvl, c, via, points: pts }); lossDashaPoints += pts;
+  }
   // Transits: mean over samples.
   const tags = new Set<string>();
+  const lossSamples: Term[][] = [];
   const moon = by(ing, "Moon");
   const perSample = transits.map((t) => {
     const terms: Term[] = [];
@@ -205,6 +251,17 @@ export function trigger(ing: Ingested, sig: Signification, active: ActiveDasha, 
     if (s.retro) tags.add("Saturn retrograde in window");
     if (t.Rahu && targets.includes(t.Rahu.sign)) terms.push({ factor: `Rahu transit ${t.Rahu.sign} on a target sign`, points: 4, source: "transit" });
     else if (t.Ketu && targets.includes(t.Ketu.sign)) terms.push({ factor: `Ketu transit ${t.Ketu.sign} on a target sign`, points: 4, source: "transit" });
+    // Loss transits: Saturn / nodes over the house, its lord, the karaka; Sade Sati.
+    const lt: Term[] = [];
+    const personTopic = ["siblings", "mother", "father", "children", "marriage", "health", "general"].includes(sig.topic);
+    const karakaSigns = personTopic ? (sig.karakas.map((k) => by(ing, k)?.sign).filter(Boolean) as Sign[]) : [];
+    const afflictTargets = [...new Set([...primarySigns.slice(0, 1), ...lordSigns.slice(0, 1), ...karakaSigns])];
+    if (afflictTargets.includes(t.Saturn.sign)) lt.push({ factor: `Saturn transit ${t.Saturn.sign} on house/lord/karaka`, points: 12, source: "loss-transit" });
+    else if (afflictTargets.some((sg) => aspectsHouse(row("Saturn", t.Saturn.sign, parseDegree(t.Saturn.degree)), asc, houseFrom(asc, sg)))) lt.push({ factor: `Saturn transit ${t.Saturn.sign} aspects house/lord/karaka`, points: 8, source: "loss-transit" });
+    if (t.Rahu && afflictTargets.includes(t.Rahu.sign)) lt.push({ factor: `Rahu transit ${t.Rahu.sign} on house/lord/karaka`, points: 8, source: "loss-transit" });
+    if (t.Ketu && afflictTargets.includes(t.Ketu.sign)) lt.push({ factor: `Ketu transit ${t.Ketu.sign} on house/lord/karaka`, points: 8, source: "loss-transit" });
+    if (moon && [12, 1, 2].includes(houseFrom(moon.sign, t.Saturn.sign))) lt.push({ factor: "Sade Sati", points: 4, source: "loss-transit" });
+    lossSamples.push(lt);
     if (moon) {
       const fromMoon = houseFrom(moon.sign, t.Saturn.sign);
       if ([12, 1, 2].includes(fromMoon)) tags.add("obstruction: Sade Sati");
@@ -218,8 +275,47 @@ export function trigger(ing: Ingested, sig: Signification, active: ActiveDasha, 
   for (const terms of perSample) for (const tm of terms) { const a = agg.get(tm.factor) ?? { sum: 0, n: 0, source: tm.source }; a.sum += tm.points; a.n++; agg.set(tm.factor, a); }
   const transit: Term[] = [...agg.entries()].map(([factor, a]) => ({ factor: `${factor}${a.n < perSample.length ? ` (${a.n}/${perSample.length} samples)` : ""}`, points: Math.round((a.sum / perSample.length) * 10) / 10, source: a.source }));
   const transitPoints = Math.min(35, transit.reduce((x, tm) => x + tm.points, 0));
-  const T = Math.round(clamp(((dashaPoints + transitPoints) / 90) * 100, 0, 100));
-  return { T, dasha, transit, tags: [...tags], dashaPoints: Math.round(dashaPoints * 10) / 10, transitPoints: Math.round(transitPoints * 10) / 10 };
+  const lagg = new Map<string, { sum: number; n: number; source: string }>();
+  for (const terms of lossSamples) for (const tm of terms) { const a = lagg.get(tm.factor) ?? { sum: 0, n: 0, source: tm.source }; a.sum += tm.points; a.n++; lagg.set(tm.factor, a); }
+  const lossTransit: Term[] = [...lagg.entries()].map(([factor, a]) => ({ factor: `${factor}${a.n < lossSamples.length ? ` (${a.n}/${lossSamples.length} samples)` : ""}`, points: Math.round((a.sum / lossSamples.length) * 10) / 10, source: a.source }));
+  const lossTransitPoints = Math.min(35, lossTransit.reduce((x, tm) => x + tm.points, 0));
+  const Tgain = Math.round(clamp(((dashaPoints + transitPoints) / 90) * 100, 0, 100));
+  const Tloss = Math.round(clamp(((lossDashaPoints + lossTransitPoints) / 90) * 100, 0, 100));
+  const T = Tgain; // ranking axis; Tloss informs direction only
+  // Direction sign — functional nature of the connected dasha lords (BPHS: trikona lords benefic, 3/6/11 lords malefic,
+  // natural malefics in dusthana adverse) plus the obstruction/delay tags and the Jupiter-vs-Saturn transit balance.
+  const toneWhy: string[] = [];
+  let toneScore = 0;
+  for (const d of dasha) {
+    if (d.c === 0) continue;
+    const p = by(ing, d.planet); if (!p) continue;
+    let s = 0;
+    if (isGraha(d.planet)) {
+      const ruled = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].filter((h) => lordOf(asc, h) === d.planet);
+      if (ruled.some((h) => [1, 5, 9].includes(h))) s += 1;
+      if (ruled.some((h) => [3, 6, 11].includes(h))) s -= 1;
+      if (ruled.some((h) => [8].includes(h))) s -= 0.5;
+    } else s -= 0.5;
+    if (p.dignity === "Exalted" || p.dignity === "Own" || p.dignity === "Moolatrikona") s += 0.5;
+    if (p.dignity === "Debilitated") s -= 0.5;
+    if (DUSTHANA.includes(p.house) && NATURAL_MALEFICS.includes(d.planet)) s -= 0.5;
+    if (p.combust) s -= 0.5;
+    const w = d.level === "AD" ? 1.2 : d.level === "MD" ? 1 : 0.6;
+    toneScore += s * w;
+    if (s !== 0) toneWhy.push(`${d.level} ${d.planet} ${s > 0 ? "+" : ""}${s}`);
+  }
+  const tagList = [...tags];
+  const obst = tagList.filter((t) => t.startsWith("obstruction")).length, dly = tagList.filter((t) => t.startsWith("delay")).length;
+  toneScore -= obst * 0.7 + dly * 0.3;
+  if (obst || dly) toneWhy.push(`tags −${(obst * 0.7 + dly * 0.3).toFixed(1)}`);
+  const jup = transit.filter((t) => t.factor.startsWith("Jupiter")).reduce((a, t) => a + t.points, 0);
+  const sat = transit.filter((t) => t.factor.startsWith("Saturn")).reduce((a, t) => a + t.points, 0);
+  if (jup > sat) { toneScore += 0.5; toneWhy.push("Jupiter-led transit +0.5"); } else if (sat > jup) { toneScore -= 0.5; toneWhy.push("Saturn-led transit −0.5"); }
+  // Direction: gain vs loss axis first, functional tone as tie-breaker.
+  const diff = Tgain - Tloss;
+  const tone: Tone = diff >= 12 ? "favourable" : diff <= -12 ? "adverse" : toneScore >= 0.75 ? "favourable" : toneScore <= -0.75 ? "adverse" : "mixed";
+  toneWhy.unshift(`gain ${Tgain} vs loss ${Tloss}`);
+  return { T, Tgain, Tloss, tone, toneScore: Math.round(toneScore * 100) / 100, toneWhy, loss, lossTransit, dasha, transit, tags: tagList, dashaPoints: Math.round(dashaPoints * 10) / 10, transitPoints: Math.round(transitPoints * 10) / 10 };
 }
 
 // ---- GRID ----
