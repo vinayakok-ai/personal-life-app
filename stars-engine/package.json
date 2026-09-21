@@ -1,0 +1,26 @@
+{
+  "name": "stars-engine",
+  "version": "0.4.0",
+  "description": "Deterministic Vedic astrology execution engine: v3.5 directive (table-driven, parser-locked) plus a v4 two-axis Promise/Trigger scorer with blind retrodiction. Built for AI agents to drive via CLI.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "bin": {
+    "stars": "src/cli.ts"
+  },
+  "scripts": {
+    "test": "node --test \"src/**/*.test.ts\"",
+    "stars": "node src/cli.ts",
+    "demo": "node src/cli.ts v4 examples/sample-chart.json examples/sample-query.json",
+    "typecheck": "tsc -p ."
+  },
+  "dependencies": {
+    "sweph": "^2.10.3-8"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "typescript": "^5"
+  }
+}

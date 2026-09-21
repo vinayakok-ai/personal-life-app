@@ -10,10 +10,10 @@
 // chart.json may carry a top-level "compute" block ({ vargas, dashaDepth, birthDate, birthTime })
 // and query.json may set "transits": "compute" — both dilute the zero-calculation law (see compute.ts).
 import { readFileSync } from "node:fs";
-import { execute, ingest, renderExecution, renderIngestion, type ChartInput } from "../src/lib/stars/index.ts";
-import { prepareChart, prepareQuery, validateNatal, type ComputeOptions } from "../src/lib/stars/compute.ts";
-import { renderScan, scan } from "../src/lib/stars/scan.ts";
-import { backtest, renderBacktest, renderRetro, renderScanV4, renderV4, retrodict, runV4, scanV4, type LifeEvent } from "../src/lib/stars/v4-run.ts";
+import { execute, ingest, renderExecution, renderIngestion, type ChartInput } from "./index.ts";
+import { prepareChart, prepareQuery, validateNatal, type ComputeOptions } from "./compute.ts";
+import { renderScan, scan } from "./scan.ts";
+import { backtest, renderBacktest, renderRetro, renderScanV4, renderV4, retrodict, runV4, scanV4, type LifeEvent } from "./v4-run.ts";
 
 const [mode, chartPath, queryPath, from, to] = process.argv.slice(2);
 if (mode === "retrodict" && chartPath && queryPath && from) {

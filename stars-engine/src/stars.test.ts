@@ -3,8 +3,8 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { execute, ingest, renderExecution, renderIngestion, parseDegree, nakshatraOf, dignityOf, fmtDegree, connects, type ChartInput, type QueryInput } from "./index.ts";
 
-const chart = () => JSON.parse(readFileSync(new URL("./fixtures/sample-chart.json", import.meta.url), "utf8")) as ChartInput;
-const query = () => JSON.parse(readFileSync(new URL("./fixtures/sample-query.json", import.meta.url), "utf8")) as QueryInput;
+const chart = () => JSON.parse(readFileSync(new URL("../examples/sample-chart.json", import.meta.url), "utf8")) as ChartInput;
+const query = () => JSON.parse(readFileSync(new URL("../examples/sample-query.json", import.meta.url), "utf8")) as QueryInput;
 
 test("degree parsing and formatting", () => {
   assert.equal(parseDegree('12°34\'56"'), 12 + 34 / 60 + 56 / 3600);
