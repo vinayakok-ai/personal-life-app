@@ -1,0 +1,958 @@
+{
+ "meta": {
+  "name": "Vinayak",
+  "ayanamsa": "Lahiri (023-50-28)",
+  "source": "AstroSage kundli PDF, printed 2026-09-21; text layer transcribed",
+  "birth": {
+   "date": "1998-11-25",
+   "time": "07:05 IST",
+   "place": "Vijayapura (13°17'N 77°48'E)"
+  }
+ },
+ "panchang": {
+  "tithi": "Shukla Shashti",
+  "vara": "Wednesday",
+  "nakshatra": "Shravana-2",
+  "yoga": "Vriddhi",
+  "karana": "Taitila"
+ },
+ "ascendant": {
+  "sign": "Scorpio",
+  "degree": "17°32'12\""
+ },
+ "planets": [
+  {
+   "planet": "Sun",
+   "sign": "Scorpio",
+   "degree": "08°44'29\""
+  },
+  {
+   "planet": "Moon",
+   "sign": "Capricorn",
+   "degree": "15°06'18\""
+  },
+  {
+   "planet": "Mars",
+   "sign": "Virgo",
+   "degree": "04°50'27\""
+  },
+  {
+   "planet": "Mercury",
+   "sign": "Scorpio",
+   "degree": "22°38'38\"",
+   "retrograde": true
+  },
+  {
+   "planet": "Jupiter",
+   "sign": "Aquarius",
+   "degree": "24°34'25\""
+  },
+  {
+   "planet": "Venus",
+   "sign": "Scorpio",
+   "degree": "15°12'01\""
+  },
+  {
+   "planet": "Saturn",
+   "sign": "Aries",
+   "degree": "03°57'48\"",
+   "retrograde": true
+  },
+  {
+   "planet": "Rahu",
+   "sign": "Leo",
+   "degree": "02°30'33\"",
+   "retrograde": true
+  },
+  {
+   "planet": "Ketu",
+   "sign": "Aquarius",
+   "degree": "02°30'33\"",
+   "retrograde": true
+  }
+ ],
+ "bhavaChalit": [
+  {
+   "house": 1,
+   "cuspSign": "Scorpio",
+   "cuspDegree": "02:59:20"
+  },
+  {
+   "house": 2,
+   "cuspSign": "Sagittarius",
+   "cuspDegree": "02:59:20"
+  },
+  {
+   "house": 3,
+   "cuspSign": "Capricorn",
+   "cuspDegree": "03:53:38"
+  },
+  {
+   "house": 4,
+   "cuspSign": "Aquarius",
+   "cuspDegree": "04:47:56"
+  },
+  {
+   "house": 5,
+   "cuspSign": "Pisces",
+   "cuspDegree": "04:47:56"
+  },
+  {
+   "house": 6,
+   "cuspSign": "Aries",
+   "cuspDegree": "03:53:38"
+  },
+  {
+   "house": 7,
+   "cuspSign": "Taurus",
+   "cuspDegree": "02:59:20"
+  },
+  {
+   "house": 8,
+   "cuspSign": "Gemini",
+   "cuspDegree": "02:59:20"
+  },
+  {
+   "house": 9,
+   "cuspSign": "Cancer",
+   "cuspDegree": "03:53:38"
+  },
+  {
+   "house": 10,
+   "cuspSign": "Leo",
+   "cuspDegree": "04:47:56"
+  },
+  {
+   "house": 11,
+   "cuspSign": "Virgo",
+   "cuspDegree": "04:47:56"
+  },
+  {
+   "house": 12,
+   "cuspSign": "Libra",
+   "cuspDegree": "03:53:38"
+  }
+ ],
+ "savBySign": [
+  29,
+  18,
+  30,
+  31,
+  29,
+  40,
+  22,
+  31,
+  26,
+  29,
+  27,
+  25
+ ],
+ "shadbala": [
+  {
+   "planet": "Sun",
+   "points": 390.4,
+   "ratio": 1.3,
+   "digBala": 33.84
+  },
+  {
+   "planet": "Moon",
+   "points": 416.82,
+   "ratio": 1.16,
+   "digBala": 48.28
+  },
+  {
+   "planet": "Mars",
+   "points": 343.55,
+   "ratio": 1.15,
+   "digBala": 55.14
+  },
+  {
+   "planet": "Mercury",
+   "points": 585.56,
+   "ratio": 1.39,
+   "digBala": 58.3
+  },
+  {
+   "planet": "Jupiter",
+   "points": 423.92,
+   "ratio": 1.09,
+   "digBala": 27.65
+  },
+  {
+   "planet": "Venus",
+   "points": 330.76,
+   "ratio": 1.0,
+   "digBala": 28.32
+  },
+  {
+   "planet": "Saturn",
+   "points": 231.13,
+   "ratio": 0.77,
+   "digBala": 45.48
+  }
+ ],
+ "dashas": [
+  {
+   "level": "MD",
+   "planet": "Moon",
+   "start": "1998-11-25",
+   "end": "2005-01-27"
+  },
+  {
+   "level": "AD",
+   "planet": "Jupiter",
+   "start": "1998-11-25",
+   "end": "1999-04-27",
+   "parent": [
+    "Moon"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Saturn",
+   "start": "1999-04-27",
+   "end": "2000-11-27",
+   "parent": [
+    "Moon"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Mercury",
+   "start": "2000-11-27",
+   "end": "2002-04-27",
+   "parent": [
+    "Moon"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Ketu",
+   "start": "2002-04-27",
+   "end": "2002-11-27",
+   "parent": [
+    "Moon"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Venus",
+   "start": "2002-11-27",
+   "end": "2004-07-27",
+   "parent": [
+    "Moon"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Sun",
+   "start": "2004-07-27",
+   "end": "2005-01-27",
+   "parent": [
+    "Moon"
+   ]
+  },
+  {
+   "level": "MD",
+   "planet": "Mars",
+   "start": "2005-01-27",
+   "end": "2012-01-27"
+  },
+  {
+   "level": "AD",
+   "planet": "Mars",
+   "start": "2005-01-27",
+   "end": "2005-06-24",
+   "parent": [
+    "Mars"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Rahu",
+   "start": "2005-06-24",
+   "end": "2006-07-12",
+   "parent": [
+    "Mars"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Jupiter",
+   "start": "2006-07-12",
+   "end": "2007-06-18",
+   "parent": [
+    "Mars"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Saturn",
+   "start": "2007-06-18",
+   "end": "2008-07-27",
+   "parent": [
+    "Mars"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Mercury",
+   "start": "2008-07-27",
+   "end": "2009-07-24",
+   "parent": [
+    "Mars"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Ketu",
+   "start": "2009-07-24",
+   "end": "2009-12-21",
+   "parent": [
+    "Mars"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Venus",
+   "start": "2009-12-21",
+   "end": "2011-02-21",
+   "parent": [
+    "Mars"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Sun",
+   "start": "2011-02-21",
+   "end": "2011-06-27",
+   "parent": [
+    "Mars"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Moon",
+   "start": "2011-06-27",
+   "end": "2012-01-27",
+   "parent": [
+    "Mars"
+   ]
+  },
+  {
+   "level": "MD",
+   "planet": "Rahu",
+   "start": "2012-01-27",
+   "end": "2030-01-27"
+  },
+  {
+   "level": "AD",
+   "planet": "Rahu",
+   "start": "2012-01-27",
+   "end": "2014-10-09",
+   "parent": [
+    "Rahu"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Jupiter",
+   "start": "2014-10-09",
+   "end": "2017-03-03",
+   "parent": [
+    "Rahu"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Saturn",
+   "start": "2017-03-03",
+   "end": "2020-01-09",
+   "parent": [
+    "Rahu"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Mercury",
+   "start": "2020-01-09",
+   "end": "2022-07-27",
+   "parent": [
+    "Rahu"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Ketu",
+   "start": "2022-07-27",
+   "end": "2023-08-15",
+   "parent": [
+    "Rahu"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Venus",
+   "start": "2023-08-15",
+   "end": "2026-08-15",
+   "parent": [
+    "Rahu"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Sun",
+   "start": "2026-08-15",
+   "end": "2027-07-09",
+   "parent": [
+    "Rahu"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Moon",
+   "start": "2027-07-09",
+   "end": "2029-01-09",
+   "parent": [
+    "Rahu"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Mars",
+   "start": "2029-01-09",
+   "end": "2030-01-27",
+   "parent": [
+    "Rahu"
+   ]
+  },
+  {
+   "level": "MD",
+   "planet": "Jupiter",
+   "start": "2030-01-27",
+   "end": "2046-01-27"
+  },
+  {
+   "level": "AD",
+   "planet": "Jupiter",
+   "start": "2030-01-27",
+   "end": "2032-03-15",
+   "parent": [
+    "Jupiter"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Saturn",
+   "start": "2032-03-15",
+   "end": "2034-09-27",
+   "parent": [
+    "Jupiter"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Mercury",
+   "start": "2034-09-27",
+   "end": "2037-01-03",
+   "parent": [
+    "Jupiter"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Ketu",
+   "start": "2037-01-03",
+   "end": "2037-12-09",
+   "parent": [
+    "Jupiter"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Venus",
+   "start": "2037-12-09",
+   "end": "2040-08-09",
+   "parent": [
+    "Jupiter"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Sun",
+   "start": "2040-08-09",
+   "end": "2041-05-27",
+   "parent": [
+    "Jupiter"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Moon",
+   "start": "2041-05-27",
+   "end": "2042-09-27",
+   "parent": [
+    "Jupiter"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Mars",
+   "start": "2042-09-27",
+   "end": "2043-09-03",
+   "parent": [
+    "Jupiter"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Rahu",
+   "start": "2043-09-03",
+   "end": "2046-01-27",
+   "parent": [
+    "Jupiter"
+   ]
+  },
+  {
+   "level": "MD",
+   "planet": "Saturn",
+   "start": "2046-01-27",
+   "end": "2065-01-27"
+  },
+  {
+   "level": "AD",
+   "planet": "Saturn",
+   "start": "2046-01-27",
+   "end": "2049-01-30",
+   "parent": [
+    "Saturn"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Mercury",
+   "start": "2049-01-30",
+   "end": "2051-10-09",
+   "parent": [
+    "Saturn"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Ketu",
+   "start": "2051-10-09",
+   "end": "2052-11-18",
+   "parent": [
+    "Saturn"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Venus",
+   "start": "2052-11-18",
+   "end": "2056-01-18",
+   "parent": [
+    "Saturn"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Sun",
+   "start": "2056-01-18",
+   "end": "2056-12-30",
+   "parent": [
+    "Saturn"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Moon",
+   "start": "2056-12-30",
+   "end": "2058-07-30",
+   "parent": [
+    "Saturn"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Mars",
+   "start": "2058-07-30",
+   "end": "2059-09-09",
+   "parent": [
+    "Saturn"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Rahu",
+   "start": "2059-09-09",
+   "end": "2062-07-15",
+   "parent": [
+    "Saturn"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Jupiter",
+   "start": "2062-07-15",
+   "end": "2065-01-27",
+   "parent": [
+    "Saturn"
+   ]
+  },
+  {
+   "level": "MD",
+   "planet": "Mercury",
+   "start": "2065-01-27",
+   "end": "2082-01-27"
+  },
+  {
+   "level": "AD",
+   "planet": "Mercury",
+   "start": "2065-01-27",
+   "end": "2067-06-24",
+   "parent": [
+    "Mercury"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Ketu",
+   "start": "2067-06-24",
+   "end": "2068-06-21",
+   "parent": [
+    "Mercury"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Venus",
+   "start": "2068-06-21",
+   "end": "2071-04-21",
+   "parent": [
+    "Mercury"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Sun",
+   "start": "2071-04-21",
+   "end": "2072-02-27",
+   "parent": [
+    "Mercury"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Moon",
+   "start": "2072-02-27",
+   "end": "2073-07-27",
+   "parent": [
+    "Mercury"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Mars",
+   "start": "2073-07-27",
+   "end": "2074-07-24",
+   "parent": [
+    "Mercury"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Rahu",
+   "start": "2074-07-24",
+   "end": "2077-02-12",
+   "parent": [
+    "Mercury"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Jupiter",
+   "start": "2077-02-12",
+   "end": "2079-05-18",
+   "parent": [
+    "Mercury"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Saturn",
+   "start": "2079-05-18",
+   "end": "2082-01-27",
+   "parent": [
+    "Mercury"
+   ]
+  },
+  {
+   "level": "MD",
+   "planet": "Ketu",
+   "start": "2082-01-27",
+   "end": "2089-01-27"
+  },
+  {
+   "level": "AD",
+   "planet": "Ketu",
+   "start": "2082-01-27",
+   "end": "2082-06-24",
+   "parent": [
+    "Ketu"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Venus",
+   "start": "2082-06-24",
+   "end": "2083-08-24",
+   "parent": [
+    "Ketu"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Sun",
+   "start": "2083-08-24",
+   "end": "2083-12-30",
+   "parent": [
+    "Ketu"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Moon",
+   "start": "2083-12-30",
+   "end": "2084-07-30",
+   "parent": [
+    "Ketu"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Mars",
+   "start": "2084-07-30",
+   "end": "2084-12-27",
+   "parent": [
+    "Ketu"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Rahu",
+   "start": "2084-12-27",
+   "end": "2086-01-15",
+   "parent": [
+    "Ketu"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Jupiter",
+   "start": "2086-01-15",
+   "end": "2086-12-21",
+   "parent": [
+    "Ketu"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Saturn",
+   "start": "2086-12-21",
+   "end": "2088-01-30",
+   "parent": [
+    "Ketu"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Mercury",
+   "start": "2088-01-30",
+   "end": "2089-01-27",
+   "parent": [
+    "Ketu"
+   ]
+  },
+  {
+   "level": "MD",
+   "planet": "Venus",
+   "start": "2089-01-27",
+   "end": "2109-01-27"
+  },
+  {
+   "level": "AD",
+   "planet": "Venus",
+   "start": "2089-01-27",
+   "end": "2092-05-27",
+   "parent": [
+    "Venus"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Sun",
+   "start": "2092-05-27",
+   "end": "2093-05-27",
+   "parent": [
+    "Venus"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Moon",
+   "start": "2093-05-27",
+   "end": "2095-01-27",
+   "parent": [
+    "Venus"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Mars",
+   "start": "2095-01-27",
+   "end": "2096-03-27",
+   "parent": [
+    "Venus"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Rahu",
+   "start": "2096-03-27",
+   "end": "2099-03-27",
+   "parent": [
+    "Venus"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Jupiter",
+   "start": "2099-03-27",
+   "end": "2101-11-27",
+   "parent": [
+    "Venus"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Saturn",
+   "start": "2101-11-27",
+   "end": "2105-01-27",
+   "parent": [
+    "Venus"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Mercury",
+   "start": "2105-01-27",
+   "end": "2107-11-27",
+   "parent": [
+    "Venus"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Ketu",
+   "start": "2107-11-27",
+   "end": "2109-01-27",
+   "parent": [
+    "Venus"
+   ]
+  },
+  {
+   "level": "MD",
+   "planet": "Sun",
+   "start": "2109-01-27",
+   "end": "2115-01-27"
+  },
+  {
+   "level": "AD",
+   "planet": "Sun",
+   "start": "2109-01-27",
+   "end": "2109-05-15",
+   "parent": [
+    "Sun"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Moon",
+   "start": "2109-05-15",
+   "end": "2109-11-15",
+   "parent": [
+    "Sun"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Mars",
+   "start": "2109-11-15",
+   "end": "2110-03-21",
+   "parent": [
+    "Sun"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Rahu",
+   "start": "2110-03-21",
+   "end": "2111-02-15",
+   "parent": [
+    "Sun"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Jupiter",
+   "start": "2111-02-15",
+   "end": "2111-12-03",
+   "parent": [
+    "Sun"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Saturn",
+   "start": "2111-12-03",
+   "end": "2112-11-15",
+   "parent": [
+    "Sun"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Mercury",
+   "start": "2112-11-15",
+   "end": "2113-09-21",
+   "parent": [
+    "Sun"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Ketu",
+   "start": "2113-09-21",
+   "end": "2114-01-27",
+   "parent": [
+    "Sun"
+   ]
+  },
+  {
+   "level": "AD",
+   "planet": "Venus",
+   "start": "2114-01-27",
+   "end": "2115-01-27",
+   "parent": [
+    "Sun"
+   ]
+  }
+ ],
+ "ledgerNotes": [
+  "Pratyantar (PD) table in the PDF (pages 11-14) is computed with 'K. P. New' ayanamsa — discarded per the Lahiri-only rule; no PD rows ingested.",
+  "Navamsa (D9), Dashamsa (D10) and all other varga charts are diagram-only in the PDF — Missing/Diagram Only.",
+  "Prastharashtakavarga contributor rows present only for the Sun; Saturn/Jupiter contributor rows absent, so Kakshya bindus cannot be verified.",
+  "Uranus/Neptune/Pluto rows in the PDF ignored (not part of the engine)."
+ ]
+}

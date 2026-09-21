@@ -31,7 +31,7 @@ export type ChalitInput = {
   house: number; // 1..12
   cuspSign: Sign;
   cuspDegree: DegreeInput;
-  /** Planets physically inside this bhava per the chart's Chalit table. */
+  /** Planets physically inside this bhava per the chart's Chalit table. If omitted for every house, occupancy is derived from the cusp (bhava-begin) degrees. */
   planets?: Planet[];
 };
 
@@ -69,6 +69,8 @@ export type ChartInput = {
   bhavaChalit?: ChalitInput[];
   /** Sarvashtakavarga points per house, index 0 = house 1. */
   sav?: number[];
+  /** Alternative: SAV points per sign, index 0 = Aries (AstroSage prints it this way); mapped to houses from the ascendant. */
+  savBySign?: number[];
   /** Optional Bhinnashtakavarga: for each planet, for each sign, the list of contributors that gave a bindu (needed for Step 18 Kakshya). */
   bav?: Partial<Record<Graha, Partial<Record<Sign, (Planet | "Ascendant")[]>>>>;
   shadbala?: ShadbalaInput[];

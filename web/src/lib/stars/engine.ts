@@ -372,9 +372,10 @@ export function execute(ing: Ingested, q: QueryInput): EngineResult {
     if (md0.planet !== moon.starLord && !ing.dashas.some((d) => d.level === "MD" && d.planet === moon.starLord)) integrity.push(`First MD ${md0.planet} does not match Moon star lord ${moon.starLord} (Vimshottari starts from the Moon's nakshatra lord).`);
   }
 
+  const uniq = <T,>(xs: T[]) => xs.filter((x, i) => xs.findIndex((y) => JSON.stringify(y) === JSON.stringify(x)) === i);
   return {
-    halted: false, halts: [], target, steps, integrity, contradictions,
+    halted: false, halts: [], target, steps, integrity: uniq(integrity), contradictions: uniq(contradictions),
     matrix: { dasha: { points: dashaPts, note: dashaNote }, transit: { points: transitPts, note: transitNote }, sav: { points: savPts, note: savNote }, varga: { points: vargaPts, note: vargaNoteM }, total, timingGate, specificity, confidence },
-    facts: { natal, timing }, nonConclusions,
+    facts: { natal: uniq(natal), timing }, nonConclusions,
   };
 }

@@ -1,0 +1,25 @@
+{
+ "text": "Will my career/startup work move forward, and when is a good window for a job change?",
+ "targetDate": "2026-09-21",
+ "transits": {
+  "asOf": "2026-09-21",
+  "Saturn": {
+   "sign": "Pisces",
+   "degree": "18°05'47\"",
+   "retrograde": true
+  },
+  "Jupiter": {
+   "sign": "Cancer",
+   "degree": "23°32'56\""
+  },
+  "Rahu": {
+   "sign": "Aquarius",
+   "degree": "05°19'05\""
+  },
+  "Ketu": {
+   "sign": "Leo",
+   "degree": "05°19'05\""
+  }
+ },
+ "proceedWithoutVarga": true
+}

@@ -74,7 +74,20 @@ export function ingest(input: ChartInput): Ingested {
     if (Math.abs(sep - 180) > 0.02) ledger.push({ severity: "ambiguous", note: `Rahu and Ketu are not 180° apart (${fmtDegree(Math.abs(sep - 180))} off) — check for a transcription error.` });
   }
 
-  const chalit = input.bhavaChalit && input.bhavaChalit.length ? input.bhavaChalit : null;
+  let chalit = input.bhavaChalit && input.bhavaChalit.length ? input.bhavaChalit : null;
+  if (chalit && chalit.length === 12 && chalit.every((c) => !c.planets)) {
+    // Derive occupancy from bhava-begin cusps: a planet belongs to the last house whose begin <= its longitude.
+    const begins = chalit.map((c) => ({ house: c.house, lon: signIndex(c.cuspSign) * 30 + parseDegree(c.cuspDegree) }));
+    const occ = new Map<number, Planet[]>();
+    for (const p of raw) {
+      let best = begins[0];
+      for (const b of begins) if (b.lon <= p.longitude && (best.lon > p.longitude || b.lon >= best.lon)) best = b;
+      if (!begins.some((b) => b.lon <= p.longitude)) best = begins.reduce((a, b) => (b.lon > a.lon ? b : a));
+      occ.set(best.house, [...(occ.get(best.house) ?? []), p.planet]);
+    }
+    chalit = chalit.map((c) => ({ ...c, planets: occ.get(c.house) ?? [] }));
+    ledger.push({ severity: "derived", note: "Chalit occupancy derived from the supplied bhava-begin cusp degrees (the chart gave cusps only)." });
+  }
   if (!chalit) ledger.push({ severity: "missing", note: "Bhava Chalit & Cusps table absent — Step 3 will fall back to whole-sign houses for manifestation." });
 
   const planets: PlanetRow[] = raw.map((p) => {
@@ -105,6 +118,11 @@ export function ingest(input: ChartInput): Ingested {
   }
 
   let sav: number[] | null = null;
+  if (!input.sav && input.savBySign?.length === 12) {
+    const a = signIndex(asc.sign);
+    input = { ...input, sav: Array.from({ length: 12 }, (_, h) => input.savBySign![(a + h) % 12]) };
+    ledger.push({ severity: "derived", note: `SAV supplied per sign; re-keyed to houses from ${asc.sign} ascendant.` });
+  }
   if (input.sav) {
     if (input.sav.length !== 12) ledger.push({ severity: "ambiguous", note: `SAV table has ${input.sav.length} entries, expected 12 — ignored.` });
     else {

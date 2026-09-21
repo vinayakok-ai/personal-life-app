@@ -6,9 +6,9 @@ export type Target = { houses: number[]; varga: Varga | null; timing: boolean; t
 
 const TOPICS: { topic: string; re: RegExp; houses: number[]; varga: Varga | null }[] = [
   { topic: "career", re: /\b(career|job|promotion|work|profession|business|startup|employ|boss|salary|role)\b/i, houses: [10], varga: "D10" },
-  { topic: "marriage", re: /\b(marriage|marry|wedding|spouse|partner|relationship|wife|husband|divorce)\b/i, houses: [7], varga: "D9" },
+  { topic: "marriage", re: /\b(marriage|marr(?:y|ied)|wedding|spouse|partner|relationship|wife|husband|divorce)\b/i, houses: [7], varga: "D9" },
   { topic: "property", re: /\b(property|house purchase|home|land|flat|apartment|vehicle|car)\b/i, houses: [4], varga: "D4" },
-  { topic: "children", re: /\b(child|children|kid|pregnan|conceiv|son|daughter)\b/i, houses: [5], varga: "D7" },
+  { topic: "children", re: /\b(child|children|kids?|pregnan\w*|conceiv\w*|son|daughter)\b/i, houses: [5], varga: "D7" },
   { topic: "wealth", re: /\b(money|wealth|income|finance|gain|debt|loan|savings)\b/i, houses: [2, 11], varga: null },
   { topic: "health", re: /\b(health|illness|disease|surgery|medical|sick)\b/i, houses: [6, 1], varga: null },
   { topic: "foreign", re: /\b(abroad|foreign|overseas|relocat|migrat|visa|travel)\b/i, houses: [12, 9], varga: null },

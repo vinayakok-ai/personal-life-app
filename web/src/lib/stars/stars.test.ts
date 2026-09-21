@@ -147,3 +147,10 @@ test("SAV of exactly 28 is flagged as a spec gap", () => {
   assert.equal(r.matrix!.sav.points, 7);
   assert.ok(r.integrity.some((i) => /SAV = 28/.test(i)));
 });
+
+test("query classifier catches inflected topic words", () => {
+  const r = execute(ingest(chart()), { text: "When will I get married?" });
+  assert.equal(r.target.topic, "marriage");
+  assert.deepEqual(r.target.houses, [7]);
+  assert.equal(r.target.varga, "D9");
+});
