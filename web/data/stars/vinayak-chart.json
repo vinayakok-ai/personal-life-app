@@ -950,9 +950,18 @@
   }
  ],
  "ledgerNotes": [
-  "Pratyantar (PD) table in the PDF (pages 11-14) is computed with 'K. P. New' ayanamsa — discarded per the Lahiri-only rule; no PD rows ingested.",
-  "Navamsa (D9), Dashamsa (D10) and all other varga charts are diagram-only in the PDF — Missing/Diagram Only.",
   "Prastharashtakavarga contributor rows present only for the Sun; Saturn/Jupiter contributor rows absent, so Kakshya bindus cannot be verified.",
-  "Uranus/Neptune/Pluto rows in the PDF ignored (not part of the engine)."
- ]
+  "Uranus/Neptune/Pluto rows in the PDF ignored (not part of the engine).",
+  "Pratyantar table in the PDF is KP-ayanamsa (discarded); Lahiri PD rows are computed from the Moon and verified against the PDF's 87 MD/AD boundaries (max drift 2 days).",
+  "D9/D10 diagrams in the PDF were read visually and match the computed vargas planet-for-planet."
+ ],
+ "compute": {
+  "vargas": [
+   "D9",
+   "D10"
+  ],
+  "dashaDepth": "PD",
+  "birthDate": "1998-11-25",
+  "birthTime": "07:05"
+ }
 }

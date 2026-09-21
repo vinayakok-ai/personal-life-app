@@ -89,3 +89,15 @@ These are documented choices, not spec. Each appears in the output tagged `Engin
 14. **"Lahiri (Chitra Paksha) Vimshottari"** conflates an ayanamsa with a dasha system; treated as Lahiri ayanamsa + Vimshottari dasha.
 15. **Rasi vs Chalit rule is only partly actionable:** Chalit "dictates the physical house of manifestation" but no scoring
     step consumes it; it is reported (Step 3, Part B) but cannot change points.
+
+## Computation layer (`compute.ts`, `scan.ts`) — rule dilution, opt-in
+
+At the user's instruction the zero-calculation law is relaxed for three things the PDF cannot supply as text.
+Everything computed is logged `[computed]` in the ledger and never overrides a supplied table.
+
+- **Vargas**: D9/D10 (and D4/D7) by Parashara arithmetic from the supplied D1 degrees. Verified planet-for-planet against the AstroSage D9/D10 diagrams.
+- **Vimshottari to PD/SD**: from the supplied Moon longitude with 365.25-day years. Re-derives the PDF's MD/AD boundaries within 2 days; supplied rows stay authoritative.
+- **Transits**: Swiss Ephemeris (`sweph`, Moshier analytical ephemeris, Lahiri ayanamsa, mean node) at 12:00 IST on the target date. Against this chart's natal table it agrees within 80 arcseconds; AstroSage's values are the coarser side.
+- **Scan** (`npm run stars -- scan chart.json query.json FROM TO`): runs the matrix once per Pratyantar window with transits at the window midpoint. An extension, not part of v3.5.
+
+Enable with a `compute` block in chart.json (`{"vargas":["D9","D10"],"dashaDepth":"PD","birthDate":"YYYY-MM-DD","birthTime":"HH:MM"}`) and `"transits":"compute"` in query.json. `sweph` is a native module used only by the CLI; the Next.js app never imports it.

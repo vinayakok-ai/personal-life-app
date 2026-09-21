@@ -154,3 +154,23 @@ test("query classifier catches inflected topic words", () => {
   assert.deepEqual(r.target.houses, [7]);
   assert.equal(r.target.varga, "D9");
 });
+
+test("compute: vargas, vimshottari and ephemeris are internally consistent", async () => {
+  const { vargaSign, vimshottari, jdOf, positionsAt, ayanamsa } = await import("./compute.ts");
+  // Scorpio 17°32' → D9 Sagittarius, D10 Sagittarius (verified against an AstroSage diagram)
+  assert.equal(vargaSign(210 + 17.5367, 9), "Sagittarius");
+  assert.equal(vargaSign(210 + 17.5367, 10), "Sagittarius");
+  assert.equal(vargaSign(30 + 15.105, 9), "Taurus"); // Moon Cap 15°06' → Taurus navamsa
+  // Moon at Shravana 2 (Cap 15°06'18") → Moon MD, balance 6y2m1d → MD ends 2005-01-26/27
+  const tree = vimshottari(285.105, jdOf("1998-11-25", "07:05"), "AD");
+  const md = tree.find((d) => d.level === "MD" && d.planet === "Moon")!;
+  assert.ok(md.end === "2005-01-26" || md.end === "2005-01-27", md.end);
+  assert.equal(tree.filter((d) => d.level === "MD").length, 9);
+  // Lahiri ayanamsa at J2000 is ~23°51'
+  const j2000 = jdOf("2000-01-01", "17:30");
+  assert.ok(Math.abs(ayanamsa(j2000) - 23.855) < 0.01);
+  // Sidereal Sun on 2000-01-01 12:00 UTC ≈ 256.6° (Sagittarius)
+  const [sun] = positionsAt(j2000, ["Sun"]);
+  assert.equal(sun.sign, "Sagittarius");
+  assert.ok(Math.abs(sun.longitude - 256.6) < 0.2, String(sun.longitude));
+});
