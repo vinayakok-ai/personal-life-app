@@ -198,3 +198,26 @@ test("v4: promise, connection weights, grid and backtest plumbing", async () => 
   assert.equal(b.rows.length, 1);
   assert.ok(b.rows[0].rank >= 1);
 });
+
+test("v4.5: transit gate, single-level inheritance, percentile reporting", async () => {
+  const { trigger, connection, SIGNIFICATIONS, badhakesha } = await import("./v4.ts");
+  const { referenceT, percentileOf, scanV4 } = await import("./v4-run.ts");
+  const { prepareChart } = await import("./compute.ts");
+  const prepared = prepareChart(chart(), { vargas: ["D9"], dashaDepth: "PD", birthDate: "1985-06-01", birthTime: "06:00" }).chart;
+  const ing = ingest(prepared);
+  assert.equal(badhakesha("Leo"), "Jupiter"); // fixed sign → 9th lord (Sagittarius)
+  assert.equal(badhakesha("Aries"), "Saturn"); // movable → 11th lord (Aquarius)
+  // Transits alone cannot exceed half their weight when no dasha lord connects.
+  const t = trigger(ing, SIGNIFICATIONS.career, { MD: "Rahu", AD: "Ketu", PD: "Rahu" }, [{ Saturn: { sign: "Taurus", degree: 10 }, Jupiter: { sign: "Taurus", degree: 10 } }]);
+  assert.ok(t.transitPoints <= 17.5, String(t.transitPoints));
+  // Inheritance is one level: a planet inherits from its star lord, never from the star lord's star lord.
+  const c = connection(ing, "Ketu", SIGNIFICATIONS.career);
+  assert.ok(c.c <= 1);
+  // Percentiles are monotone in T and bounded.
+  const ref = referenceT(prepared, ing, SIGNIFICATIONS.career);
+  assert.ok(ref.length > 100);
+  assert.ok(percentileOf(ref, 0) <= percentileOf(ref, 50) && percentileOf(ref, 50) <= percentileOf(ref, 100));
+  assert.equal(percentileOf(ref, 101), 100);
+  const rows = scanV4(prepared, { text: "career" }, "2026-01-01", "2026-06-30");
+  assert.ok(rows.every((r) => r.pct !== undefined && r.pct >= 0 && r.pct <= 100));
+});

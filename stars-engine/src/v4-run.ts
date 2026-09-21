@@ -5,7 +5,22 @@ import type { Ingested } from "./types.ts";
 import { jdOf, transitsAt } from "./compute.ts";
 import { SIGNIFICATIONS, cell, promise, topicOf, trigger, type ActiveDasha, type Cell, type PromiseResult, type Signification, type Topic, type TriggerResult } from "./v4.ts";
 
-export type V4Result = { topic: Topic; sig: Signification; date: string; window: [string, string]; active: ActiveDasha & { rows: DashaInput[] }; promise: PromiseResult; trigger: TriggerResult; cell: Cell };
+export type V4Result = { topic: Topic; sig: Signification; date: string; window: [string, string]; active: ActiveDasha & { rows: DashaInput[] }; promise: PromiseResult; trigger: TriggerResult; cell: Cell; pct?: number };
+
+/** Reference distribution of T for a topic over the native's life (birth → +70y), cached per chart+topic. */
+const refCache = new Map<string, number[]>();
+export function referenceT(chart: ChartInput, ing: Ingested, sig: Signification): number[] {
+  const first = ing.dashas.filter((d) => d.level === "MD").sort((a, b) => a.start.localeCompare(b.start))[0];
+  const from = first?.start ?? "1990-01-01";
+  const to = `${Number(from.slice(0, 4)) + 70}-01-01`;
+  const key = `${JSON.stringify(chart.ascendant)}|${chart.planets.map((p) => p.planet + p.sign + p.degree).join()}|${sig.topic}|${sig.primary.join()}`;
+  if (refCache.has(key)) return refCache.get(key)!;
+  const pds = ing.dashas.filter((d) => d.level === "PD" && d.start >= from && d.start <= to);
+  const Ts = pds.map((pd) => { const s = sampleDates(pd.start, pd.end, 3); return trigger(ing, sig, activeAt(ing.dashas, s[1]), s.map(transitsAt)).T; }).sort((a, b) => a - b);
+  refCache.set(key, Ts);
+  return Ts;
+}
+export const percentileOf = (ref: number[], T: number) => (ref.length ? Math.round((ref.filter((x) => x < T).length / ref.length) * 100) : 0);
 
 export function activeAt(dashas: DashaInput[], date: string): ActiveDasha & { rows: DashaInput[] } {
   const rows = dashas.filter((d) => d.start <= date && date <= d.end);
@@ -32,7 +47,15 @@ export function runV4(ing: Ingested, q: QueryInput, window?: [string, string]): 
 export function scanV4(chart: ChartInput, q: QueryInput, from: string, to: string): V4Result[] {
   const ing = ingest(chart);
   const pds = ing.dashas.filter((d) => d.level === "PD" && d.end >= from && d.start <= to).sort((a, b) => a.start.localeCompare(b.start));
-  return pds.map((pd) => runV4(ing, q, [pd.start < from ? from : pd.start, pd.end > to ? to : pd.end]));
+  const rows = pds.map((pd) => runV4(ing, q, [pd.start < from ? from : pd.start, pd.end > to ? to : pd.end]));
+  if (rows.length) { const ref = referenceT(chart, ing, rows[0].sig); for (const r of rows) r.pct = percentileOf(ref, r.trigger.T); }
+  return rows;
+}
+export function runV4WithPct(chart: ChartInput, q: QueryInput): V4Result {
+  const ing = ingest(chart);
+  const r = runV4(ing, q);
+  r.pct = percentileOf(referenceT(chart, ing, r.sig), r.trigger.T);
+  return r;
 }
 
 export type LifeEvent = { date: string; topic: Topic; label: string };
@@ -47,6 +70,7 @@ export function backtest(chart: ChartInput, events: LifeEvent[], from: string, t
     const hit = all.find((r) => r.window[0] <= ev.date && ev.date <= r.window[1]) ?? all[0];
     const sorted = [...all].sort((a, b) => b.trigger.T - a.trigger.T);
     const rank = sorted.findIndex((r) => r === hit) + 1;
+    void hit.pct;
     return { event: ev, T: hit.trigger.T, gl: `${hit.trigger.Tgain}/${hit.trigger.Tloss}`, tone: hit.trigger.tone, rank, of: all.length, percentile: Math.round((1 - (rank - 1) / all.length) * 100), cell: hit.cell.name, window: `${hit.window[0]}→${hit.window[1]}` };
   });
   const meanPct = rows.length ? Math.round(rows.reduce((a, r) => a + r.percentile, 0) / rows.length) : 0;
@@ -64,7 +88,7 @@ export function renderV4(r: V4Result): string {
   out.push("", `## Promise P = ${r.promise.P}  (raw ${r.promise.raw >= 0 ? "+" : ""}${r.promise.raw} on a 50 baseline)`);
   out.push(md([["Factor", "Points", "Source"], ...r.promise.terms.sort((a, b) => b.points - a.points).map((t) => [t.factor, (t.points >= 0 ? "+" : "") + t.points, t.source])]));
   if (r.promise.tags.length) out.push("Tags: " + r.promise.tags.join("; "));
-  out.push("", `## Trigger T = ${r.trigger.T}  (gain ${r.trigger.Tgain} / loss ${r.trigger.Tloss}; gain = dasha ${r.trigger.dashaPoints}/55 + transit ${r.trigger.transitPoints}/35, scaled to 100)`);
+  out.push("", `## Trigger T = ${r.trigger.T}${r.pct !== undefined ? `  — ${r.pct}th percentile of this chart's lifetime windows` : ""}  (gain ${r.trigger.Tgain} / loss ${r.trigger.Tloss}; gain = dasha ${r.trigger.dashaPoints}/55 + transit ${r.trigger.transitPoints}/35, scaled to 100)`);
   out.push(`Active: ${(["MD", "AD", "PD"] as const).map((l) => `${l} ${r.active[l] ?? "?"}`).join(" / ")} — tone **${r.trigger.tone}** (${r.trigger.toneScore}: ${r.trigger.toneWhy.join(", ") || "neutral"})`);
   out.push(md([["Level", "Planet", "Connection", "c", "Points"], ...r.trigger.dasha.map((d) => [d.level, d.planet, d.via, String(d.c), String(d.points)])]));
   out.push(r.trigger.transit.length ? md([["Transit factor", "Points"], ...r.trigger.transit.map((t) => [t.factor, String(t.points)])]) : "No Jupiter/Saturn/node transit on the target signs.");
@@ -80,8 +104,8 @@ export function renderV4(r: V4Result): string {
 }
 
 export function renderScanV4(rows: V4Result[]): string {
-  return md([["Window", "MD/AD/PD", "P", "T", "gain/loss", "Tone", "Dasha", "Transit", "Cell", "Tags"], ...rows.map((r) => [
-    `${r.window[0]} → ${r.window[1]}`, `${r.active.MD}/${r.active.AD}/${r.active.PD}`, String(r.promise.P), `**${r.trigger.T}**`, `${r.trigger.Tgain}/${r.trigger.Tloss}`, r.trigger.tone, String(r.trigger.dashaPoints), String(r.trigger.transitPoints), r.cell.name, r.trigger.tags.join("; ") || "—",
+  return md([["Window", "MD/AD/PD", "P", "T", "pct", "gain/loss", "Tone", "Dasha", "Transit", "Cell", "Tags"], ...rows.map((r) => [
+    `${r.window[0]} → ${r.window[1]}`, `${r.active.MD}/${r.active.AD}/${r.active.PD}`, String(r.promise.P), `**${r.trigger.T}**`, r.pct !== undefined ? String(r.pct) : "—", `${r.trigger.Tgain}/${r.trigger.Tloss}`, r.trigger.tone, String(r.trigger.dashaPoints), String(r.trigger.transitPoints), r.cell.name, r.trigger.tags.join("; ") || "—",
   ])]);
 }
 
@@ -93,14 +117,17 @@ export function renderBacktest(b: ReturnType<typeof backtest>): string {
 export type Retro = { topic: Topic; P: number; coveragePct: number; windows: { from: string; to: string; T: number; tone: string; cell: string; dashas: string; tags: string }[] };
 
 /** Merge adjacent PD windows whose T ≥ threshold, per topic; report the merged runs ranked by peak T. */
-export function retrodict(chart: ChartInput, from: string, to: string, threshold = 55, topN = 6): Retro[] {
+/** threshold ≤ 100 is an absolute T; pass e.g. "p85" via thresholdPct to flag windows at or above that lifetime percentile. */
+export function retrodict(chart: ChartInput, from: string, to: string, threshold = 55, topN = 6, thresholdPct?: number): Retro[] {
   const topics = (Object.keys(SIGNIFICATIONS) as Topic[]).filter((t) => t !== "general");
   return topics.map((topic) => {
     const rows = scanV4(chart, { text: topic }, from, to);
+    const thr = thresholdPct !== undefined ? -1 : threshold;
+    const passes = (r: V4Result) => (thresholdPct !== undefined ? (r.pct ?? 0) >= thresholdPct : r.trigger.T >= thr);
     const runs: Retro["windows"] = [];
     let cur: (Retro["windows"][number] & { peak: number }) | null = null;
     for (const r of rows) {
-      const ok = r.trigger.T >= threshold;
+      const ok = passes(r);
       if (ok && cur) { cur.to = r.window[1]; cur.T = Math.max(cur.T, r.trigger.T); if (r.trigger.T > cur.peak) { cur.peak = r.trigger.T; cur.cell = r.cell.name; cur.tone = r.trigger.tone; cur.dashas = `${r.active.MD}/${r.active.AD}/${r.active.PD}`; } cur.tags = [...new Set([...cur.tags.split("; ").filter(Boolean), ...r.trigger.tags])].join("; "); }
       else if (ok) cur = { from: r.window[0], to: r.window[1], T: r.trigger.T, peak: r.trigger.T, tone: r.trigger.tone, cell: r.cell.name, dashas: `${r.active.MD}/${r.active.AD}/${r.active.PD}`, tags: r.trigger.tags.join("; ") };
       else if (cur) { runs.push(cur); cur = null; }
@@ -108,12 +135,12 @@ export function retrodict(chart: ChartInput, from: string, to: string, threshold
     if (cur) runs.push(cur);
     const days = (a: string, b: string) => jdOf(b) - jdOf(a);
     const total = days(from, to) || 1;
-    const covered = rows.filter((r) => r.trigger.T >= threshold).reduce((a, r) => a + days(r.window[0], r.window[1]), 0);
+    const covered = rows.filter(passes).reduce((a, r) => a + days(r.window[0], r.window[1]), 0);
     return { topic, P: rows[0]?.promise.P ?? 0, coveragePct: Math.round((covered / total) * 100), windows: runs.sort((a, b) => b.T - a.T).slice(0, topN).sort((a, b) => a.from.localeCompare(b.from)) };
   });
 }
 
-export function renderRetro(rs: Retro[], threshold: number): string {
+export function renderRetro(rs: Retro[], threshold: number | string): string {
   const out = [`Blind retrodiction — windows where Trigger T ≥ ${threshold}, merged when contiguous. The engine has seen no life events.`, ""];
   for (const r of rs) {
     out.push(`### ${r.topic}  (Promise P = ${r.P}; ${r.coveragePct}% of the period is above threshold — lower is more specific)`);

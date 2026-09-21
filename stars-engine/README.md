@@ -32,7 +32,7 @@ node src/cli.ts execute   chart.json query.json             # v3.5 Mode 1.5 + 2:
 node src/cli.ts scan      chart.json query.json FROM TO     # v3.5 matrix per Pratyantar window
 node src/cli.ts v4        chart.json query.json             # v4 Promise / Trigger / grid for one date
 node src/cli.ts v4scan    chart.json query.json FROM TO     # v4 per Pratyantar window
-node src/cli.ts retrodict chart.json FROM TO [threshold]    # v4 blind: windows the engine would have flagged, per topic, with coverage %
+node src/cli.ts retrodict chart.json FROM TO [62|p85]      # v4 blind: windows the engine would have flagged, per topic, with coverage % (default p85 = top 15 % of lifetime)
 node src/cli.ts backtest  chart.json events.json FROM TO    # v4: rank dated events among all windows (optional; see "bias")
 ```
 
@@ -73,8 +73,13 @@ ephemeris disagree (typically < 90 arcseconds). Everything computed is tagged `[
   `delay` / `obstruction` tags, not just points.
 - **Grid**: Event window · Building · Promised-dormant · Event with friction · Possible-weak · Dormant ·
   Forced/atypical · Unlikely · Denied.
+- **Percentile**: every T is also reported as a percentile of the native's own lifetime window distribution for
+  that topic (`pct` column; `retrodict … p85` flags the top 15 %). A fixed threshold means different things in
+  different charts; the percentile does not.
 - **Coverage %** (retrodict): share of the period above threshold. High coverage = the engine is describing the
   chart's standing emphasis, not predicting. Aim for 10–15 %.
+- **Dasha gate**: transit points are scaled by 0.5 + 0.5·(strongest dasha link), so Gochara alone cannot flag a window.
+- Signification sets use one primary house per topic; supporting houses are secondary at half weight.
 
 ## On bias
 

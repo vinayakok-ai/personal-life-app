@@ -1,4 +1,6 @@
 // Stars Engine v4 — two-axis scoring (see REVIEW.md §5).
+// Signification sets use ONE primary house (the classical bhava of the matter); supporting houses are secondary
+// at half weight, so that connection strength stays specific (see docs/reviews/bahubali-v1.md on coverage).
 //   Promise P  (0–100, static per topic): what the natal chart allows.
 //   Trigger T  (0–100, per window): whether dasha + transits activate it.
 //   Grid cell: P × T → a named outcome class and a specificity level.
@@ -6,6 +8,20 @@
 
 import type { Dignity, Graha, Ingested, Planet, PlanetRow, Sign, TransitInput } from "./types.ts";
 import { NATURAL_BENEFICS, NATURAL_MALEFICS, SIGN_LORD, SPECIAL_ASPECTS, houseFrom, isGraha, signAt, signIndex } from "./tables.ts";
+
+/** Jaimini rasi drishti: movable signs see fixed signs except the adjacent, etc. */
+const RASI_DRISHTI: Record<Sign, Sign[]> = {
+  Aries: ["Leo", "Scorpio", "Aquarius"], Taurus: ["Cancer", "Libra", "Capricorn"], Gemini: ["Virgo", "Sagittarius", "Pisces"],
+  Cancer: ["Scorpio", "Aquarius", "Taurus"], Leo: ["Libra", "Capricorn", "Aries"], Virgo: ["Sagittarius", "Pisces", "Gemini"],
+  Libra: ["Aquarius", "Taurus", "Leo"], Scorpio: ["Capricorn", "Aries", "Cancer"], Sagittarius: ["Pisces", "Gemini", "Virgo"],
+  Capricorn: ["Taurus", "Leo", "Scorpio"], Aquarius: ["Aries", "Cancer", "Libra"], Pisces: ["Gemini", "Virgo", "Sagittarius"],
+};
+/** Badhakesha: 11th lord for movable, 9th for fixed, 7th for dual lagnas. */
+export function badhakesha(asc: Sign): Graha {
+  const s = signIndex(asc);
+  const h = s % 3 === 0 ? 11 : s % 3 === 1 ? 9 : 7;
+  return SIGN_LORD[signAt(s + h - 1)];
+}
 import { dignityOf, parseDegree } from "./ingest.ts";
 import { compoundRelation, aspectsHouse } from "./engine.ts";
 
@@ -17,13 +33,13 @@ export type Signification = {
 export const SIGNIFICATIONS: Record<Topic, Signification> = {
   marriage: { topic: "marriage", primary: [7], secondary: [2, 11], karakas: ["Venus"], charakaraka: "DK", arudhaOf: 12, varga: "D9", vargaHouse: 7 },
   career: { topic: "career", primary: [10], secondary: [6, 2, 11], karakas: ["Sun", "Saturn", "Mercury"], charakaraka: "AmK", arudhaOf: 10, varga: "D10", vargaHouse: 10 },
-  business: { topic: "business", primary: [7, 10], secondary: [11, 2, 3], karakas: ["Mercury", "Venus"], charakaraka: "AmK", arudhaOf: 7, varga: "D10", vargaHouse: 7 },
-  wealth: { topic: "wealth", primary: [2, 11], secondary: [5, 9], karakas: ["Jupiter"], arudhaOf: 1 },
+  business: { topic: "business", primary: [7], secondary: [10, 11, 2, 3], karakas: ["Mercury", "Venus"], charakaraka: "AmK", arudhaOf: 7, varga: "D10", vargaHouse: 7 },
+  wealth: { topic: "wealth", primary: [2], secondary: [11, 5, 9], karakas: ["Jupiter"], arudhaOf: 1 },
   children: { topic: "children", primary: [5], secondary: [9, 11], karakas: ["Jupiter"], charakaraka: "PK", varga: "D7", vargaHouse: 5 },
   property: { topic: "property", primary: [4], secondary: [11, 2], karakas: ["Mars", "Venus"], charakaraka: "MK", varga: "D4", vargaHouse: 4 },
-  health: { topic: "health", primary: [1, 6], secondary: [8], karakas: ["Sun", "Moon"], charakaraka: "AK" },
-  foreign: { topic: "foreign", primary: [12, 9], secondary: [3, 7], karakas: ["Rahu"] },
-  education: { topic: "education", primary: [4, 5], secondary: [9, 2], karakas: ["Mercury", "Jupiter"] },
+  health: { topic: "health", primary: [1], secondary: [6, 8], karakas: ["Sun", "Moon"], charakaraka: "AK" },
+  foreign: { topic: "foreign", primary: [12], secondary: [9, 3, 7], karakas: ["Rahu"] },
+  education: { topic: "education", primary: [4], secondary: [5, 9, 2], karakas: ["Mercury", "Jupiter"] },
   siblings: { topic: "siblings", primary: [3], secondary: [11], karakas: ["Mars"], charakaraka: "BK" },
   mother: { topic: "mother", primary: [4], secondary: [], karakas: ["Moon"], charakaraka: "MK" },
   father: { topic: "father", primary: [9], secondary: [10], karakas: ["Sun"], charakaraka: "PK" },
@@ -275,7 +291,10 @@ function connectionBase(ing: Ingested, p: Planet, sig: Signification): { c: numb
     if (aspectsHouse(lp, asc, pr.house)) cands.push([0.4, `aspected by H${h} lord ${lord}`]);
   }
   if (sig.karakas.includes(p)) cands.push([0.8, "karaka"]);
-  if (sig.charakaraka && ck[sig.charakaraka] === p) cands.push([0.6, sig.charakaraka]);
+  if (sig.charakaraka && ck[sig.charakaraka] === p) {
+    const hits = sig.primary.some((h) => pr.house === h || RASI_DRISHTI[pr.sign].includes(houseSign(asc, h)));
+    cands.push([hits ? 0.6 : 0.3, `${sig.charakaraka}${hits ? " (rasi drishti on target)" : ""}`]);
+  }
   if (sig.arudhaOf) { const a = arudha(ing, sig.arudhaOf); if (lordOf(asc, a) === p) cands.push([0.5, `lord of A${sig.arudhaOf} (H${a})`]); if (pr.house === a) cands.push([0.4, `in A${sig.arudhaOf}`]); }
   for (const h of sig.secondary) {
     if (lordOf(asc, h) === p) cands.push([0.5, `lord of H${h}`]);
@@ -296,7 +315,7 @@ function inherit(ing: Ingested, p: Planet, base: (q: Planet) => { c: number; via
     consider(SIGN_LORD[pr.sign], 0.8, "via dispositor");
     for (const o of ing.planets) if (o.sign === pr.sign && o.planet !== p) consider(o.planet, 0.8, "via conjunct");
   }
-  consider(pr.starLord, 0.7, "via star lord");
+  consider(pr.starLord, 0.6, "via star lord");
   return best;
 }
 
@@ -327,6 +346,8 @@ function lossConnectionBase(ing: Ingested, p: Planet, sig: Signification): { c: 
     if (lp && p !== lord && pr.sign === lp.sign && NATURAL_MALEFICS.includes(p)) cands.push([0.5, `malefic conjunct H${h} lord`]);
   }
   if (isGraha(p) && [6, 8, 12].some((h) => lordOf(asc, h) === p)) cands.push([0.5, "dusthana lord from lagna"]);
+  if (badhakesha(asc) === p) cands.push([0.7, "Badhakesha"]);
+  if (pr.retrograde && NATURAL_MALEFICS.includes(p)) for (const c of cands) c[0] = Math.min(1, c[0] * 1.25);
   for (const k of sig.karakas) { const kp = by(ing, k); if (kp && p !== k && NATURAL_MALEFICS.includes(p) && (pr.sign === kp.sign || aspectsHouse(pr, asc, kp.house))) cands.push([0.4, `malefic on karaka ${k}`]); }
   if (!cands.length) return { c: 0, via: "no link" };
   const [c, via] = cands.reduce((a, b) => (b[0] > a[0] ? b : a));
@@ -388,7 +409,13 @@ export function trigger(ing: Ingested, sig: Signification, active: ActiveDasha, 
     else if (afflictTargets.some((sg) => aspectsHouse(row("Saturn", t.Saturn.sign, parseDegree(t.Saturn.degree)), asc, houseFrom(asc, sg)))) lt.push({ factor: `Saturn transit ${t.Saturn.sign} aspects house/lord/karaka`, points: 8, source: "loss-transit" });
     if (t.Rahu && afflictTargets.includes(t.Rahu.sign)) lt.push({ factor: `Rahu transit ${t.Rahu.sign} on house/lord/karaka`, points: 8, source: "loss-transit" });
     if (t.Ketu && afflictTargets.includes(t.Ketu.sign)) lt.push({ factor: `Ketu transit ${t.Ketu.sign} on house/lord/karaka`, points: 8, source: "loss-transit" });
-    if (moon && [12, 1, 2].includes(houseFrom(moon.sign, t.Saturn.sign))) lt.push({ factor: "Sade Sati", points: 4, source: "loss-transit" });
+    if (moon) {
+      const fm = houseFrom(moon.sign, t.Saturn.sign);
+      if (fm === 12) lt.push({ factor: "Sade Sati phase 1 (12th from Moon)", points: 4, source: "loss-transit" });
+      else if (fm === 1) lt.push({ factor: "Sade Sati phase 2 (over the Moon)", points: 6, source: "loss-transit" });
+      else if (fm === 2) lt.push({ factor: "Sade Sati phase 3 (2nd from Moon)", points: 3, source: "loss-transit" });
+      else if ([4, 8].includes(fm)) lt.push({ factor: `Saturn ${fm}th from Moon`, points: 3, source: "loss-transit" });
+    }
     lossSamples.push(lt);
     if (moon) {
       const fromMoon = houseFrom(moon.sign, t.Saturn.sign);
@@ -402,7 +429,11 @@ export function trigger(ing: Ingested, sig: Signification, active: ActiveDasha, 
   const agg = new Map<string, { sum: number; n: number; source: string }>();
   for (const terms of perSample) for (const tm of terms) { const a = agg.get(tm.factor) ?? { sum: 0, n: 0, source: tm.source }; a.sum += tm.points; a.n++; agg.set(tm.factor, a); }
   const transit: Term[] = [...agg.entries()].map(([factor, a]) => ({ factor: `${factor}${a.n < perSample.length ? ` (${a.n}/${perSample.length} samples)` : ""}`, points: Math.round((a.sum / perSample.length) * 10) / 10, source: a.source }));
-  const transitPoints = Math.min(35, transit.reduce((x, tm) => x + tm.points, 0));
+  // Gochara delivers what the dasha promises: transit points are scaled by dasha participation (0.5 + 0.5·max c).
+  const maxC = Math.max(0, ...dasha.map((d) => d.c));
+  const gate = 0.5 + 0.5 * Math.min(1, maxC);
+  const transitPoints = Math.round(Math.min(35, transit.reduce((x, tm) => x + tm.points, 0)) * gate * 10) / 10;
+  if (gate < 1 && transit.length) transit.push({ factor: `Dasha gate ×${gate.toFixed(2)} (max dasha link ${maxC.toFixed(2)})`, points: 0, source: "gate" });
   const lagg = new Map<string, { sum: number; n: number; source: string }>();
   for (const terms of lossSamples) for (const tm of terms) { const a = lagg.get(tm.factor) ?? { sum: 0, n: 0, source: tm.source }; a.sum += tm.points; a.n++; lagg.set(tm.factor, a); }
   const lossTransit: Term[] = [...lagg.entries()].map(([factor, a]) => ({ factor: `${factor}${a.n < lossSamples.length ? ` (${a.n}/${lossSamples.length} samples)` : ""}`, points: Math.round((a.sum / lossSamples.length) * 10) / 10, source: a.source }));
