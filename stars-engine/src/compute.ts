@@ -6,7 +6,7 @@
 // This module is only used by the CLI / scan tooling; the engine itself stays table-driven.
 
 import sweph from "sweph";
-import { SIGNS, type ChartInput, type DashaInput, type DashaLevel, type Planet, type QueryInput, type Sign, type TransitInput, type VargaInput } from "./types.ts";
+import { SIGNS, type ChartInput, type DashaInput, type DashaLevel, type Graha, type Planet, type QueryInput, type Sign, type TransitInput, type VargaInput } from "./types.ts";
 import { parseDegree } from "./ingest.ts";
 import { signIndex } from "./tables.ts";
 
@@ -162,4 +162,64 @@ export function validateNatal(chart: ChartInput, birthDate: string, birthTime: s
     const s = lonOf(p.sign, parseDegree(p.degree));
     return { planet: p.planet, supplied: s, computed: c.longitude, diffArcsec: Math.round((((c.longitude - s + 540) % 360) - 180) * 3600) };
   });
+}
+
+// ---- Ashtakavarga (BPHS benefic-position tables) ----
+type Contributor = Planet | "Ascendant";
+const BAV_TABLE: Record<Graha, Record<Contributor, number[]>> = {
+  Sun: { Sun: [1, 2, 4, 7, 8, 9, 10, 11], Moon: [3, 6, 10, 11], Mars: [1, 2, 4, 7, 8, 9, 10, 11], Mercury: [3, 5, 6, 9, 10, 11, 12], Jupiter: [5, 6, 9, 11], Venus: [6, 7, 12], Saturn: [1, 2, 4, 7, 8, 9, 10, 11], Ascendant: [3, 4, 6, 10, 11, 12], Rahu: [], Ketu: [] },
+  Moon: { Sun: [3, 6, 7, 8, 10, 11], Moon: [1, 3, 6, 7, 10, 11], Mars: [2, 3, 5, 6, 9, 10, 11], Mercury: [1, 3, 4, 5, 7, 8, 10, 11], Jupiter: [1, 4, 7, 8, 10, 11, 12], Venus: [3, 4, 5, 7, 9, 10, 11], Saturn: [3, 5, 6, 11], Ascendant: [3, 6, 10, 11], Rahu: [], Ketu: [] },
+  Mars: { Sun: [3, 5, 6, 10, 11], Moon: [3, 6, 11], Mars: [1, 2, 4, 7, 8, 10, 11], Mercury: [3, 5, 6, 11], Jupiter: [6, 10, 11, 12], Venus: [6, 8, 11, 12], Saturn: [1, 4, 7, 8, 9, 10, 11], Ascendant: [1, 3, 6, 10, 11], Rahu: [], Ketu: [] },
+  Mercury: { Sun: [5, 6, 9, 11, 12], Moon: [2, 4, 6, 8, 10, 11], Mars: [1, 2, 4, 7, 8, 9, 10, 11], Mercury: [1, 3, 5, 6, 9, 10, 11, 12], Jupiter: [6, 8, 11, 12], Venus: [1, 2, 3, 4, 5, 8, 9, 11], Saturn: [1, 2, 4, 7, 8, 9, 10, 11], Ascendant: [1, 2, 4, 6, 8, 10, 11], Rahu: [], Ketu: [] },
+  Jupiter: { Sun: [1, 2, 3, 4, 7, 8, 9, 10, 11], Moon: [2, 5, 7, 9, 11], Mars: [1, 2, 4, 7, 8, 10, 11], Mercury: [1, 2, 4, 5, 6, 9, 10, 11], Jupiter: [1, 2, 3, 4, 7, 8, 10, 11], Venus: [2, 5, 6, 9, 10, 11], Saturn: [3, 5, 6, 12], Ascendant: [1, 2, 4, 5, 6, 7, 9, 10, 11], Rahu: [], Ketu: [] },
+  Venus: { Sun: [8, 11, 12], Moon: [1, 2, 3, 4, 5, 8, 9, 11, 12], Mars: [3, 5, 6, 9, 11, 12], Mercury: [3, 5, 6, 9, 11], Jupiter: [5, 8, 9, 10, 11], Venus: [1, 2, 3, 4, 5, 8, 9, 10, 11], Saturn: [3, 4, 5, 8, 9, 10, 11], Ascendant: [1, 2, 3, 4, 5, 8, 9, 11], Rahu: [], Ketu: [] },
+  Saturn: { Sun: [1, 2, 4, 7, 8, 10, 11], Moon: [3, 6, 11], Mars: [3, 5, 6, 10, 11, 12], Mercury: [6, 8, 9, 10, 11, 12], Jupiter: [5, 6, 11, 12], Venus: [6, 11, 12], Saturn: [3, 5, 6, 11], Ascendant: [1, 3, 4, 6, 10, 11], Rahu: [], Ketu: [] },
+};
+const GRAHAS: Graha[] = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"];
+
+/** Bhinnashtakavarga contributors per planet per sign, and Sarvashtakavarga per sign (index 0 = Aries). */
+export function ashtakavarga(signs: Record<Graha, Sign> & { Ascendant: Sign }): { bav: Record<Graha, Record<Sign, Contributor[]>>; savBySign: number[]; bavBySign: Record<Graha, number[]> } {
+  const bav = {} as Record<Graha, Record<Sign, Contributor[]>>;
+  const bavBySign = {} as Record<Graha, number[]>;
+  const savBySign = Array(12).fill(0);
+  for (const g of GRAHAS) {
+    bav[g] = Object.fromEntries(SIGNS.map((s) => [s, [] as Contributor[]])) as Record<Sign, Contributor[]>;
+    for (const c of [...GRAHAS, "Ascendant"] as Contributor[]) {
+      const from = signIndex(signs[c as keyof typeof signs]);
+      for (const h of BAV_TABLE[g][c]) bav[g][SIGNS[(from + h - 1) % 12]].push(c);
+    }
+    bavBySign[g] = SIGNS.map((s) => bav[g][s].length);
+    for (let i = 0; i < 12; i++) savBySign[i] += bavBySign[g][i];
+  }
+  return { bav, savBySign, bavBySign };
+}
+
+/** Sripati (Porphyry-based) bhava-begin cusps as AstroSage prints them, sidereal. */
+export function sripatiCusps(jd: number, lat: number, lon: number): { begins: number[]; mids: number[]; asc: number } {
+  const h = sweph.houses_ex(jd, C.SEFLG_SIDEREAL, lat, lon, "O").data;
+  const mids = h.houses.slice(0, 12);
+  const begins = mids.map((m, i) => { const a = mids[(i + 11) % 12]; let x = (a + m) / 2; if (Math.abs(a - m) > 180) x = (x + 180) % 360; return x; });
+  return { begins, mids, asc: h.points[0] };
+}
+
+/** Build a complete ChartInput from birth data alone (rule dilution: everything computed, nothing transcribed). */
+export function chartFromBirth(name: string, date: string, time: string, lat: number, lon: number, tz = 5.5): ChartInput {
+  const jd = jdOf(date, time, tz);
+  const cus = sripatiCusps(jd, lat, lon);
+  const pos = positionsAt(jd, ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]);
+  const ascSign = SIGNS[Math.floor(cus.asc / 30)];
+  const signs = Object.fromEntries(pos.map((p) => [p.planet, p.sign])) as Record<Graha, Sign> & { Ascendant: Sign };
+  signs.Ascendant = ascSign;
+  const av = ashtakavarga(signs);
+  const chalit = cus.begins.map((b, i) => ({ house: i + 1, cuspSign: SIGNS[Math.floor(b / 30)], cuspDegree: b % 30 }));
+  return {
+    meta: { name, ayanamsa: `Lahiri (${ayanamsa(jd).toFixed(4)}°)`, source: "Computed by Swiss Ephemeris (Moshier) from birth data", birth: { date, time: `${time} (UTC+${tz})`, place: `${lat}N ${lon}E` } },
+    ascendant: { sign: ascSign, degree: cus.asc % 30 },
+    planets: pos.map((p) => ({ planet: p.planet, sign: p.sign, degree: p.degree, retrograde: p.retrograde })),
+    bhavaChalit: chalit,
+    savBySign: av.savBySign,
+    bav: av.bav,
+    dashas: [],
+    ledgerNotes: ["Entire chart computed from birth data (Swiss Ephemeris, Lahiri, mean node, Sripati bhavas, BPHS Ashtakavarga). Shadbala and Bhava Bala not computed — supply from software if wanted."],
+  };
 }
