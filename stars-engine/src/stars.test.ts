@@ -205,7 +205,7 @@ test("v4.5: transit gate, single-level inheritance, percentile reporting", async
   const { prepareChart } = await import("./compute.ts");
   const prepared = prepareChart(chart(), { vargas: ["D9"], dashaDepth: "PD", birthDate: "1985-06-01", birthTime: "06:00" }).chart;
   const ing = ingest(prepared);
-  assert.equal(badhakesha("Leo"), "Jupiter"); // fixed sign → 9th lord (Sagittarius)
+  assert.equal(badhakesha("Leo"), "Mars"); // fixed sign → 9th lord (Aries)
   assert.equal(badhakesha("Aries"), "Saturn"); // movable → 11th lord (Aquarius)
   // Transits alone cannot exceed half their weight when no dasha lord connects.
   const t = trigger(ing, SIGNIFICATIONS.career, { MD: "Rahu", AD: "Ketu", PD: "Rahu" }, [{ Saturn: { sign: "Taurus", degree: 10 }, Jupiter: { sign: "Taurus", degree: 10 } }]);
