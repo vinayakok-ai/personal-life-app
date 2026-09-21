@@ -1,0 +1,160 @@
+{
+ "meta": {
+  "name": "Vinayak (07:35 variant)",
+  "ayanamsa": "Lahiri (023-50-28)",
+  "source": "AstroSage kundli PDF, printed 2026-09-21; text layer transcribed",
+  "birth": {
+   "date": "1998-11-25",
+   "time": "07:35 IST",
+   "place": "Vijayapura (13°17'N 77°48'E)"
+  }
+ },
+ "panchang": {
+  "tithi": "Shukla Shashti",
+  "vara": "Wednesday",
+  "nakshatra": "Shravana-2",
+  "yoga": "Vriddhi",
+  "karana": "Taitila"
+ },
+ "ascendant": {
+  "sign": "Scorpio",
+  "degree": "24°20'00\""
+ },
+ "planets": [
+  {
+   "planet": "Sun",
+   "sign": "Scorpio",
+   "degree": "08°44'29\""
+  },
+  {
+   "planet": "Moon",
+   "sign": "Capricorn",
+   "degree": "15°22'00\""
+  },
+  {
+   "planet": "Mars",
+   "sign": "Virgo",
+   "degree": "04°50'27\""
+  },
+  {
+   "planet": "Mercury",
+   "sign": "Scorpio",
+   "degree": "22°38'38\"",
+   "retrograde": true
+  },
+  {
+   "planet": "Jupiter",
+   "sign": "Aquarius",
+   "degree": "24°34'25\""
+  },
+  {
+   "planet": "Venus",
+   "sign": "Scorpio",
+   "degree": "15°12'01\""
+  },
+  {
+   "planet": "Saturn",
+   "sign": "Aries",
+   "degree": "03°57'48\"",
+   "retrograde": true
+  },
+  {
+   "planet": "Rahu",
+   "sign": "Leo",
+   "degree": "02°30'33\"",
+   "retrograde": true
+  },
+  {
+   "planet": "Ketu",
+   "sign": "Aquarius",
+   "degree": "02°30'33\"",
+   "retrograde": true
+  }
+ ],
+ "savBySign": [
+  29,
+  18,
+  30,
+  31,
+  29,
+  40,
+  22,
+  31,
+  26,
+  29,
+  27,
+  25
+ ],
+ "shadbala": [
+  {
+   "planet": "Sun",
+   "points": 390.4,
+   "ratio": 1.3,
+   "digBala": 33.84
+  },
+  {
+   "planet": "Moon",
+   "points": 416.82,
+   "ratio": 1.16,
+   "digBala": 48.28
+  },
+  {
+   "planet": "Mars",
+   "points": 343.55,
+   "ratio": 1.15,
+   "digBala": 55.14
+  },
+  {
+   "planet": "Mercury",
+   "points": 585.56,
+   "ratio": 1.39,
+   "digBala": 58.3
+  },
+  {
+   "planet": "Jupiter",
+   "points": 423.92,
+   "ratio": 1.09,
+   "digBala": 27.65
+  },
+  {
+   "planet": "Venus",
+   "points": 330.76,
+   "ratio": 1.0,
+   "digBala": 28.32
+  },
+  {
+   "planet": "Saturn",
+   "points": 231.13,
+   "ratio": 0.77,
+   "digBala": 45.48
+  }
+ ],
+ "dashas": [],
+ "ledgerNotes": [
+  "07:35 rectification variant: ascendant/Moon from Swiss Ephemeris, dashas fully computed, Chalit omitted."
+ ],
+ "compute": {
+  "vargas": [
+   "D9",
+   "D10"
+  ],
+  "dashaDepth": "PD",
+  "birthDate": "1998-11-25",
+  "birthTime": "07:35"
+ },
+ "bhavaBala": [
+  375.59,
+  427.19,
+  275.92,
+  296.2,
+  489.18,
+  352.33,
+  434.81,
+  654.2,
+  470.71,
+  504.72,
+  660.16,
+  395.6
+ ],
+ "vargas": {}
+}
