@@ -1,0 +1,67 @@
+{
+  "meta": {
+    "name": "SAMPLE — not a real person",
+    "ayanamsa": "Lahiri (Chitra Paksha)",
+    "source": "Hand-written sample for engine tests; replace with values from an official chart"
+  },
+  "panchang": { "tithi": "Shukla Panchami", "vara": "Thursday", "nakshatra": "Rohini", "yoga": "Siddha", "karana": "Bava" },
+  "ascendant": { "sign": "Leo", "degree": "14°22'10\"" },
+  "planets": [
+    { "planet": "Sun",     "sign": "Aries",     "degree": "12°05'30\"" },
+    { "planet": "Moon",    "sign": "Taurus",    "degree": "17°40'00\"" },
+    { "planet": "Mars",    "sign": "Capricorn", "degree": "26°12'45\"" },
+    { "planet": "Mercury", "sign": "Aries",     "degree": "22°48'00\"", "retrograde": true },
+    { "planet": "Jupiter", "sign": "Cancer",    "degree": "3°15'20\"" },
+    { "planet": "Venus",   "sign": "Pisces",    "degree": "27°30'00\"" },
+    { "planet": "Saturn",  "sign": "Libra",     "degree": "9°50'10\"", "retrograde": true },
+    { "planet": "Rahu",    "sign": "Gemini",    "degree": "1°20'00\"" },
+    { "planet": "Ketu",    "sign": "Sagittarius", "degree": "1°20'00\"" }
+  ],
+  "bhavaChalit": [
+    { "house": 1,  "cuspSign": "Leo",         "cuspDegree": 14.37, "planets": [] },
+    { "house": 2,  "cuspSign": "Virgo",       "cuspDegree": 13.9,  "planets": [] },
+    { "house": 3,  "cuspSign": "Libra",       "cuspDegree": 13.4,  "planets": ["Saturn"] },
+    { "house": 4,  "cuspSign": "Scorpio",     "cuspDegree": 13.6,  "planets": [] },
+    { "house": 5,  "cuspSign": "Sagittarius", "cuspDegree": 14.6,  "planets": ["Ketu"] },
+    { "house": 6,  "cuspSign": "Capricorn",   "cuspDegree": 15.1,  "planets": ["Mars"] },
+    { "house": 7,  "cuspSign": "Aquarius",    "cuspDegree": 14.37, "planets": [] },
+    { "house": 8,  "cuspSign": "Pisces",      "cuspDegree": 13.9,  "planets": ["Venus"] },
+    { "house": 9,  "cuspSign": "Aries",       "cuspDegree": 13.4,  "planets": ["Mercury", "Sun"] },
+    { "house": 10, "cuspSign": "Taurus",      "cuspDegree": 13.6,  "planets": ["Moon"] },
+    { "house": 11, "cuspSign": "Gemini",      "cuspDegree": 14.6,  "planets": ["Rahu"] },
+    { "house": 12, "cuspSign": "Cancer",      "cuspDegree": 15.1,  "planets": ["Jupiter"] }
+  ],
+  "sav": [30, 24, 27, 28, 31, 26, 29, 22, 33, 30, 27, 30],
+  "shadbala": [
+    { "planet": "Sun", "points": 452, "ratio": 1.16, "digBala": 21 },
+    { "planet": "Moon", "points": 480, "ratio": 1.33, "digBala": 40 },
+    { "planet": "Mars", "points": 390, "ratio": 1.30, "digBala": 15 },
+    { "planet": "Mercury", "points": 410, "ratio": 0.98, "digBala": 28 },
+    { "planet": "Jupiter", "points": 520, "ratio": 1.34, "digBala": 55 },
+    { "planet": "Venus", "points": 430, "ratio": 1.30, "digBala": 12 },
+    { "planet": "Saturn", "points": 300, "ratio": 1.00, "digBala": 33 }
+  ],
+  "dashas": [
+    { "level": "MD", "planet": "Moon",    "start": "1985-06-01", "end": "1995-06-01" },
+    { "level": "MD", "planet": "Mars",    "start": "1995-06-01", "end": "2002-06-01" },
+    { "level": "MD", "planet": "Rahu",    "start": "2002-06-01", "end": "2020-06-01" },
+    { "level": "MD", "planet": "Jupiter", "start": "2020-06-01", "end": "2036-06-01" },
+    { "level": "AD", "planet": "Jupiter", "start": "2020-06-01", "end": "2022-07-20", "parent": ["Jupiter"] },
+    { "level": "AD", "planet": "Saturn",  "start": "2022-07-20", "end": "2025-02-01", "parent": ["Jupiter"] },
+    { "level": "AD", "planet": "Mercury", "start": "2025-02-01", "end": "2027-05-08", "parent": ["Jupiter"] },
+    { "level": "AD", "planet": "Ketu",    "start": "2027-05-08", "end": "2028-04-14", "parent": ["Jupiter"] },
+    { "level": "AD", "planet": "Venus",   "start": "2028-04-14", "end": "2030-12-14", "parent": ["Jupiter"] },
+    { "level": "PD", "planet": "Venus",   "start": "2026-06-05", "end": "2026-10-20", "parent": ["Jupiter", "Mercury"] },
+    { "level": "PD", "planet": "Sun",     "start": "2026-10-20", "end": "2026-12-01", "parent": ["Jupiter", "Mercury"] }
+  ],
+  "vargas": {
+    "D9": { "ascendant": "Libra", "planets": [
+      { "planet": "Sun", "sign": "Leo" }, { "planet": "Moon", "sign": "Cancer" }, { "planet": "Mars", "sign": "Scorpio" },
+      { "planet": "Mercury", "sign": "Virgo" }, { "planet": "Jupiter", "sign": "Pisces" }, { "planet": "Venus", "sign": "Taurus" },
+      { "planet": "Saturn", "sign": "Aquarius" }, { "planet": "Rahu", "sign": "Gemini" }, { "planet": "Ketu", "sign": "Sagittarius" } ] },
+    "D10": { "ascendant": "Gemini", "planets": [
+      { "planet": "Sun", "sign": "Aries" }, { "planet": "Moon", "sign": "Capricorn" }, { "planet": "Mars", "sign": "Aries" },
+      { "planet": "Mercury", "sign": "Gemini" }, { "planet": "Jupiter", "sign": "Sagittarius" }, { "planet": "Venus", "sign": "Libra" },
+      { "planet": "Saturn", "sign": "Leo" }, { "planet": "Rahu", "sign": "Pisces" }, { "planet": "Ketu", "sign": "Virgo" } ] }
+  }
+}

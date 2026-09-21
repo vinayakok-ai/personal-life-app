@@ -1,0 +1,11 @@
+{
+  "text": "Will my career move forward in 2026? When is a good window for a job change?",
+  "targetDate": "2026-09-21",
+  "transits": {
+    "asOf": "2026-09-21",
+    "Saturn": { "sign": "Pisces", "degree": "1°30'00\"", "retrograde": true },
+    "Jupiter": { "sign": "Cancer", "degree": "22°00'00\"" },
+    "Rahu": { "sign": "Aquarius", "degree": "12°00'00\"" },
+    "Ketu": { "sign": "Leo", "degree": "12°00'00\"" }
+  }
+}
