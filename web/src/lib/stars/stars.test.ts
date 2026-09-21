@@ -174,3 +174,27 @@ test("compute: vargas, vimshottari and ephemeris are internally consistent", asy
   assert.equal(sun.sign, "Sagittarius");
   assert.ok(Math.abs(sun.longitude - 256.6) < 0.2, String(sun.longitude));
 });
+
+test("v4: promise, connection weights, grid and backtest plumbing", async () => {
+  const { promise, connection, cell, SIGNIFICATIONS, topicOf } = await import("./v4.ts");
+  const { backtest, scanV4 } = await import("./v4-run.ts");
+  const ing = ingest(chart());
+  const P = promise(ing, SIGNIFICATIONS.career);
+  assert.ok(P.P >= 0 && P.P <= 100);
+  assert.ok(P.terms.some((t) => /H10 lord Venus Exalted/.test(t.factor)));
+  // Venus rules H10 in the sample chart → full connection; Moon occupies H10 → 0.9; Mars (H6, aspects H9/H12/H1) → weaker
+  assert.deepEqual(connection(ing, "Venus", SIGNIFICATIONS.career).c, 1);
+  assert.deepEqual(connection(ing, "Moon", SIGNIFICATIONS.career).c, 0.9);
+  assert.equal(cell(70, 70).name, "Event window");
+  assert.equal(cell(20, 70).name, "Forced / atypical outcome");
+  assert.equal(cell(70, 10).name, "Promised, dormant");
+  assert.equal(topicOf("When will I get married?"), "marriage");
+  const { prepareChart } = await import("./compute.ts");
+  const prepared = prepareChart(chart(), { vargas: ["D9"], dashaDepth: "PD", birthDate: "1985-06-01", birthTime: "06:00" }).chart;
+  const rows = scanV4(prepared, { text: "career" }, "2026-01-01", "2026-12-31");
+  assert.ok(rows.length > 0);
+  assert.ok(rows.every((r) => r.trigger.T >= 0 && r.trigger.T <= 100));
+  const b = backtest(prepared, [{ date: "2026-06-15", topic: "career", label: "test" }], "2026-01-01", "2026-12-31");
+  assert.equal(b.rows.length, 1);
+  assert.ok(b.rows[0].rank >= 1);
+});

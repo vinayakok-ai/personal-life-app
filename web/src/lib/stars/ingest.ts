@@ -155,7 +155,7 @@ export function ingest(input: ChartInput): Ingested {
 
   return {
     ayanamsa: input.meta?.ayanamsa ?? "unspecified", ascendant: asc, planets, chalit, sav, bav: input.bav ?? null,
-    shadbala, dashas, vargas, panchang: input.panchang ?? null, ledger,
+    shadbala, bhavaBala: input.bhavaBala?.length === 12 ? input.bhavaBala : null, dashas, vargas, panchang: input.panchang ?? null, ledger,
   };
 }
 

@@ -101,3 +101,19 @@ Everything computed is logged `[computed]` in the ledger and never overrides a s
 - **Scan** (`npm run stars -- scan chart.json query.json FROM TO`): runs the matrix once per Pratyantar window with transits at the window midpoint. An extension, not part of v3.5.
 
 Enable with a `compute` block in chart.json (`{"vargas":["D9","D10"],"dashaDepth":"PD","birthDate":"YYYY-MM-DD","birthTime":"HH:MM"}`) and `"transits":"compute"` in query.json. `sweph` is a native module used only by the CLI; the Next.js app never imports it.
+
+## v4 — two-axis engine (`v4.ts`, `v4-run.ts`)
+
+Implements REVIEW.md §5. Promise **P** (static, per topic) and Trigger **T** (per window) are scored
+separately and read on a 3×3 grid; every term is printed with its points so the number can be audited.
+
+```bash
+npm run stars -- v4       chart.json query.json                 # one date
+npm run stars -- v4scan   chart.json query.json FROM TO         # every Pratyantar window, transits sampled at entry/mid/exit
+npm run stars -- backtest chart.json events.json FROM TO        # rank each past event's window among all windows of its topic
+```
+
+`events.json` is a list of `{ "date": "YYYY-MM-DD", "topic": "career|marriage|…", "label": "…" }`
+(see `data/stars/events-template.json`). The backtest reports each event's T, its rank among all windows,
+and the mean percentile (50 = chance). Weights in `v4.ts` are the untuned defaults from the review and are
+meant to be adjusted against that backtest.

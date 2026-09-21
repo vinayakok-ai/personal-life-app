@@ -74,6 +74,8 @@ export type ChartInput = {
   /** Optional Bhinnashtakavarga: for each planet, for each sign, the list of contributors that gave a bindu (needed for Step 18 Kakshya). */
   bav?: Partial<Record<Graha, Partial<Record<Sign, (Planet | "Ascendant")[]>>>>;
   shadbala?: ShadbalaInput[];
+  /** Total Bhava Bala per house 1..12 (optional; v4 Promise axis). */
+  bhavaBala?: number[];
   dashas: DashaInput[];
   vargas?: Partial<Record<"D9" | "D10" | "D4" | "D7", VargaInput>>;
   /** Free-form notes copied from the document that the parser could not place. */
@@ -128,6 +130,7 @@ export type Ingested = {
   sav: number[] | null;
   bav: ChartInput["bav"] | null;
   shadbala: (ShadbalaInput & { rank: number })[] | null;
+  bhavaBala: number[] | null;
   dashas: DashaInput[];
   vargas: NonNullable<ChartInput["vargas"]>;
   panchang: ChartInput["panchang"] | null;
