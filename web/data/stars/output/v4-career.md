@@ -28,8 +28,8 @@ Signification: primary H10; secondary H6,H2,H11; karaka Sun/Saturn/Mercury; AmK;
 | H10 occupants Rahu | -5 | occupation |
 Tags: Mercury retrograde (delay)
 
-## Trigger T = 61  (dasha 43/55 + transit 12/35, scaled to 100)
-Active: MD Rahu / AD Sun / PD Moon
+## Trigger T = 61  (gain 61 / loss 47; gain = dasha 43/55 + transit 12/35, scaled to 100)
+Active: MD Rahu / AD Sun / PD Moon — tone **favourable** (0: gain 61 vs loss 47, MD Rahu -0.5, Jupiter-led transit +0.5)
 | Level | Planet | Connection | c | Points |
 |---|---|---|---|---|
 | MD | Rahu | occupies H10 | 0.9 | 18 |
@@ -39,6 +39,16 @@ Active: MD Rahu / AD Sun / PD Moon
 |---|---|
 | Jupiter transit Cancer aspects a target sign | 8 |
 | Ketu transit Leo on a target sign | 4 |
+
+Loss axis T_loss = 47
+| Level | Planet | Loss link | c | Points |
+|---|---|---|---|---|
+| MD | Rahu | node on H10/8th | 0.7 | 14 |
+| AD | Sun | malefic on karaka Mercury | 0.4 | 10 |
+| PD | Moon | lord of 12th from H10 (H9) | 1 | 10 |
+| Loss transit | Points |
+|---|---|
+| Ketu transit Leo on house/lord/karaka | 8 |
 Tags: Saturn retrograde in window
 
 ## Grid: **Event window** (Level 5) — promise and trigger both strong; specific timing allowed
