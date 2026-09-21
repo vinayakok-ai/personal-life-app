@@ -70,9 +70,14 @@
   "label": "Mother passed away"
  },
  {
-  "date": "2020-08-01",
+  "date": "2020-07-15",
   "topic": "career",
-  "label": "First job, WFH during COVID"
+  "label": "Joined Xceedance (first job, WFH)"
+ },
+ {
+  "date": "2022-08-01",
+  "topic": "career",
+  "label": "Left Xceedance, joined K K Traders"
  },
  {
   "date": "2023-05-01",
@@ -80,13 +85,23 @@
   "label": "Moved homes within Bangalore"
  },
  {
+  "date": "2024-02-01",
+  "topic": "career",
+  "label": "Left K K Traders, joined Meragi"
+ },
+ {
+  "date": "2025-08-15",
+  "topic": "career",
+  "label": "Left Meragi"
+ },
+ {
   "date": "2025-09-01",
   "topic": "business",
-  "label": "Started own startup"
+  "label": "Founded Sutrverse"
  },
  {
   "date": "2026-07-15",
   "topic": "business",
-  "label": "Startup work improved markedly"
+  "label": "Sutrverse work improved markedly"
  }
 ]

@@ -1,0 +1,87 @@
+[
+ {
+  "date": "2000-11-15",
+  "topic": "foreign",
+  "label": "Family relocation Muscat \u2192 Sharjah"
+ },
+ {
+  "date": "2004-06-01",
+  "topic": "foreign",
+  "label": "Family moved to Dubai"
+ },
+ {
+  "date": "2006-06-01",
+  "topic": "wealth",
+  "label": "Father's new business, financial uptick"
+ },
+ {
+  "date": "2009-01-01",
+  "topic": "wealth",
+  "label": "Financial crisis, downturn"
+ },
+ {
+  "date": "2010-02-15",
+  "topic": "wealth",
+  "label": "Business closed (wealth, adverse)"
+ },
+ {
+  "date": "2010-06-01",
+  "topic": "foreign",
+  "label": "Moved to India (Bijapur)"
+ },
+ {
+  "date": "2010-08-15",
+  "topic": "marriage",
+  "label": "First crush"
+ },
+ {
+  "date": "2013-03-01",
+  "topic": "education",
+  "label": "High school, strong results"
+ },
+ {
+  "date": "2014-06-01",
+  "topic": "foreign",
+  "label": "Moved to Kota alone for JEE prep"
+ },
+ {
+  "date": "2016-06-01",
+  "topic": "education",
+  "label": "Selected for IIT Roorkee"
+ },
+ {
+  "date": "2020-07-15",
+  "topic": "career",
+  "label": "Joined Xceedance (first job, WFH)"
+ },
+ {
+  "date": "2022-08-01",
+  "topic": "career",
+  "label": "Left Xceedance, joined K K Traders"
+ },
+ {
+  "date": "2023-05-01",
+  "topic": "property",
+  "label": "Moved homes within Bangalore"
+ },
+ {
+  "date": "2024-02-01",
+  "topic": "career",
+  "label": "Left K K Traders, joined Meragi"
+ },
+ {
+  "date": "2025-08-15",
+  "topic": "career",
+  "label": "Left Meragi"
+ },
+ {
+  "date": "2025-09-01",
+  "topic": "career",
+  "label": "Founded Sutrverse"
+ },
+ {
+  "date": "2026-07-15",
+  "topic": "career",
+  "label": "Sutrverse work improved markedly"
+ }
+]

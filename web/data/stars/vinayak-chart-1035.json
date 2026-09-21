@@ -667,7 +667,8 @@
  },
  "dashas": [],
  "ledgerNotes": [
-  "Entire chart computed from birth data (Swiss Ephemeris, Lahiri, mean node, Sripati bhavas, BPHS Ashtakavarga). Shadbala and Bhava Bala not computed — supply from software if wanted."
+  "Entire chart computed from birth data (Swiss Ephemeris, Lahiri, mean node, Sripati bhavas, BPHS Ashtakavarga). Shadbala and Bhava Bala not computed — supply from software if wanted.",
+  "Shadbala and Bhava Bala transcribed from AstroSage report (10:35, but generated with 13°17'N; ascendant there 7°01' vs 3°27' at Bijapur city). Positions in that report agree with the computed chart within 30 arcseconds."
  ],
  "compute": {
   "vargas": [
@@ -679,5 +680,63 @@
   "dashaDepth": "PD",
   "birthDate": "1998-11-25",
   "birthTime": "10:35"
- }
+ },
+ "shadbala": [
+  {
+   "planet": "Sun",
+   "points": 455.75,
+   "ratio": 1.52,
+   "digBala": 52.56
+  },
+  {
+   "planet": "Moon",
+   "points": 419.59,
+   "ratio": 1.17,
+   "digBala": 30.14
+  },
+  {
+   "planet": "Mars",
+   "points": 301.17,
+   "ratio": 1,
+   "digBala": 46.12
+  },
+  {
+   "planet": "Mercury",
+   "points": 423.28,
+   "ratio": 1.01,
+   "digBala": 45.18
+  },
+  {
+   "planet": "Jupiter",
+   "points": 488.71,
+   "ratio": 1.25,
+   "digBala": 44.14
+  },
+  {
+   "planet": "Venus",
+   "points": 299.95,
+   "ratio": 0.91,
+   "digBala": 9.61
+  },
+  {
+   "planet": "Saturn",
+   "points": 241.96,
+   "ratio": 0.81,
+   "digBala": 28.98
+  }
+ ],
+ "bhavaBala": [
+  256.79,
+  320.84,
+  557.42,
+  290.21,
+  369.4,
+  501.11,
+  514.85,
+  530.94,
+  486.05,
+  345.27,
+  355.38,
+  524.67
+ ]
 }
