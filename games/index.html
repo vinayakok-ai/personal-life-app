@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="8 Ball">
+<meta name="theme-color" content="#0b1411">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>8 Ball Pool</title>
+<style>
+  :root {
+    --bg: #0b1411; --panel: #13211c; --text: #eef3ef; --muted: #8fa59b;
+    --accent: #f2b544; --you: #5cc8ff; --cpu: #ff7a6b; --bar: #24382f;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); overflow: hidden;
+    font: 15px/1.3 -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+    -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; overscroll-behavior: none; }
+  body { position: fixed; inset: 0; }
+  #app { position: absolute; inset: 0; display: flex; flex-direction: column;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
+  header { display: flex; align-items: center; gap: 8px; padding: 8px 12px 4px; }
+  .player { flex: 1; min-width: 0; padding: 6px 10px; border-radius: 12px; background: var(--panel); border: 2px solid transparent; transition: border-color .2s; }
+  .player.active { border-color: var(--you); }
+  #p1.active { border-color: var(--cpu); }
+  .player.right { text-align: right; }
+  .name { font-weight: 700; font-size: 14px; }
+  .group { color: var(--muted); font-size: 12px; margin-left: 4px; font-weight: 500; }
+  .dots { display: flex; gap: 3px; margin-top: 4px; min-height: 12px; flex-wrap: wrap; }
+  .right .dots { justify-content: flex-end; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; position: relative; overflow: hidden; }
+  .dot.stripe { background: #f3efe4 !important; }
+  .dot.stripe::after { content: ""; position: absolute; left: 0; right: 0; top: 3px; height: 6px; background: var(--c); }
+  .dot.gone { opacity: .18; }
+  #menuBtn { width: 42px; height: 42px; border-radius: 12px; border: 0; background: var(--panel); color: var(--text); font-size: 20px; }
+  #msg { text-align: center; min-height: 22px; padding: 2px 12px 4px; font-size: 14px; color: var(--muted); }
+  #msg.hot { color: var(--accent); font-weight: 600; }
+  #stage { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
+  canvas { display: block; touch-action: none; }
+  footer { display: flex; align-items: center; gap: 10px; padding: 8px 12px 10px; }
+  .fine { width: 48px; height: 48px; border-radius: 14px; border: 0; background: var(--panel); color: var(--text); font-size: 18px; touch-action: none; }
+  #power { flex: 1; height: 48px; border-radius: 14px; background: var(--bar); position: relative; overflow: hidden; touch-action: none; }
+  #powerFill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: linear-gradient(90deg, #4fd18b, #f2b544 60%, #ff5a4a); }
+  #powerLabel { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; color: var(--text); font-weight: 600; pointer-events: none; text-shadow: 0 1px 2px #0008; }
+  footer.disabled { opacity: .35; pointer-events: none; }
+  #overlay { position: fixed; inset: 0; background: #000a; display: none; align-items: center; justify-content: center; padding: 16px; z-index: 5; }
+  #overlay.show { display: flex; }
+  .card { width: 100%; max-width: 340px; background: var(--panel); border-radius: 20px; padding: 22px 18px; text-align: center; }
+  .card h1 { margin: 0 0 6px; font-size: 26px; }
+  .card p { margin: 6px 0 14px; color: var(--muted); }
+  .card button { display: block; width: 100%; margin: 8px 0; padding: 14px; border: 0; border-radius: 14px; font-size: 16px; font-weight: 600; background: var(--bar); color: var(--text); }
+  .card button.primary { background: var(--accent); color: #1b1404; }
+  .card .row { display: flex; gap: 8px; }
+  .card .row button { flex: 1; }
+  .card .small { font-size: 12px; color: var(--muted); margin-top: 12px; line-height: 1.45; text-align: left; }
+  .card .lvl.sel { outline: 2px solid var(--accent); }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="player" id="p0"><div class="name">You<span class="group" id="g0"></span></div><div class="dots" id="d0"></div></div>
+    <button id="menuBtn" aria-label="Menu">☰</button>
+    <div class="player right" id="p1"><div class="name"><span class="group" id="g1"></span>CPU</div><div class="dots" id="d1"></div></div>
+  </header>
+  <div id="msg"></div>
+  <div id="stage"><canvas id="c"></canvas></div>
+  <footer id="controls">
+    <button class="fine" id="left" aria-label="Nudge aim left">◀</button>
+    <div id="power"><div id="powerFill"></div><div id="powerLabel">Slide right for power, let go to shoot</div></div>
+    <button class="fine" id="right" aria-label="Nudge aim right">▶</button>
+  </footer>
+</div>
+
+<div id="overlay" class="show">
+  <div class="card">
+    <h1 id="ovTitle">8 Ball Pool</h1>
+    <p id="ovText">You vs the computer</p>
+    <div class="row">
+      <button class="lvl" data-level="0">Easy</button>
+      <button class="lvl" data-level="1">Medium</button>
+      <button class="lvl" data-level="2">Hard</button>
+    </div>
+    <button class="primary" id="newGame">New game</button>
+    <button id="resume" hidden>Resume</button>
+    <button id="sound">Sound: on</button>
+    <div class="small">
+      <b>Aim:</b> touch and drag anywhere on the table. Use ◀ ▶ for fine aim.<br>
+      <b>Shoot:</b> slide along the power bar, release to shoot (slide back to cancel).<br>
+      <b>Ball in hand:</b> drag the white ball to place it.<br>
+      Works offline once added to your Home Screen.
+    </div>
+  </div>
+</div>
+
+<script src="core.js"></script>
+<script>
+'use strict';
+const P = window.Pool;
+const { W, L, R, POCKETS, CG, SG } = P;
+const RAIL = 34;
+const COLORS = ['#f7f4ea', '#f4c20d', '#1f4fd1', '#d8261c', '#5b2a86', '#f26b1d', '#127a3b', '#7a1f1f', '#111111',
+  '#f4c20d', '#1f4fd1', '#d8261c', '#5b2a86', '#f26b1d', '#127a3b', '#7a1f1f'];
+const $ = (id) => document.getElementById(id);
+const canvas = $('c'), ctx = canvas.getContext('2d');
+
+// ---------- persistent prefs ----------
+const store = {
+  get(k, d) { try { const v = localStorage.getItem('pool.' + k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem('pool.' + k, JSON.stringify(v)); } catch {} },
+};
+let level = store.get('level', 1);
+let soundOn = store.get('sound', true);
+let gamesPlayed = 0;
+
+// ---------- state ----------
+let game = null;
+let state = 'menu';         // menu | aim | rolling | cpu | over
+let aim = -Math.PI / 2;
+let power = 0;
+let cpuAnim = null;         // {from, to, t0, plan}
+let lastMsg = '';
+
+// ---------- sound ----------
+let actx = null, noiseBuf = null, soundBudget = 0;
+function initAudio() {
+  if (!soundOn) return;
+  try {
+    if (!actx) {
+      actx = new (window.AudioContext || window.webkitAudioContext)();
+      noiseBuf = actx.createBuffer(1, actx.sampleRate * 0.2, actx.sampleRate);
+      const d = noiseBuf.getChannelData(0);
+      for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    }
+    if (actx.state === 'suspended') actx.resume();
+  } catch { actx = null; }
+}
+function blip(freq, q, dur, vol) {
+  if (!actx || !soundOn || soundBudget <= 0) return;
+  soundBudget--;
+  const t = actx.currentTime;
+  const src = actx.createBufferSource(); src.buffer = noiseBuf;
+  const f = actx.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = freq; f.Q.value = q;
+  const g = actx.createGain(); g.gain.setValueAtTime(Math.min(1, vol), t); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+  src.connect(f); f.connect(g); g.connect(actx.destination);
+  src.start(t); src.stop(t + dur + 0.02);
+}
+function thump() {
+  if (!actx || !soundOn) return;
+  const t = actx.currentTime, o = actx.createOscillator(), g = actx.createGain();
+  o.frequency.setValueAtTime(140, t); o.frequency.exponentialRampToValueAtTime(50, t + 0.18);
+  g.gain.setValueAtTime(0.5, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+  o.connect(g); g.connect(actx.destination); o.start(t); o.stop(t + 0.25);
+}
+function onSound(type, v) {
+  if (type === 'ball') { if (v > 25) blip(3200, 1.2, 0.04, (v / 1400) * 1.6); }
+  else if (type === 'rail') { if (v > 40) blip(380, 0.8, 0.07, v / 2200); }
+  else if (type === 'pocket') thump();
+}
+
+// ---------- layout ----------
+let scale = 1, rotated = false, dpr = 1;
+function layout() {
+  const st = $('stage').getBoundingClientRect();
+  dpr = Math.min(3, window.devicePixelRatio || 1);
+  rotated = st.width > st.height * 1.1;
+  const tw = W + 2 * RAIL, tl = L + 2 * RAIL;
+  const cw = rotated ? tl : tw, ch = rotated ? tw : tl;
+  scale = Math.min((st.width - 8) / cw, (st.height - 4) / ch);
+  canvas.style.width = cw * scale + 'px';
+  canvas.style.height = ch * scale + 'px';
+  canvas.width = Math.round(cw * scale * dpr);
+  canvas.height = Math.round(ch * scale * dpr);
+}
+function setTableTransform() {
+  const s = scale * dpr;
+  if (rotated) ctx.setTransform(0, -s, s, 0, s * RAIL, s * (W + RAIL));
+  else ctx.setTransform(s, 0, 0, s, s * RAIL, s * RAIL);
+}
+function toTable(e) {
+  const r = canvas.getBoundingClientRect();
+  const sx = (e.clientX - r.left) / scale, sy = (e.clientY - r.top) / scale;
+  return rotated ? { x: W + RAIL - sy, y: sx - RAIL } : { x: sx - RAIL, y: sy - RAIL };
+}
+
+// ---------- drawing ----------
+function drawTable() {
+  // wood
+  const wood = ctx.createLinearGradient(-RAIL, 0, W + RAIL, 0);
+  wood.addColorStop(0, '#5a3418'); wood.addColorStop(0.5, '#7a4a24'); wood.addColorStop(1, '#5a3418');
+  ctx.fillStyle = wood;
+  roundRect(-RAIL, -RAIL, W + 2 * RAIL, L + 2 * RAIL, 18); ctx.fill();
+  // cushions
+  ctx.fillStyle = '#145c36';
+  ctx.fillRect(-12, -12, W + 24, L + 24);
+  // cloth
+  const cloth = ctx.createRadialGradient(W / 2, L / 2, 80, W / 2, L / 2, L * 0.65);
+  cloth.addColorStop(0, '#2b9a5c'); cloth.addColorStop(1, '#1b7444');
+  ctx.fillStyle = cloth; ctx.fillRect(0, 0, W, L);
+  // diamonds
+  ctx.fillStyle = '#e9dcc0';
+  for (let i = 1; i < 4; i++) { dot(-23, (L / 8) * i); dot(W + 23, (L / 8) * i); dot(-23, L - (L / 8) * i); dot(W + 23, L - (L / 8) * i); dot((W / 4) * i, -23); dot((W / 4) * i, L + 23); }
+  // head string + spots
+  ctx.strokeStyle = 'rgba(255,255,255,0.10)'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(0, P.HEAD_Y); ctx.lineTo(W, P.HEAD_Y); ctx.stroke();
+  ctx.fillStyle = 'rgba(255,255,255,0.18)'; dot(W / 2, P.FOOT_Y, 2.5);
+  // pockets
+  ctx.fillStyle = '#060807';
+  for (const p of POCKETS) {
+    ctx.beginPath();
+    if (p.corner) {
+      const sx = p.x < W / 2 ? 1 : -1, sy = p.y < L / 2 ? 1 : -1;
+      const cx = p.x < W / 2 ? 0 : W, cy = p.y < L / 2 ? 0 : L;
+      ctx.moveTo(cx + sx * CG, cy); ctx.lineTo(cx, cy + sy * CG); ctx.lineTo(p.x - sx * 6, p.y - sy * 6); ctx.closePath(); ctx.fill();
+      ctx.beginPath(); ctx.arc(p.x - sx * 3, p.y - sy * 3, 25, 0, Math.PI * 2);
+    } else {
+      const cx = p.x < 0 ? 0 : W, sx = p.x < 0 ? -1 : 1;
+      ctx.moveTo(cx, L / 2 - SG); ctx.lineTo(cx, L / 2 + SG); ctx.lineTo(cx + sx * 10, L / 2 + 18); ctx.lineTo(cx + sx * 10, L / 2 - 18); ctx.closePath(); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx + sx * 10, L / 2, 22, 0, Math.PI * 2);
+    }
+    ctx.fill();
+  }
+}
+function dot(x, y, r = 2.2) { ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); }
+function roundRect(x, y, w, h, r) {
+  ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+}
+function drawBall(b) {
+  const { x, y, id } = b;
+  ctx.fillStyle = 'rgba(0,0,0,0.35)';
+  ctx.beginPath(); ctx.ellipse(x + 2.5, y + 3.5, R, R * 0.9, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.save();
+  ctx.beginPath(); ctx.arc(x, y, R, 0, Math.PI * 2); ctx.clip();
+  const stripe = id >= 9;
+  ctx.fillStyle = stripe ? COLORS[0] : COLORS[id];
+  ctx.fillRect(x - R, y - R, 2 * R, 2 * R);
+  if (stripe) { ctx.fillStyle = COLORS[id]; ctx.fillRect(x - R, y - R * 0.55, 2 * R, R * 1.1); }
+  if (id > 0) {
+    ctx.fillStyle = '#fbfaf5'; ctx.beginPath(); ctx.arc(x, y, R * 0.48, 0, Math.PI * 2); ctx.fill();
+    ctx.save(); ctx.translate(x, y); if (rotated) ctx.rotate(Math.PI / 2);
+    ctx.fillStyle = '#111'; ctx.font = `bold ${R * 0.62}px -apple-system, system-ui, sans-serif`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(String(id), 0, 0.5);
+    ctx.restore();
+  }
+  const hl = ctx.createRadialGradient(x - R * 0.35, y - R * 0.4, 0, x - R * 0.35, y - R * 0.4, R * 0.9);
+  hl.addColorStop(0, 'rgba(255,255,255,0.75)'); hl.addColorStop(0.25, 'rgba(255,255,255,0.15)'); hl.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = hl; ctx.fillRect(x - R, y - R, 2 * R, 2 * R);
+  const sh = ctx.createRadialGradient(x, y, R * 0.55, x, y, R);
+  sh.addColorStop(0, 'rgba(0,0,0,0)'); sh.addColorStop(1, 'rgba(0,0,0,0.35)');
+  ctx.fillStyle = sh; ctx.fillRect(x - R, y - R, 2 * R, 2 * R);
+  ctx.restore();
+}
+function drawGuide(ang, full) {
+  const c = game.balls[0], hit = P.rayCast(game.balls, ang);
+  ctx.save();
+  ctx.strokeStyle = 'rgba(255,255,255,0.75)'; ctx.lineWidth = 1.5; ctx.setLineDash([6, 6]);
+  ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(hit.x, hit.y); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.beginPath(); ctx.arc(hit.x, hit.y, R, 0, Math.PI * 2); ctx.stroke();
+  if (hit.ball && full) {
+    const b = hit.ball, nx = (b.x - hit.x) / (2 * R), ny = (b.y - hit.y) / (2 * R);
+    const legal = isLegalTarget(b.id);
+    ctx.strokeStyle = legal ? 'rgba(255,255,255,0.9)' : 'rgba(255,90,74,0.95)';
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(b.x, b.y); ctx.lineTo(b.x + nx * 90, b.y + ny * 90); ctx.stroke();
+    const dx = Math.cos(ang), dy = Math.sin(ang), dn = dx * nx + dy * ny;
+    const tx = dx - dn * nx, ty = dy - dn * ny;
+    ctx.strokeStyle = 'rgba(255,255,255,0.4)'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(hit.x, hit.y); ctx.lineTo(hit.x + tx * 60, hit.y + ty * 60); ctx.stroke();
+    if (!legal) {
+      ctx.beginPath(); ctx.moveTo(hit.x - 6, hit.y - 6); ctx.lineTo(hit.x + 6, hit.y + 6); ctx.moveTo(hit.x + 6, hit.y - 6); ctx.lineTo(hit.x - 6, hit.y + 6);
+      ctx.strokeStyle = 'rgba(255,90,74,0.95)'; ctx.stroke();
+    }
+  }
+  ctx.restore();
+}
+function drawCue(ang, pull) {
+  const c = game.balls[0], dx = Math.cos(ang), dy = Math.sin(ang);
+  const start = R + 5 + pull * 90, len = 380;
+  const x0 = c.x - dx * start, y0 = c.y - dy * start, x1 = c.x - dx * (start + len), y1 = c.y - dy * (start + len);
+  const nx = -dy, ny = dx;
+  ctx.save();
+  ctx.fillStyle = 'rgba(0,0,0,0.3)';
+  quad(x0 + 4, y0 + 6, x1 + 4, y1 + 6, nx, ny, 2.2, 5.5);
+  const g = ctx.createLinearGradient(x0, y0, x1, y1);
+  g.addColorStop(0, '#eaf3ff'); g.addColorStop(0.03, '#eaf3ff'); g.addColorStop(0.035, '#2a6bd6');
+  g.addColorStop(0.06, '#f1d9a6'); g.addColorStop(0.6, '#d8a865'); g.addColorStop(0.62, '#2b1a10'); g.addColorStop(1, '#3d2414');
+  ctx.fillStyle = g;
+  quad(x0, y0, x1, y1, nx, ny, 2.2, 5.5);
+  ctx.restore();
+}
+function quad(x0, y0, x1, y1, nx, ny, w0, w1) {
+  ctx.beginPath();
+  ctx.moveTo(x0 + nx * w0, y0 + ny * w0); ctx.lineTo(x1 + nx * w1, y1 + ny * w1);
+  ctx.lineTo(x1 - nx * w1, y1 - ny * w1); ctx.lineTo(x0 - nx * w0, y0 - ny * w0); ctx.closePath(); ctx.fill();
+}
+function render() {
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  setTableTransform();
+  drawTable();
+  if (!game) return;
+  if (game.ballInHand && state === 'aim' && game.turn === 0) {
+    const c = game.balls[0];
+    ctx.strokeStyle = 'rgba(242,181,68,0.85)'; ctx.lineWidth = 2; ctx.setLineDash([4, 4]);
+    ctx.beginPath(); ctx.arc(c.x, c.y, R + 7, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+    if (game.kitchen) { ctx.fillStyle = 'rgba(255,255,255,0.04)'; ctx.fillRect(0, P.HEAD_Y, W, L - P.HEAD_Y); }
+  }
+  if (state === 'aim' && game.turn === 0) drawGuide(aim, true);
+  if (state === 'cpu' && cpuAnim) drawGuide(cpuAngle(), false);
+  for (const b of game.balls) if (b.on) drawBall(b);
+  if (state === 'aim' && game.turn === 0) drawCue(aim, power);
+  if (state === 'cpu' && cpuAnim) drawCue(cpuAngle(), cpuPull());
+}
+
+// ---------- HUD ----------
+function setMsg(t, hot) { const m = $('msg'); m.textContent = t; m.className = hot ? 'hot' : ''; lastMsg = t; }
+function updateHud() {
+  for (const pl of [0, 1]) {
+    const g = game ? game.groups[pl] : null;
+    $('p' + pl).classList.toggle('active', !!game && game.turn === pl && state !== 'over');
+    $('g' + pl).textContent = g ? (pl === 0 ? ' · ' : '') + g + (pl === 1 ? ' · ' : '') : '';
+    const d = $('d' + pl); d.innerHTML = '';
+    if (!game) continue;
+    const ids = g ? P.groupIds(g).concat([8]) : [];
+    for (const id of ids) {
+      const s = document.createElement('div');
+      s.className = 'dot' + (id >= 9 ? ' stripe' : '') + (game.balls[id].on ? '' : ' gone');
+      s.style.background = COLORS[id]; s.style.setProperty('--c', COLORS[id]);
+      d.appendChild(s);
+    }
+    if (!g) d.innerHTML = '<span class="group" style="margin:0">open table</span>';
+  }
+  $('controls').classList.toggle('disabled', !(state === 'aim' && game && game.turn === 0));
+}
+function isLegalTarget(id) {
+  if (game.isBreak) return true;
+  return P.targetsFor(game.balls, game.groups, false, 0).includes(id);
+}
+
+// ---------- game flow ----------
+function newGame() {
+  game = P.newGame(gamesPlayed % 2);
+  gamesPlayed++;
+  closeOverlay();
+  startTurn(game.turn === 0 ? 'Your break! Aim, then slide the power bar.' : '');
+}
+function startTurn(note) {
+  power = 0; setPower(0);
+  if (game.turn === 0) {
+    state = 'aim';
+    if (!game.isBreak) aimAtSomething();
+    else aim = -Math.PI / 2;
+    setMsg(note || (game.ballInHand ? 'Ball in hand: drag the white ball, then shoot' : 'Your shot'), !!note);
+  } else {
+    state = 'cpu';
+    setMsg(note ? note + ' · CPU is thinking…' : 'CPU is thinking…', !!note);
+    setTimeout(cpuThink, 450);
+  }
+  updateHud();
+}
+function aimAtSomething() {
+  const c = game.balls[0];
+  const tg = P.targetsFor(game.balls, game.groups, false, 0);
+  let best = null, bd = Infinity;
+  for (const id of tg) { const b = game.balls[id]; const d = Math.hypot(b.x - c.x, b.y - c.y); if (d < bd) { bd = d; best = b; } }
+  if (best) aim = Math.atan2(best.y - c.y, best.x - c.x);
+}
+function shoot(ang, pw) {
+  initAudio();
+  soundBudget = 6; blip(1800, 1, 0.05, 0.3 + pw * 0.7);
+  P.beginShot(game, ang, pw, onSound);
+  state = 'rolling';
+  setMsg(game.turn === 0 ? '' : 'CPU shoots');
+  updateHud();
+}
+function finishShot() {
+  const sh = game.turn;
+  const j = P.endShot(game);
+  if (game.winner !== null) return gameOver();
+  const who = sh === 0 ? 'You' : 'CPU';
+  let note = '';
+  if (j.foul) note = `Foul: ${j.foul.toLowerCase()}. ` + (game.turn === 0 ? 'Ball in hand for you.' : 'CPU gets ball in hand.');
+  else if (j.assign) note = `${who === 'You' ? 'You are' : 'CPU is'} ${game.groups[sh]}.` + (j.cont ? ' Shoot again.' : '');
+  else if (j.cont) note = sh === 0 ? 'Nice! Shoot again.' : '';
+  else if (j.eightIn) note = '8-ball on the break, re-spotted.';
+  startTurn(note);
+}
+function gameOver() {
+  state = 'over';
+  updateHud();
+  const won = game.winner === 0;
+  setMsg(won ? 'You win!' : 'CPU wins', true);
+  setTimeout(() => {
+    openOverlay(won ? 'You win! 🎱' : 'CPU wins',
+      (won ? 'You ' : 'CPU ') + game.why + (game.winner === 0 ? '.' : '.') , false);
+  }, 700);
+}
+
+// ---------- CPU ----------
+function cpuThink() {
+  if (state !== 'cpu') return;
+  const plan = P.aiPlan(game, 1, level);
+  if (game.ballInHand) {
+    const c = game.balls[0];
+    if (P.validCuePos(game.balls, plan.pos.x, plan.pos.y, game.kitchen)) { c.x = plan.pos.x; c.y = plan.pos.y; }
+  }
+  const c = game.balls[0];
+  const start = game.isBreak ? -Math.PI / 2 : aimFromCpuStart(c);
+  let to = plan.angle;
+  while (to - start > Math.PI) to -= 2 * Math.PI;
+  while (to - start < -Math.PI) to += 2 * Math.PI;
+  cpuAnim = { from: start, to, t0: performance.now(), plan };
+}
+function aimFromCpuStart(c) { return Math.atan2(L / 2 - c.y, W / 2 - c.x); }
+const CPU_AIM_MS = 900, CPU_PULL_MS = 550;
+function cpuAngle() {
+  const t = Math.min(1, (performance.now() - cpuAnim.t0) / CPU_AIM_MS);
+  const e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+  return cpuAnim.from + (cpuAnim.to - cpuAnim.from) * e;
+}
+function cpuPull() {
+  const t = (performance.now() - cpuAnim.t0 - CPU_AIM_MS) / CPU_PULL_MS;
+  return t <= 0 ? 0 : Math.min(1, t) * cpuAnim.plan.power;
+}
+function cpuTick() {
+  if (state === 'cpu' && cpuAnim && performance.now() - cpuAnim.t0 > CPU_AIM_MS + CPU_PULL_MS + 150) {
+    const { angle, power: pw } = cpuAnim.plan;
+    cpuAnim = null;
+    shoot(angle, pw);
+  }
+}
+
+// ---------- main loop ----------
+let acc = 0, lastT = performance.now(), frames = 0;
+function loop(t) {
+  const dt = Math.min(0.1, (t - lastT) / 1000); lastT = t;
+  if (state === 'rolling') {
+    acc += dt;
+    let n = 0;
+    while (acc >= P.DT && n < 4) {
+      soundBudget = 4;
+      P.frame(game.balls, game.ev); acc -= P.DT; n++; frames++;
+      if (!P.anyMoving(game.balls)) break;
+    }
+    if (n === 4) acc = 0;
+    if (!P.anyMoving(game.balls) || frames > 60 * 40) { acc = 0; frames = 0; finishShot(); }
+  }
+  cpuTick();
+  render();
+  requestAnimationFrame(loop);
+}
+
+// ---------- input: table ----------
+let drag = null;
+canvas.addEventListener('pointerdown', (e) => {
+  initAudio();
+  if (state !== 'aim' || game.turn !== 0) return;
+  canvas.setPointerCapture(e.pointerId);
+  const p = toTable(e), c = game.balls[0];
+  if (game.ballInHand && Math.hypot(p.x - c.x, p.y - c.y) < 48) {
+    drag = { kind: 'cue', dx: c.x - p.x, dy: c.y - p.y };
+  } else {
+    drag = { kind: 'aim' };
+    setAim(p);
+  }
+});
+canvas.addEventListener('pointermove', (e) => {
+  if (!drag) return;
+  const p = toTable(e);
+  if (drag.kind === 'cue') placeCue(p.x + drag.dx, p.y + drag.dy);
+  else setAim(p);
+});
+const endDrag = () => { drag = null; };
+canvas.addEventListener('pointerup', endDrag);
+canvas.addEventListener('pointercancel', endDrag);
+function setAim(p) {
+  const c = game.balls[0];
+  if (Math.hypot(p.x - c.x, p.y - c.y) > 6) aim = Math.atan2(p.y - c.y, p.x - c.x);
+}
+function placeCue(x, y) {
+  const c = game.balls[0];
+  x = Math.max(R, Math.min(W - R, x));
+  y = Math.max(game.kitchen ? P.HEAD_Y : R, Math.min(L - R, y));
+  if (P.validCuePos(game.balls, x, y, game.kitchen)) { c.x = x; c.y = y; return; }
+  // slide along whichever axis is free so the ball doesn't stick on neighbours
+  if (P.validCuePos(game.balls, x, c.y, game.kitchen)) c.x = x;
+  else if (P.validCuePos(game.balls, c.x, y, game.kitchen)) c.y = y;
+}
+
+// ---------- input: power bar ----------
+const bar = $('power');
+let pdrag = null;
+function setPower(v) {
+  power = v;
+  $('powerFill').style.width = (v * 100).toFixed(1) + '%';
+  $('powerLabel').textContent = v > 0 ? Math.round(v * 100) + '%' : 'Slide right for power, let go to shoot';
+}
+bar.addEventListener('pointerdown', (e) => {
+  initAudio();
+  if (state !== 'aim' || game.turn !== 0) return;
+  bar.setPointerCapture(e.pointerId);
+  pdrag = { x0: e.clientX, w: bar.getBoundingClientRect().width * 0.85 };
+});
+bar.addEventListener('pointermove', (e) => {
+  if (!pdrag) return;
+  setPower(Math.max(0, Math.min(1, (e.clientX - pdrag.x0) / pdrag.w)));
+});
+bar.addEventListener('pointerup', () => {
+  if (!pdrag) return;
+  pdrag = null;
+  if (power > 0.02 && state === 'aim') { const pw = power; setPower(0); shoot(aim, pw); }
+  else setPower(0);
+});
+bar.addEventListener('pointercancel', () => { pdrag = null; setPower(0); });
+
+// ---------- input: fine aim ----------
+for (const [id, dir] of [['left', -1], ['right', 1]]) {
+  const btn = $(id);
+  let timer = null, held = 0;
+  const tick = () => { held++; aim += dir * (held < 15 ? 0.0012 : 0.004); };
+  btn.addEventListener('pointerdown', (e) => {
+    e.preventDefault(); btn.setPointerCapture(e.pointerId);
+    if (state !== 'aim') return;
+    held = 0; tick(); clearInterval(timer); timer = setInterval(tick, 40);
+  });
+  const stop = () => { clearInterval(timer); timer = null; };
+  btn.addEventListener('pointerup', stop); btn.addEventListener('pointercancel', stop);
+}
+
+// ---------- menu ----------
+function openOverlay(title, text, canResume) {
+  $('ovTitle').textContent = title; $('ovText').textContent = text;
+  $('resume').hidden = !canResume;
+  document.querySelectorAll('.lvl').forEach((b) => b.classList.toggle('sel', +b.dataset.level === level));
+  $('sound').textContent = 'Sound: ' + (soundOn ? 'on' : 'off');
+  $('overlay').classList.add('show');
+}
+function closeOverlay() { $('overlay').classList.remove('show'); }
+$('menuBtn').addEventListener('click', () => openOverlay('8 Ball Pool', 'You vs the computer · ' + P.LEVELS[level].name, !!game && state !== 'over'));
+$('resume').addEventListener('click', closeOverlay);
+$('newGame').addEventListener('click', () => { initAudio(); newGame(); });
+$('sound').addEventListener('click', () => { soundOn = !soundOn; store.set('sound', soundOn); if (soundOn) initAudio(); $('sound').textContent = 'Sound: ' + (soundOn ? 'on' : 'off'); });
+document.querySelectorAll('.lvl').forEach((b) => b.addEventListener('click', () => {
+  level = +b.dataset.level; store.set('level', level);
+  document.querySelectorAll('.lvl').forEach((x) => x.classList.toggle('sel', x === b));
+}));
+document.addEventListener('gesturestart', (e) => e.preventDefault());
+document.addEventListener('dblclick', (e) => e.preventDefault());
+
+window.addEventListener('resize', layout);
+window.addEventListener('orientationchange', () => setTimeout(layout, 200));
+layout();
+openOverlay('8 Ball Pool', 'You vs the computer', false);
+updateHud();
+requestAnimationFrame(loop);
+
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
